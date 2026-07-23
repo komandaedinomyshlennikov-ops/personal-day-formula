@@ -51,16 +51,21 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       setError(t('errors.requiredField'));
       return;
     }
-    
-    const date = new Date(birthDate);
-    const now = new Date();
-    const age = now.getFullYear() - date.getFullYear();
-    
+
+    // YYYY-MM-DD from input[type=date] — parse without timezone shift
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
+    if (!match) {
+      setError(t('errors.invalidDate'));
+      return;
+    }
+    const year = Number(match[1]);
+    const age = new Date().getFullYear() - year;
+
     if (age < 0 || age > 120) {
       setError(t('errors.invalidDate'));
       return;
     }
-    
+
     onComplete(birthDate);
   };
 

@@ -21,6 +21,7 @@ import { Switch } from '@/components/ui/switch';
 import { LanguageSelector } from './LanguageSelector';
 import { InstallPrompt } from './InstallPrompt';
 import type { UserData } from '@/types';
+import { parseDateOnly, toLocalDate } from '@/utils/date';
 
 interface SettingsProps {
   userData: UserData;
@@ -85,8 +86,15 @@ export function Settings({
             <div>
               <p className="text-white font-semibold">{t('settings.profile')}</p>
               <p className="text-gray-400 text-sm">
-                {userData.birthDate 
-                  ? new Date(userData.birthDate).toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US') 
+                {userData.birthDate
+                  ? (() => {
+                      const parsed = parseDateOnly(userData.birthDate);
+                      return parsed
+                        ? toLocalDate(parsed).toLocaleDateString(
+                            currentLang === 'ru' ? 'ru-RU' : 'en-US'
+                          )
+                        : userData.birthDate;
+                    })() 
                   : t('errors.invalidDate')}
               </p>
             </div>

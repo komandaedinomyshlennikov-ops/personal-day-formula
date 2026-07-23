@@ -1,73 +1,59 @@
-// Утилиты для расчётов цифровой психологии
+// Утилиты для расчётов цифровой психологии (timezone-safe)
 
 import type { DayInfo } from '@/types';
 import type { TFunction } from 'i18next';
+import { fromLocalDate, requireDateOnly, toLocalDate } from '@/utils/date';
 
 export type { DayInfo };
 
 // Расчёт Числа Жизненного Пути (постоянное число на всю жизнь)
-// Складываем все цифры даты рождения и сводим к одной цифре
+// Складываем день + месяц + год рождения и сводим к одной цифре
 export function calculateLifePathNumber(birthDate: string): number {
-  const date = new Date(birthDate);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  
-  // Складываем все цифры: день + месяц + год
-  const sum = day + month + year;
-  return reduceToSingleDigit(sum);
+  const { day, month, year } = requireDateOnly(birthDate);
+  return reduceToSingleDigit(day + month + year);
 }
 
 // Расчёт личного года
 export function calculatePersonalYear(birthDate: string, year: number): number {
-  const date = new Date(birthDate);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  
-  const sum = day + month + year;
-  return reduceToSingleDigit(sum);
+  const { day, month } = requireDateOnly(birthDate);
+  return reduceToSingleDigit(day + month + year);
 }
 
 // Расчёт личного месяца
 export function calculatePersonalMonth(birthDate: string, year: number, month: number): number {
   const personalYear = calculatePersonalYear(birthDate, year);
-  const sum = personalYear + month;
-  return reduceToSingleDigit(sum);
+  return reduceToSingleDigit(personalYear + month);
 }
 
-// Расчёт личного дня:
-// Личный день = личный месяц + число дня
+// Расчёт личного дня: личный месяц + число дня
 export function calculatePersonalDay(birthDate: string, date: Date): number {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  
-  // Личный месяц
-  const personalMonth = calculatePersonalMonth(birthDate, year, month);
-  
-  // Личный день = личный месяц + число дня
-  const sum = personalMonth + day;
-  return reduceToSingleDigit(sum);
+  const { year, month, day } = fromLocalDate(date);
+  return calculatePersonalDayFromNumbers(birthDate, year, month, day);
 }
 
 // Расчёт личного дня (версия с отдельными параметрами)
-export function calculatePersonalDayFromNumbers(birthDate: string, year: number, month: number, day: number): number {
-  // Личный месяц
+export function calculatePersonalDayFromNumbers(
+  birthDate: string,
+  year: number,
+  month: number,
+  day: number
+): number {
   const personalMonth = calculatePersonalMonth(birthDate, year, month);
-  
-  // Личный день = личный месяц + число дня
-  const sum = personalMonth + day;
-  return reduceToSingleDigit(sum);
+  return reduceToSingleDigit(personalMonth + day);
 }
 
-// Расчёт общего дня (универсальный день)
+// Расчёт общего дня (универсальный день) — local calendar parts
 export function calculateUniversalDay(date: Date): number {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  
-  const sum = day + month + year;
-  return reduceToSingleDigit(sum);
+  const { year, month, day } = fromLocalDate(date);
+  return calculateUniversalDayFromParts(year, month, day);
+}
+
+export function calculateUniversalDayFromParts(
+  year: number,
+  month: number,
+  day: number
+): number {
+  return reduceToSingleDigit(day + month + year);
 }
 
 // Сведение к однозначному числу
@@ -346,33 +332,35 @@ export function getMonthName(month: number, t?: (key: string) => string): string
   return months[month - 1];
 }
 
-// Генерация данных для месяца
+// Генерация данных для месяца (local dates, no UTC shift)
 export function generateMonthData(
-  birthDate: string, 
-  year: number, 
+  birthDate: string,
+  year: number,
   month: number
 ): DayInfo[] {
+  // Validate birth date early
+  requireDateOnly(birthDate);
+
   const daysInMonth = new Date(year, month, 0).getDate();
   const data: DayInfo[] = [];
-  
+
   for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month - 1, day);
-    const personalNumber = calculatePersonalDay(birthDate, date);
-    const generalNumber = calculateUniversalDay(date);
-    
-    // Определяем благоприятность
+    const date = toLocalDate({ year, month, day });
+    const personalNumber = calculatePersonalDayFromNumbers(birthDate, year, month, day);
+    const generalNumber = calculateUniversalDayFromParts(year, month, day);
+
     const isFavorable = [1, 3, 5, 6].includes(personalNumber);
     const isUnfavorable = [4, 8, 9].includes(personalNumber);
-    
+
     data.push({
       date,
       personalNumber,
       generalNumber,
       isFavorable,
-      isUnfavorable
+      isUnfavorable,
     } as DayInfo);
   }
-  
+
   return data;
 }
 

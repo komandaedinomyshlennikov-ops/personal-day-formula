@@ -17,17 +17,22 @@ import { ShareCalendar } from '@/components/ShareCalendar';
 import { SubscriptionExpired } from '@/components/SubscriptionExpired';
 import { useUserData } from '@/hooks/useUserData';
 import { useNotifications } from '@/hooks/useNotifications';
+import { buildMonthCsv, buildPdfHtml, downloadCsv } from '@/utils/export';
+import { SUPPORT_TELEGRAM } from '@/config/site';
 import type { DayInfo, ViewState, Language } from '@/types';
 import { Toaster, toast } from 'sonner';
 
 function App() {
   const [view, setView] = useState<ViewState>('onboarding');
   const [selectedDay, setSelectedDay] = useState<DayInfo | null>(null);
-  const [selectedMonthYear, setSelectedMonthYear] = useState<{ type: 'month' | 'year'; number: number } | null>(null);
+  const [selectedMonthYear, setSelectedMonthYear] = useState<{
+    type: 'month' | 'year';
+    number: number;
+  } | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [showBirthModal, setShowBirthModal] = useState(false);
   const [showExpiredModal, setShowExpiredModal] = useState(false);
-  
+
   const {
     userData,
     isLoaded,
@@ -41,110 +46,113 @@ function App() {
     setLanguage,
     clearUserData,
     logout,
-    subscriptionPlans
+    subscriptionPlans,
   } = useUserData();
 
   const { requestPermission, scheduleDailyNotification } = useNotifications();
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
 
-  // Определение начального экрана и проверка подписки
+  // Initial screen + subscription gate
   useEffect(() => {
-    if (isLoaded) {
-      if (userData.birthDate) {
-        // Проверяем, активна ли подписка
-        const isSubscribed = checkSubscription();
-        if (!isSubscribed && userData.subscriptionEndDate) {
-          // Подписка закончилась - показываем экран блокировки
-          setShowExpiredModal(true);
-        }
-        setView('calendar');
-      } else {
-        setView('landing');
-      }
-      setIsReady(true);
-    }
-  }, [isLoaded, userData.birthDate, userData.subscriptionEndDate]);
+    if (!isLoaded) return;
 
-  // Синхронизация языка приложения с userData
+    if (userData.birthDate) {
+      const isSubscribed = checkSubscription();
+      if (!isSubscribed && userData.subscriptionEndDate) {
+        setShowExpiredModal(true);
+      }
+      setView('calendar');
+    } else {
+      setView('landing');
+    }
+    setIsReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once after load
+  }, [isLoaded]);
+
+  // Sync i18n with userData.language
   useEffect(() => {
     if (isLoaded && userData.language && userData.language !== currentLanguage) {
       i18n.changeLanguage(userData.language);
     }
   }, [isLoaded, userData.language, currentLanguage, i18n]);
 
-  // Обработчик завершения onboarding
   const handleOnboardingComplete = (date: string) => {
     setBirthDate(date);
     startTrial();
     setView('calendar');
-    toast.success(t('notifications.trialEnded'), {
-      description: t('subscription.plans.trial.description')
+    toast.success(t('onboarding.startTrial'), {
+      description: t('subscription.plans.trial.description', {
+        defaultValue: '3 дня полного доступа',
+      }),
     });
   };
 
-  // Обработчик выбора дня
   const handleDaySelect = (day: DayInfo) => {
     setSelectedDay(day);
     setView('day-detail');
   };
 
-  // Обработчик выбора подписки
   const handleSubscriptionSelect = (planId: string) => {
     if (planId === 'trial') {
-      toast.info('Пробный период уже активирован');
+      toast.info(t('subscription.trialActiveTitle', { defaultValue: 'Пробный период уже активен' }));
       return;
     }
     setView('activation');
   };
 
-  // Обработчик активации по коду
-  const handleActivation = (code: string) => {
-    const normalizedCode = code.trim().toUpperCase();
-    const success = activateWithCode(code);
+  const handleActivation = async (code: string): Promise<boolean> => {
+    const success = await activateWithCode(code);
     if (success) {
-      // Определяем тип подписки для сообщения
-      const isLifetime = normalizedCode === 'LIFE-2026';
-      toast.success(t('subscription.activationSuccess'), {
-        description: isLifetime 
-          ? t('subscription.plans.lifetime.description')
-          : t('subscription.choosePlan')
+      toast.success(t('subscription.activationSuccess', { defaultValue: 'Подписка активирована' }), {
+        description: t('subscription.activeDesc', {
+          defaultValue: 'Полный доступ открыт',
+        }),
       });
       setShowExpiredModal(false);
       setView('calendar');
-    } else {
-      toast.error(t('subscription.invalidCode'), {
-        description: t('errors.generic')
-      });
+      return true;
     }
+
+    toast.error(t('subscription.invalidCode', { defaultValue: 'Неверный код' }), {
+      description: t('errors.generic', { defaultValue: 'Проверьте код и попробуйте снова' }),
+    });
+    return false;
   };
 
-  // Обработчик клика на личный месяц
   const handleMonthClick = (monthNumber: number) => {
     setSelectedMonthYear({ type: 'month', number: monthNumber });
     setView('month-year-detail');
   };
 
-  // Обработчик клика на личный год
   const handleYearClick = (yearNumber: number) => {
     setSelectedMonthYear({ type: 'year', number: yearNumber });
     setView('month-year-detail');
   };
 
-  // Экспорт в PDF
+  const getExportPeriod = () => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  };
+
   const handleExportPDF = async () => {
     if (!userData.birthDate) return;
-    
+
     try {
       const [{ default: JsPDF }, { default: html2canvas }] = await Promise.all([
         import('jspdf'),
-        import('html2canvas')
+        import('html2canvas'),
       ]);
-      
-      const birthDate = new Date(userData.birthDate);
-      const currentDate = new Date();
-      
-      // Создаём временный контейнер для рендеринга
+
+      const { year, month } = getExportPeriod();
+      const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+      const bodyHtml = buildPdfHtml({
+        birthDate: userData.birthDate,
+        year,
+        month,
+        locale,
+      });
+
       const container = document.createElement('div');
       container.style.cssText = `
         position: fixed;
@@ -156,81 +164,48 @@ function App() {
         color: white;
         font-family: system-ui, -apple-system, sans-serif;
       `;
-      
-      // Генерируем HTML контент
-      container.innerHTML = `
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-size: 28px; margin-bottom: 10px; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            Астронавигатор
-          </h1>
-          <p style="color: #9ca3af; font-size: 14px;">Личный календарь успеха</p>
-        </div>
-        
-        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-          <p style="color: #9ca3af; font-size: 12px; margin-bottom: 8px;">Дата рождения</p>
-          <p style="font-size: 20px; font-weight: bold;">${birthDate.toLocaleDateString('ru-RU')}</p>
-        </div>
-        
-        <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-          <p style="color: #9ca3af; font-size: 12px; margin-bottom: 8px;">Отчёт сгенерирован</p>
-          <p style="font-size: 16px;">${currentDate.toLocaleDateString('ru-RU')}</p>
-        </div>
-        
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-          <p style="color: #6b7280; font-size: 12px;">
-            astrocalendar.ok.kimi.link
-          </p>
-          <p style="color: #6b7280; font-size: 11px; margin-top: 4px;">
-            © 2026 Татьяна Генюш
-          </p>
-        </div>
-      `;
-      
+      container.innerHTML = bodyHtml;
       document.body.appendChild(container);
-      
-      // Конвертируем в canvas
+
       const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#1a1a2e'
+        backgroundColor: '#1a1a2e',
       });
-      
+
       document.body.removeChild(container);
-      
-      // Создаём PDF
+
       const doc = new JsPDF('p', 'mm', 'a4');
       const imgData = canvas.toDataURL('image/png');
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      doc.save('astronavigator-calendar.pdf');
-      
-      toast.success('PDF экспортирован');
+
+      doc.addImage(imgData, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, 297));
+      doc.save(`astronavigator-${year}-${String(month).padStart(2, '0')}.pdf`);
+
+      toast.success(t('settings.exportPdf', { defaultValue: 'PDF экспортирован' }));
     } catch (error) {
       console.error('PDF export error:', error);
-      toast.error('Ошибка при экспорте');
+      toast.error(t('errors.generic', { defaultValue: 'Ошибка при экспорте' }));
     }
   };
 
-  // Экспорт в CSV
   const handleExportCSV = () => {
     if (!userData.birthDate) return;
-    
-    const csvContent = 'data:text/csv;charset=utf-8,Дата,Общее число,Личное число\n';
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'astronavigator-data.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast.success('CSV экспортирован');
+
+    try {
+      const { year, month } = getExportPeriod();
+      const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+      const csv = buildMonthCsv(userData.birthDate, year, month, locale);
+      downloadCsv(csv, `astronavigator-${year}-${String(month).padStart(2, '0')}.csv`);
+      toast.success(t('settings.exportCsv', { defaultValue: 'CSV экспортирован' }));
+    } catch (error) {
+      console.error('CSV export error:', error);
+      toast.error(t('errors.generic', { defaultValue: 'Ошибка при экспорте' }));
+    }
   };
 
-  // Очистка данных
   const handleClearData = () => {
     if (confirm(t('settings.deleteDataDesc'))) {
       clearUserData();
@@ -239,17 +214,15 @@ function App() {
     }
   };
 
-  // Выход из приложения
   const handleLogout = () => {
     if (confirm(t('settings.logoutDesc'))) {
       logout();
     }
   };
 
-  // Применение темы
   useEffect(() => {
     const root = document.documentElement;
-    
+
     if (userData.theme === 'dark') {
       root.classList.remove('light');
       root.style.colorScheme = 'dark';
@@ -257,7 +230,6 @@ function App() {
       root.classList.add('light');
       root.style.colorScheme = 'light';
     } else {
-      // Auto - следуем системным настройкам
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) {
         root.classList.remove('light');
@@ -269,7 +241,6 @@ function App() {
     }
   }, [userData.theme]);
 
-  // Применение высокого контраста
   useEffect(() => {
     const root = document.documentElement;
     if (userData.highContrast) {
@@ -279,7 +250,6 @@ function App() {
     }
   }, [userData.highContrast]);
 
-  // Обработчик переключения уведомлений
   const handleToggleNotifications = useCallback(async () => {
     if (!userData.notificationsEnabled) {
       const granted = await requestPermission();
@@ -287,14 +257,20 @@ function App() {
         toggleNotifications();
         scheduleDailyNotification(8, 0);
         toast.success(t('settings.notifications'), {
-          description: t('notifications.dailyReminderBody')
+          description: t('notifications.dailyReminderBody'),
         });
       }
     } else {
       toggleNotifications();
       toast.info(t('notifications.subscriptionEnded'));
     }
-  }, [userData.notificationsEnabled, requestPermission, toggleNotifications, scheduleDailyNotification, t]);
+  }, [
+    userData.notificationsEnabled,
+    requestPermission,
+    toggleNotifications,
+    scheduleDailyNotification,
+    t,
+  ]);
 
   if (!isReady) {
     return (
@@ -309,29 +285,33 @@ function App() {
   }
 
   const isSubscribed = checkSubscription();
-  const birthDate = userData.birthDate ? new Date(userData.birthDate) : new Date();
-  
-  // Проверяем, закончилась ли подписка
-  const subscriptionEnded = !isSubscribed && userData.subscriptionEndDate && userData.birthDate;
-  const daysOverdue = subscriptionEnded 
-    ? Math.floor((new Date().getTime() - new Date(userData.subscriptionEndDate!).getTime()) / (1000 * 60 * 60 * 24))
+  const subscriptionEnded =
+    !isSubscribed && !!userData.subscriptionEndDate && !!userData.birthDate;
+  const daysOverdue = subscriptionEnded
+    ? Math.floor(
+        (Date.now() - new Date(userData.subscriptionEndDate!).getTime()) /
+          (1000 * 60 * 60 * 24)
+      )
     : 0;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${userData.theme === 'light' ? 'text-gray-900' : 'text-white'} ${userData.highContrast ? 'high-contrast' : ''}`}>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        userData.theme === 'light' ? 'text-gray-900' : 'text-white'
+      } ${userData.highContrast ? 'high-contrast' : ''}`}
+    >
       <StarBackground />
-      <Toaster 
-        position="top-center" 
+      <Toaster
+        position="top-center"
         toastOptions={{
           style: {
             background: '#1a1a2e',
             color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }
+            border: '1px solid rgba(255,255,255,0.1)',
+          },
         }}
       />
 
-      {/* Birth Date Modal */}
       <BirthDateModal
         isOpen={showBirthModal}
         onClose={() => setShowBirthModal(false)}
@@ -341,7 +321,6 @@ function App() {
         }}
       />
 
-      {/* Subscription Expired Modal - блокирует доступ */}
       {showExpiredModal && subscriptionEnded && (
         <SubscriptionExpired
           onSubscribe={() => {
@@ -349,7 +328,7 @@ function App() {
             setView('subscription');
           }}
           onContactSupport={() => {
-            window.open('https://t.me/tatianageniush', '_blank');
+            window.open(SUPPORT_TELEGRAM, '_blank');
           }}
           isTrial={userData.isTrialActive}
           daysOverdue={daysOverdue}
@@ -369,10 +348,10 @@ function App() {
           </PageTransition>
         )}
 
-        {view === 'calendar' && (
+        {view === 'calendar' && userData.birthDate && (
           <PageTransition key="calendar" direction="none">
             <Calendar
-              birthDate={birthDate}
+              birthDate={userData.birthDate}
               onDaySelect={handleDaySelect}
               onSettings={() => setView('settings')}
               onSubscription={() => setView('subscription')}
@@ -388,10 +367,7 @@ function App() {
 
         {view === 'day-detail' && selectedDay && (
           <PageTransition key="day-detail" direction="left">
-            <DayDetail
-              day={selectedDay}
-              onBack={() => setView('calendar')}
-            />
+            <DayDetail day={selectedDay} onBack={() => setView('calendar')} />
           </PageTransition>
         )}
 
@@ -399,7 +375,9 @@ function App() {
           <PageTransition key="subscription" direction="left">
             <Subscription
               plans={subscriptionPlans}
-              currentPlanId={userData.isTrialActive ? 'trial' : (isSubscribed ? 'active' : null)}
+              currentPlanId={
+                userData.isTrialActive ? 'trial' : isSubscribed ? 'active' : null
+              }
               onSelect={handleSubscriptionSelect}
               onBack={() => setView('calendar')}
               trialEndDate={userData.subscriptionEndDate}
@@ -436,9 +414,7 @@ function App() {
 
         {view === 'share' && (
           <PageTransition key="share" direction="left">
-            <ShareCalendar 
-              onBack={() => setView('calendar')} 
-            />
+            <ShareCalendar onBack={() => setView('calendar')} />
           </PageTransition>
         )}
 

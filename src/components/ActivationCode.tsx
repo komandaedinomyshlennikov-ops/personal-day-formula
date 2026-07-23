@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Key, Send, Check, Loader2 } from 'lucide-react';
 
 interface ActivationCodeProps {
-  onActivate: (code: string) => void;
+  onActivate: (code: string) => boolean | Promise<boolean>;
   onBack: () => void;
 }
 
@@ -23,11 +23,16 @@ export function ActivationCode({ onActivate, onBack }: ActivationCodeProps) {
     setIsChecking(true);
     setError('');
 
-    // Имитация проверки на сервере
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    onActivate(code.trim().toUpperCase());
-    setIsChecking(false);
+    try {
+      const ok = await onActivate(code.trim().toUpperCase());
+      if (!ok) {
+        setError('Неверный или устаревший код активации');
+      }
+    } catch {
+      setError('Ошибка проверки кода. Попробуйте ещё раз.');
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   return (

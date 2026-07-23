@@ -22,10 +22,12 @@ import {
   calculatePersonalMonth,
   isZeroDay
 } from '@/utils/numerology';
+import { normalizeBirthDateString } from '@/utils/date';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
-  birthDate: Date;
+  /** YYYY-MM-DD only — never a Date (avoids timezone shift) */
+  birthDate: string;
   onDaySelect: (day: DayInfo) => void;
   onSettings: () => void;
   onSubscription: () => void;
@@ -122,10 +124,9 @@ export function Calendar({
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
-  
-  // Convert Date to string format YYYY-MM-DD
-  const birthDateString = birthDate.toISOString().split('T')[0];
-  
+
+  const birthDateString = normalizeBirthDateString(birthDate) ?? birthDate;
+
   const monthData = generateMonthData(birthDateString, year, month);
   const personalYear = calculatePersonalYear(birthDateString, year);
   const personalMonth = calculatePersonalMonth(birthDateString, year, month);
