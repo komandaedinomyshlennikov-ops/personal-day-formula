@@ -1,0 +1,343 @@
+{
+  "app": {
+    "name": "AstroNavigator",
+    "tagline": "パーソナル成功カレンダー",
+    "description": "あなたのパーソナルイヤー、マンス、デイナンバーを計算。ヴェーダ数秘術のエネルギーに基づいて重要なイベントを計画。",
+    "version": "v1.0"
+  },
+  "nav": {
+    "home": "ホーム",
+    "calendar": "マイカレンダー",
+    "settings": "設定",
+    "subscription": "サブスクリプション",
+    "share": "シェア",
+    "notes": "メモ",
+    "back": "戻る"
+  },
+  "actions": {
+    "calculate": "計算",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "share": "シェア",
+    "download": "PDFダウンロード",
+    "exportCSV": "CSVエクスポート",
+    "start": "開始",
+    "next": "次へ",
+    "continue": "続ける",
+    "done": "完了",
+    "activate": "有効化",
+    "changeLanguage": "言語を変更",
+    "select": "選択",
+    "copy": "コピー",
+    "copied": "コピーしました！"
+  },
+  "dates": {
+    "birthdatePlaceholder": "YYYY.MM.DD",
+    "today": "今日",
+    "tomorrow": "明日",
+    "yesterday": "昨日",
+    "format": "{{year}}年{{month}}{{day}}日",
+    "shortFormat": "{{month}}/{{day}}"
+  },
+  "months": {
+    "january": "1月",
+    "february": "2月",
+    "march": "3月",
+    "april": "4月",
+    "may": "5月",
+    "june": "6月",
+    "july": "7月",
+    "august": "8月",
+    "september": "9月",
+    "october": "10月",
+    "november": "11月",
+    "december": "12月"
+  },
+  "weekdays": {
+    "mon": "月",
+    "tue": "火",
+    "wed": "水",
+    "thu": "木",
+    "fri": "金",
+    "sat": "土",
+    "sun": "日",
+    "monday": "月曜日",
+    "tuesday": "火曜日",
+    "wednesday": "水曜日",
+    "thursday": "木曜日",
+    "friday": "金曜日",
+    "saturday": "土曜日",
+    "sunday": "日曜日"
+  },
+  "onboarding": {
+    "slide1Title": "AstroNavigator",
+    "slide1Subtitle": "あなたのパーソナル成功カレンダー",
+    "slide1Description": "数秘術と惑星サイクルの叡智を通じて、人生、ビジネス、旅行、会議、重要なイベントを賢く計画するための日々のパートナー。",
+    "slide2Title": "9エネルギーシステム",
+    "slide2Subtitle": "惑星サイクルと振動",
+    "slide2Description": "各日付は特定の惑星が支配する独自のエネルギーを持っています。これらの振動を理解することで、イベントを予測し、ミスを避けることができます。",
+    "slide3Title": "使い方",
+    "slide3Subtitle": "宇宙の叡智で計画",
+    "slide3Description": "カレンダーは、プロジェクトを開始する時期、契約を結ぶ時期、購入する時期をガイドします。より大きな自信を持って人生を進みましょう！",
+    "birthDateTitle": "あなたの生年月日",
+    "birthDateDescription": "パーソナルカレンダーとライフパスナンバーを計算するために生年月日を入力してください",
+    "startTrial": "3日間無料トライアル開始",
+    "trialNote": "トライアル期間は自動的に開始されます"
+  },
+  "calendar": {
+    "personalYear": "パーソナルイヤー",
+    "personalMonth": "パーソナルマンス",
+    "personalDay": "パーソナルデイ",
+    "universalDay": "ユニバーサルデイ",
+    "favorable": "好ましい",
+    "neutral": "中立",
+    "completion": "完了",
+    "zeroDayHint": "10、20、30日——重要事項を延期",
+    "zeroDayWarning": "重要事項を延期",
+    "zeroDayDescription": "10、20、30日は一時停止と反省の日です。新しい事業を始めるのは避け、現在のタスクを完了することに集中してください。",
+    "swipeHint": "左右にスワイプして月を変更",
+    "consultation": "Tatiana Geniushへの相談",
+    "share": "シェア",
+    "legend": {
+      "favorable": "好ましい",
+      "neutral": "中立",
+      "completion": "完了",
+      "zeroDay": "10、20、30日——延期"
+    }
+  },
+  "energies": {
+    "1": {
+      "name": "太陽",
+      "sanskrit": "スーリヤ",
+      "title": "新しい人生戦略",
+      "shortDesc": "勇気と決断的な行動の時",
+      "fullDesc": "太陽のエネルギーは明確さ、リーダーシップ、新しい始まりをもたらします。大胆な一歩を踏み出し、重要なプロジェクトを開始する時です。",
+      "keywords": ["リーダーシップ", "活力", "認識", "エゴ"],
+      "advice": "新しい事業を始め、昇進を求め、中心に立つ",
+      "positive": ["新しいプロジェクトを開始", "契約を結ぶ", "重要な決定を下す", "大きな買い物をする", "新しい活動を始める"],
+      "negative": ["行動を恐れる", "重要事項を延期", "責任を避ける"],
+      "warnings": ["決断に自信を持つ", "疑いが妨げないように"]
+    },
+    "2": {
+      "name": "月",
+      "sanskrit": "チャンドラ",
+      "title": "関係と外交",
+      "shortDesc": "直感に満ちた穏やかで内省的な時期",
+      "fullDesc": "月のエネルギーは感情的感受性と受容性をもたらします。新しいビジネスを始めるのはお勧めしません。関係と外交に集中してください。",
+      "keywords": ["外交", "感受性", "直感", "パートナーシップ"],
+      "advice": "関係を築き、劇場や博物館を訪れ、視野を広げる",
+      "positive": ["関係を築く", "劇場や博物館を訪れる", "視野を広げる", "心理学を学ぶ", "外交的である"],
+      "negative": ["新しいビジネスを始める", "重要事項を交渉", "判断を絶対化する"],
+      "warnings": ["対立を避ける", "忍耐強くある"]
+    },
+    "3": {
+      "name": "木星",
+      "sanskrit": "グル",
+      "title": "システムと成功",
+      "shortDesc": "新しいプロジェクトを開始する絶好の時期",
+      "fullDesc": "木星の拡張的な叡智は成長と機会をもたらします。分析、構造、契約締結に最適な時期です。",
+      "keywords": ["叡智", "拡張", "楽観主義", "学習"],
+      "advice": "新しいプロジェクトを開始し、契約を結び、提案を分析し、知識を得る",
+      "positive": ["新しいプロジェクトを開始", "契約を結ぶ", "提案を分析", "知識を得る", "知性を発達させる"],
+      "negative": ["出来事を予期する", "貪欲さと賭博を示す", "衝動的に行動する"],
+      "warnings": ["偏見を排除", "すべてを徹底的に分析"]
+    },
+    "4": {
+      "name": "ラーフ",
+      "sanskrit": "ラーフ",
+      "title": "野心と物質化",
+      "shortDesc": "目標、健康、内面の仕事に集中",
+      "fullDesc": "ラーフ（北月交点）のエネルギーは欲望と物質的追求を増幅します。野心的な目標には良いですが、執着には注意。西洋の同等物：北交点/ドラゴンヘッド",
+      "keywords": ["野心", "変容", "革新", "欲望"],
+      "advice": "新しいことに進み、創造的な解決策を考え、野心的な目標を設定",
+      "positive": ["新しいことに進む", "創造的な解決策を考える", "野心的な目標を設定", "計画に取り組む"],
+      "negative": ["誘惑に屈する", "論争に巻き込まれる", "財務に不注意である"],
+      "warnings": ["誘惑を避ける", "財務に慎重である"]
+    },
+    "5": {
+      "name": "水星",
+      "sanskrit": "ブッダ",
+      "title": "規模とコミュニケーション",
+      "shortDesc": "重要な交渉に最適な時期",
+      "fullDesc": "水星はコミュニケーションとネットワーキングをサポートします。この期間、多くのプロジェクトが安定した結果をもたらすでしょう。",
+      "keywords": ["コミュニケーション", "知性", "適応性", "商業"],
+      "advice": "交渉を行い、プロジェクトを拡大し、新しい知り合いを作り、積極的にコミュニケーションする",
+      "positive": ["交渉を行う", "プロジェクトを拡大", "新しい知り合いを作る", "積極的にコミュニケーション", "公に話す"],
+      "negative": ["優柔不断である", "コミュニケーションを避ける", "重要な会議を延期"],
+      "warnings": ["詳細に注意", "エネルギーを分散させない"]
+    },
+    "6": {
+      "name": "金星",
+      "sanskrit": "シュクラ",
+      "title": "愛と快適",
+      "shortDesc": "人生を楽しみ、古いタスクを完了する時",
+      "fullDesc": "金星は調和と美をもたらします。人生を楽しみ、古いタスクを完了し、質の高い買い物をし、投資する時です。",
+      "keywords": ["愛", "美", "調和", "贅沢"],
+      "advice": "人生を楽しみ、古いタスクを完了し、質の高い買い物をし、投資する",
+      "positive": ["人生を楽しむ", "古いタスクを完了", "質の高い買い物", "投資", "旅行に行く"],
+      "negative": ["無駄な支出", "残酷である", "他人を批判する"],
+      "warnings": ["他人により優しく", "ポジティブに集中"]
+    },
+    "7": {
+      "name": "ケートゥ",
+      "sanskrit": "ケートゥ",
+      "title": "変容とスピリチュアリティ",
+      "shortDesc": "危機を機会とし、深い癒し",
+      "fullDesc": "ケートゥ（南月交点）は手放すことでスピリチュアルな洞察をもたらします。瞑想、セラピー、古いパターンを解放する時です。西洋の同等物：南交点/ドラゴンテイル",
+      "keywords": ["スピリチュアリティ", "手放す", "癒し", "直感"],
+      "advice": "スピリチュアリティを実践し、行動を分析し、一人の時間を過ごし、瞑想する",
+      "positive": ["スピリチュアリティを実践", "行動を分析", "一人の時間を過ごす", "瞑想"],
+      "negative": ["重要な決定を下す", "真剣な交渉を行う", "お金を貸す"],
+      "warnings": ["関係で橋を焼かない", "医療処置を避ける"]
+    },
+    "8": {
+      "name": "土星",
+      "sanskrit": "シャニ",
+      "title": "お金と努力",
+      "shortDesc": "新しい活動を始める絶好の時期",
+      "fullDesc": "土星は規律と努力を報います。契約締結と重要な決定に最適な時期です。努力を続ければ、成功はついてきます！",
+      "keywords": ["規律", "責任", "構造", "カルマ"],
+      "advice": "新しい活動を始め、契約を結び、重要な決定を下し、勤勉に働く",
+      "positive": ["新しい活動を始める", "契約を結ぶ", "重要な決定を下す", "大きな買い物", "勤勉に働く"],
+      "negative": ["復讐を求める", "怠ける", "規律を破る"],
+      "warnings": ["規律を厳守", "法律と規則を破らない"]
+    },
+    "9": {
+      "name": "火星",
+      "sanskrit": "マンガラ",
+      "title": "完了と浄化",
+      "shortDesc": "人生のすべての領域を締めくくる時",
+      "fullDesc": "火星は始めたことを終わらせるエネルギーをもたらします。高い感情的強度。締めくくりと浄化の時です。",
+      "keywords": ["行動", "勇気", "完了", "浄化"],
+      "advice": "締めくくり、空間を浄化し、デトックスし、慈善活動を実践する",
+      "positive": ["締めくくり", "空間を浄化", "デトックス", "慈善活動", "関係を分析"],
+      "negative": ["新しいプロジェクトを開始", "攻撃性を示す", "規則を破る"],
+      "warnings": ["規律とスポーツがバランスを見つけるのに役立つ", "違反の報いはすぐに来る"]
+    }
+  },
+  "subscription": {
+    "title": "サブスクリプション",
+    "currentPlan": "現在のプラン",
+    "trialActive": "トライアル中",
+    "trialExpired": "トライアル期限切れ",
+    "trialDaysLeft": "残り{{days}}日",
+    "subscriptionExpired": "サブスクリプション期限切れ",
+    "subscriptionExpiredMessage": "サブスクリプションが期限切れになりました。すべての機能を引き続き使用するには、サブスクリプションしてください。",
+    "choosePlan": "プランを選択",
+    "activate": "有効化",
+    "activateWithCode": "コードで有効化",
+    "enterCode": "有効化コードを入力",
+    "codePlaceholder": "例：MONTH-2026",
+    "invalidCode": "無効な有効化コード",
+    "activationSuccess": "サブスクリプション有効化！",
+    "plans": {
+      "trial": {
+        "name": "3日間無料",
+        "description": "すべての機能を無料でお試し"
+      },
+      "month": {
+        "name": "月額",
+        "description": "基本アクセス"
+      },
+      "year": {
+        "name": "年額",
+        "description": "58%節約"
+      },
+      "lifetime": {
+        "name": "生涯",
+        "description": "永久アクセス"
+      }
+    },
+    "paymentInfo": "支払いについてはTelegramでお問い合わせ",
+    "contactForPayment": "サブスクリプションを有効化するためにお問い合わせ",
+    "telegramButton": "Telegramでメッセージ",
+    "premiumFeature": "プレミアム機能",
+    "unlockWithSubscription": "ロック解除するにはサブスクリプション"
+  },
+  "settings": {
+    "title": "設定",
+    "profile": "あなたのプロフィール",
+    "theme": "テーマ",
+    "lightTheme": "ライト",
+    "darkTheme": "ダーク",
+    "autoTheme": "自動",
+    "accessibility": "アクセシビリティ",
+    "highContrast": "高コントラスト",
+    "highContrastDesc": "視覚障害者向け",
+    "notifications": "通知",
+    "notificationsDesc": "重要な日について",
+    "language": "言語",
+    "languageDesc": "希望の言語を選択",
+    "export": "データをエクスポート",
+    "exportPDF": "PDFにエクスポート",
+    "exportPDFDesc": "カレンダーをPDFとして保存",
+    "exportCSV": "CSVにエクスポート",
+    "exportCSVDesc": "データをCSVとして保存",
+    "contacts": "連絡先",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "phone": "電話",
+    "email": "メール",
+    "account": "アカウント",
+    "logout": "ログアウト",
+    "logoutDesc": "データをリセットして終了",
+    "deleteData": "すべてのデータを削除",
+    "deleteDataDesc": "アプリケーションをリセット",
+    "version": "AstroNavigator v1.0"
+  },
+  "astroEvents": {
+    "title": "天文イベント",
+    "subtitle": "あなたの時期のエネルギーを増幅する惑星的影響",
+    "significantDates": "重要な日付",
+    "howItAffectsYou": "あなたにどう影響するか",
+    "lunarNodes": "月交点が活性——運命的な出来事",
+    "plutoRetrograde": "冥王星逆行——深い変容の時期",
+    "uranusDirect": "天王星順行——予期せぬ変化",
+    "newMoon": "新月——意図を設定する時",
+    "fullMoon": "満月——タスクを完了する時",
+    "mercuryRetrograde": "水星逆行——書類を再確認",
+    "venusInTaurus": "金星牡牛座——官能が増強",
+    "jupiterInPisces": "木星魚座——直感が増強",
+    "saturnInAquarius": "土星水瓶座——構造と規律",
+    "marsInAries": "火星牡羊座——エネルギーと行動"
+  },
+  "recommendations": {
+    "positive": "好ましい行動",
+    "negative": "避ける",
+    "warnings": "警告",
+    "favorableActions": "幸運な行動",
+    "avoid": "何を避けるか",
+    "focus": "焦点領域",
+    "opportunities": "機会",
+    "challenges": "課題",
+    "astroEvents": "天文イベント"
+  },
+  "notifications": {
+    "trialEnding": "トライアルがまもなく終了",
+    "trialEnded": "トライアル期間終了",
+    "subscriptionEnding": "サブスクリプションがまもなく終了",
+    "subscriptionEnded": "サブスクリプション期限切れ",
+    "dailyReminder": "おはようございます！",
+    "dailyReminderBody": "AstroNavigatorで今日のおすすめを確認",
+    "languageChanged": "言語を{{language}}に変更"
+  },
+  "errors": {
+    "generic": "問題が発生しました",
+    "network": "ネットワークエラー",
+    "invalidDate": "無効な日付",
+    "requiredField": "必須フィールド",
+    "futureDate": "未来の日付は許可されていません"
+  },
+  "share": {
+    "title": "友達とシェア",
+    "subtitle": "大切な人が自分のパーソナルエネルギーを発見するのを助ける",
+    "shareText": "AstroNavigatorであなたのパーソナルエネルギーを発見！生年月日に基づく私のパーソナルカレンダー。",
+    "copyLink": "リンクをコピー",
+    "shareVia": "でシェア..."
+  },
+  "meta": {
+    "title": "AstroNavigator - パーソナル成功カレンダー",
+    "description": "あなたのパーソナルイヤー、マンス、デイナンバーを計算。ヴェーダ数秘術のエネルギーに基づいて重要なイベントを計画。"
+  }
+}

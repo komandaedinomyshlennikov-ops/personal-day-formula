@@ -1,0 +1,343 @@
+{
+  "app": {
+    "name": "AstroNavigator",
+    "tagline": "个人成功日历",
+    "description": "计算您的个人年、月、日数字。根据吠陀命理能量规划重要事件。",
+    "version": "v1.0"
+  },
+  "nav": {
+    "home": "首页",
+    "calendar": "我的日历",
+    "settings": "设置",
+    "subscription": "订阅",
+    "share": "分享",
+    "notes": "笔记",
+    "back": "返回"
+  },
+  "actions": {
+    "calculate": "计算",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "share": "分享",
+    "download": "下载PDF",
+    "exportCSV": "导出CSV",
+    "start": "开始",
+    "next": "下一步",
+    "continue": "继续",
+    "done": "完成",
+    "activate": "激活",
+    "changeLanguage": "切换语言",
+    "select": "选择",
+    "copy": "复制",
+    "copied": "已复制！"
+  },
+  "dates": {
+    "birthdatePlaceholder": "YYYY.MM.DD",
+    "today": "今天",
+    "tomorrow": "明天",
+    "yesterday": "昨天",
+    "format": "{{year}}年{{month}}{{day}}日",
+    "shortFormat": "{{month}}/{{day}}"
+  },
+  "months": {
+    "january": "1月",
+    "february": "2月",
+    "march": "3月",
+    "april": "4月",
+    "may": "5月",
+    "june": "6月",
+    "july": "7月",
+    "august": "8月",
+    "september": "9月",
+    "october": "10月",
+    "november": "11月",
+    "december": "12月"
+  },
+  "weekdays": {
+    "mon": "一",
+    "tue": "二",
+    "wed": "三",
+    "thu": "四",
+    "fri": "五",
+    "sat": "六",
+    "sun": "日",
+    "monday": "星期一",
+    "tuesday": "星期二",
+    "wednesday": "星期三",
+    "thursday": "星期四",
+    "friday": "星期五",
+    "saturday": "星期六",
+    "sunday": "星期日"
+  },
+  "onboarding": {
+    "slide1Title": "AstroNavigator",
+    "slide1Subtitle": "您的个人成功日历",
+    "slide1Description": "通过命理学和行星周期的智慧，明智地规划生活、商业、旅行、会议和重要事件的日常伴侣。",
+    "slide2Title": "9能量系统",
+    "slide2Subtitle": "行星周期与振动",
+    "slide2Description": "每个日期都带有由特定行星管理的独特能量。理解这些振动可以让您预测事件并避免错误。",
+    "slide3Title": "如何使用",
+    "slide3Subtitle": "用宇宙智慧规划",
+    "slide3Description": "日历将指导您何时开始项目、签署协议或进行购买。以更大的信心度过人生！",
+    "birthDateTitle": "您的出生日期",
+    "birthDateDescription": "输入您的出生日期，以便我们计算您的个人日历和生命路径数字",
+    "startTrial": "开始3天免费试用",
+    "trialNote": "试用期自动开始"
+  },
+  "calendar": {
+    "personalYear": "个人年",
+    "personalMonth": "个人月",
+    "personalDay": "个人日",
+    "universalDay": "通用日",
+    "favorable": "有利",
+    "neutral": "中性",
+    "completion": "完成",
+    "zeroDayHint": "10、20、30日——推迟重要事项",
+    "zeroDayWarning": "推迟重要事项",
+    "zeroDayDescription": "10、20、30日是暂停和反思的日子。避免开始新的事业；相反，专注于完成当前任务。",
+    "swipeHint": "向左/向右滑动切换月份",
+    "consultation": "咨询Tatiana Geniush",
+    "share": "分享",
+    "legend": {
+      "favorable": "有利",
+      "neutral": "中性",
+      "completion": "完成",
+      "zeroDay": "10、20、30日——推迟"
+    }
+  },
+  "energies": {
+    "1": {
+      "name": "太阳",
+      "sanskrit": "Surya",
+      "title": "新人生策略",
+      "shortDesc": "勇气和果断行动的时刻",
+      "fullDesc": "太阳的能量带来清晰、领导力和新的开始。这是您采取大胆步骤并启动重要项目的时机。",
+      "keywords": ["领导力", "活力", "认可", "自我"],
+      "advice": "开始新事业，要求晋升，成为焦点",
+      "positive": ["开始新项目", "签署合同", "做出重要决定", "进行大额购买", "开始新活动"],
+      "negative": ["害怕行动", "推迟重要事项", "逃避责任"],
+      "warnings": ["对自己的决定有信心", "不要让怀疑阻止您"]
+    },
+    "2": {
+      "name": "月亮",
+      "sanskrit": "Chandra",
+      "title": "关系与外交",
+      "shortDesc": "充满直觉的平静、内省时期",
+      "fullDesc": "月亮的能量带来情感敏感性和接受性。不推荐开始新事业。专注于关系和外交。",
+      "keywords": ["外交", "敏感性", "直觉", "伙伴关系"],
+      "advice": "建立关系，参观剧院和博物馆，拓展视野",
+      "positive": ["建立关系", "参观剧院和博物馆", "拓展视野", "学习心理学", "保持外交"],
+      "negative": ["开始新业务", "谈判重要事项", "判断过于武断"],
+      "warnings": ["避免冲突", "保持耐心"]
+    },
+    "3": {
+      "name": "木星",
+      "sanskrit": "Guru",
+      "title": "系统与成功",
+      "shortDesc": "启动新项目的绝佳时期",
+      "fullDesc": "木星的扩展智慧带来成长和机会。分析、结构和签署合同的完美时机。",
+      "keywords": ["智慧", "扩展", "乐观", "学习"],
+      "advice": "启动新项目，签署合同，分析提案，获取知识",
+      "positive": ["启动新项目", "签署合同", "分析提案", "获取知识", "发展智力"],
+      "negative": ["预测事件", "表现出贪婪和赌博", "冲动行事"],
+      "warnings": ["消除偏见", "彻底分析一切"]
+    },
+    "4": {
+      "name": "罗喉",
+      "sanskrit": "Rahu",
+      "title": "野心与物质化",
+      "shortDesc": "专注于目标、健康和内在工作",
+      "fullDesc": "罗喉（北交点）的能量放大欲望和物质追求。适合设定雄心勃勃的目标，但要注意沉迷。西方等价物：北交点/龙头",
+      "keywords": ["野心", "转变", "创新", "欲望"],
+      "advice": "走向新事物，想出创意解决方案，设定雄心勃勃的目标",
+      "positive": ["走向新事物", "想出创意解决方案", "设定雄心勃勃的目标", "制定计划"],
+      "negative": ["屈服于诱惑", "卷入争论", "对财务粗心"],
+      "warnings": ["避免诱惑", "对财务谨慎"]
+    },
+    "5": {
+      "name": "水星",
+      "sanskrit": "Budha",
+      "title": "规模与沟通",
+      "shortDesc": "重要谈判的最佳时机",
+      "fullDesc": "水星支持沟通和社交。在此期间，许多项目将产生稳定的结果。",
+      "keywords": ["沟通", "智力", "适应性", "商业"],
+      "advice": "进行谈判，扩大项目规模，结识新朋友，积极沟通",
+      "positive": ["进行谈判", "扩大项目规模", "结识新朋友", "积极沟通", "公开演讲"],
+      "negative": ["犹豫不决", "避免沟通", "推迟重要会议"],
+      "warnings": ["注意细节", "不要分散精力"]
+    },
+    "6": {
+      "name": "金星",
+      "sanskrit": "Shukra",
+      "title": "爱与舒适",
+      "shortDesc": "享受生活并完成旧任务的时刻",
+      "fullDesc": "金星带来和谐与美丽。享受生活、完成旧任务、进行优质购买和投资的时刻。",
+      "keywords": ["爱", "美丽", "和谐", "奢华"],
+      "advice": "享受生活，完成旧任务，进行优质购买，投资",
+      "positive": ["享受生活", "完成旧任务", "进行优质购买", "投资", "去旅行"],
+      "negative": ["进行空洞的支出", "残忍", "评判他人"],
+      "warnings": ["对他人更友善", "专注于积极方面"]
+    },
+    "7": {
+      "name": "计都",
+      "sanskrit": "Ketu",
+      "title": "转变与灵性",
+      "shortDesc": "危机即机遇，深度疗愈",
+      "fullDesc": "计都（南交点）通过放手带来灵性洞见。冥想、治疗和释放旧模式的时刻。西方等价物：南交点/龙尾",
+      "keywords": ["灵性", "放手", "疗愈", "直觉"],
+      "advice": "修行灵性，分析自己的行为，独处，冥想",
+      "positive": ["修行灵性", "分析自己的行为", "独处", "冥想"],
+      "negative": ["做出重要决定", "进行严肃谈判", "借钱"],
+      "warnings": ["不要在关系中烧桥", "避免医疗程序"]
+    },
+    "8": {
+      "name": "土星",
+      "sanskrit": "Shani",
+      "title": "金钱与努力",
+      "shortDesc": "开始新活动的绝佳时期",
+      "fullDesc": "土星奖励纪律和努力工作。签署合同和做出重要决定的完美时机。只要努力工作，成功就会随之而来！",
+      "keywords": ["纪律", "责任", "结构", "业力"],
+      "advice": "开始新活动，签署合同，做出重要决定，勤奋工作",
+      "positive": ["开始新活动", "签署合同", "做出重要决定", "进行大额购买", "勤奋工作"],
+      "negative": ["寻求报复", "懒惰", "打破纪律"],
+      "warnings": ["严格遵守纪律", "不要违反法律和规则"]
+    },
+    "9": {
+      "name": "火星",
+      "sanskrit": "Mangala",
+      "title": "完成与净化",
+      "shortDesc": "总结生活各个领域的时刻",
+      "fullDesc": "火星带来完成开始事情的能量。高情感强度。总结和净化的时刻。",
+      "keywords": ["行动", "勇气", "完成", "净化"],
+      "advice": "总结，净化空间，排毒，行善",
+      "positive": ["总结", "净化空间", "排毒", "行善", "分析关系"],
+      "negative": ["开始新项目", "表现出攻击性", "打破规则"],
+      "warnings": ["纪律和运动将帮助找到平衡", "违规的报应将很快到来"]
+    }
+  },
+  "subscription": {
+    "title": "订阅",
+    "currentPlan": "当前计划",
+    "trialActive": "试用中",
+    "trialExpired": "试用已过期",
+    "trialDaysLeft": "剩余{{days}}天",
+    "subscriptionExpired": "订阅已过期",
+    "subscriptionExpiredMessage": "您的订阅已过期。请订阅以继续使用所有功能。",
+    "choosePlan": "选择您的计划",
+    "activate": "激活",
+    "activateWithCode": "使用代码激活",
+    "enterCode": "输入激活码",
+    "codePlaceholder": "例如，MONTH-2026",
+    "invalidCode": "无效的激活码",
+    "activationSuccess": "订阅已激活！",
+    "plans": {
+      "trial": {
+        "name": "3天免费",
+        "description": "免费试用所有功能"
+      },
+      "month": {
+        "name": "月度",
+        "description": "基本访问"
+      },
+      "year": {
+        "name": "年度",
+        "description": "节省58%"
+      },
+      "lifetime": {
+        "name": "终身",
+        "description": "永久访问"
+      }
+    },
+    "paymentInfo": "在Telegram上联系我们进行付款",
+    "contactForPayment": "联系我们激活您的订阅",
+    "telegramButton": "在Telegram上留言",
+    "premiumFeature": "高级功能",
+    "unlockWithSubscription": "订阅以解锁"
+  },
+  "settings": {
+    "title": "设置",
+    "profile": "您的个人资料",
+    "theme": "主题",
+    "lightTheme": "浅色",
+    "darkTheme": "深色",
+    "autoTheme": "自动",
+    "accessibility": "无障碍",
+    "highContrast": "高对比度",
+    "highContrastDesc": "视障人士专用",
+    "notifications": "通知",
+    "notificationsDesc": "关于重要日子",
+    "language": "语言",
+    "languageDesc": "选择您偏好的语言",
+    "export": "导出数据",
+    "exportPDF": "导出为PDF",
+    "exportPDFDesc": "将日历保存为PDF",
+    "exportCSV": "导出为CSV",
+    "exportCSVDesc": "将数据保存为CSV",
+    "contacts": "联系方式",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "phone": "电话",
+    "email": "电子邮件",
+    "account": "账户",
+    "logout": "退出登录",
+    "logoutDesc": "重置数据并退出",
+    "deleteData": "删除所有数据",
+    "deleteDataDesc": "重置应用程序",
+    "version": "AstroNavigator v1.0"
+  },
+  "astroEvents": {
+    "title": "天文事件",
+    "subtitle": "放大您时期能量的行星影响",
+    "significantDates": "重要日期",
+    "howItAffectsYou": "如何影响您",
+    "lunarNodes": "月交点活跃——命运事件展开",
+    "plutoRetrograde": "冥王星逆行——深度转变时期",
+    "uranusDirect": "天王星顺行——意想不到的变化",
+    "newMoon": "新月——设定意图的时刻",
+    "fullMoon": "满月——完成任务的时刻",
+    "mercuryRetrograde": "水星逆行——仔细检查文件",
+    "venusInTaurus": "金星在金牛座——感官增强",
+    "jupiterInPisces": "木星在双鱼座——直觉增强",
+    "saturnInAquarius": "土星在水瓶座——结构与纪律",
+    "marsInAries": "火星在白羊座——能量与行动"
+  },
+  "recommendations": {
+    "positive": "有利行动",
+    "negative": "避免",
+    "warnings": "警告",
+    "favorableActions": "幸运行动",
+    "avoid": "避免什么",
+    "focus": "重点领域",
+    "opportunities": "机会",
+    "challenges": "挑战",
+    "astroEvents": "天文事件"
+  },
+  "notifications": {
+    "trialEnding": "试用即将结束",
+    "trialEnded": "试用期已结束",
+    "subscriptionEnding": "订阅即将结束",
+    "subscriptionEnded": "订阅已过期",
+    "dailyReminder": "早安！",
+    "dailyReminderBody": "在AstroNavigator中查看今天的建议",
+    "languageChanged": "语言已更改为{{language}}"
+  },
+  "errors": {
+    "generic": "出了点问题",
+    "network": "网络错误",
+    "invalidDate": "无效日期",
+    "requiredField": "必填字段",
+    "futureDate": "不允许未来日期"
+  },
+  "share": {
+    "title": "与朋友分享",
+    "subtitle": "帮助您所爱的人发现他们的个人能量",
+    "shareText": "用AstroNavigator发现您的个人能量！基于出生日期的我的个人日历。",
+    "copyLink": "复制链接",
+    "shareVia": "通过...分享"
+  },
+  "meta": {
+    "title": "AstroNavigator - 个人成功日历",
+    "description": "计算您的个人年、月、日数字。根据吠陀命理能量规划重要事件。"
+  }
+}

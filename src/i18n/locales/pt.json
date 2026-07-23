@@ -1,0 +1,343 @@
+{
+  "app": {
+    "name": "AstroNavigator",
+    "tagline": "Calendário Pessoal do Sucesso",
+    "description": "Calcule seus números de Ano, Mês e Dia pessoais. Planeje eventos importantes de acordo com as energias da numerologia védica.",
+    "version": "v1.0"
+  },
+  "nav": {
+    "home": "Início",
+    "calendar": "Meu Calendário",
+    "settings": "Configurações",
+    "subscription": "Assinatura",
+    "share": "Compartilhar",
+    "notes": "Notas",
+    "back": "Voltar"
+  },
+  "actions": {
+    "calculate": "Calcular",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "share": "Compartilhar",
+    "download": "Baixar PDF",
+    "exportCSV": "Exportar CSV",
+    "start": "Começar",
+    "next": "Próximo",
+    "continue": "Continuar",
+    "done": "Concluído",
+    "activate": "Ativar",
+    "changeLanguage": "Mudar Idioma",
+    "select": "Selecionar",
+    "copy": "Copiar",
+    "copied": "Copiado!"
+  },
+  "dates": {
+    "birthdatePlaceholder": "DD/MM/AAAA",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "yesterday": "Ontem",
+    "format": "{{day}} de {{month}} de {{year}}",
+    "shortFormat": "{{day}}/{{month}}"
+  },
+  "months": {
+    "january": "Janeiro",
+    "february": "Fevereiro",
+    "march": "Março",
+    "april": "Abril",
+    "may": "Maio",
+    "june": "Junho",
+    "july": "Julho",
+    "august": "Agosto",
+    "september": "Setembro",
+    "october": "Outubro",
+    "november": "Novembro",
+    "december": "Dezembro"
+  },
+  "weekdays": {
+    "mon": "Seg",
+    "tue": "Ter",
+    "wed": "Qua",
+    "thu": "Qui",
+    "fri": "Sex",
+    "sat": "Sáb",
+    "sun": "Dom",
+    "monday": "Segunda-feira",
+    "tuesday": "Terça-feira",
+    "wednesday": "Quarta-feira",
+    "thursday": "Quinta-feira",
+    "friday": "Sexta-feira",
+    "saturday": "Sábado",
+    "sunday": "Domingo"
+  },
+  "onboarding": {
+    "slide1Title": "AstroNavigator",
+    "slide1Subtitle": "Seu Calendário Pessoal do Sucesso",
+    "slide1Description": "Seu companheiro diário para planejar sabiamente a vida, negócios, viagens, reuniões e eventos importantes através da sabedoria da numerologia e ciclos planetários.",
+    "slide2Title": "O Sistema de 9 Energias",
+    "slide2Subtitle": "Ciclos Planetários & Vibrações",
+    "slide2Description": "Cada data carrega uma energia única governada por um planeta específico. Entender essas vibrações permite prever eventos e evitar erros.",
+    "slide3Title": "Como Usar",
+    "slide3Subtitle": "Planeje com Sabedoria Cósmica",
+    "slide3Description": "O calendário o guiará sobre quando iniciar projetos, assinar contratos ou fazer compras. Avance pela vida com maior confiança!",
+    "birthDateTitle": "Sua Data de Nascimento",
+    "birthDateDescription": "Insira sua data de nascimento para que possamos calcular seu calendário pessoal e número do caminho da vida",
+    "startTrial": "Começar Teste Grátis de 3 Dias",
+    "trialNote": "O período de teste começa automaticamente"
+  },
+  "calendar": {
+    "personalYear": "Ano Pessoal",
+    "personalMonth": "Mês Pessoal",
+    "personalDay": "Dia Pessoal",
+    "universalDay": "Dia Universal",
+    "favorable": "Favorável",
+    "neutral": "Neutro",
+    "completion": "Conclusão",
+    "zeroDayHint": "10, 20, 30 — adie o importante",
+    "zeroDayWarning": "Adie Assuntos Importantes",
+    "zeroDayDescription": "As datas 10, 20, 30 são dias de pausa e reflexão. Evite iniciar novos empreendimentos; em vez disso, concentre-se em concluir tarefas atuais.",
+    "swipeHint": "Deslize esquerda/direita para mudar meses",
+    "consultation": "Consulta com Tatiana Geniush",
+    "share": "Compartilhar",
+    "legend": {
+      "favorable": "Favorável",
+      "neutral": "Neutro",
+      "completion": "Conclusão",
+      "zeroDay": "10, 20, 30 — adiar"
+    }
+  },
+  "energies": {
+    "1": {
+      "name": "Sol",
+      "sanskrit": "Surya",
+      "title": "Nova Estratégia de Vida",
+      "shortDesc": "Tempo para coragem e ações decisivas",
+      "fullDesc": "A energia do Sol traz clareza, liderança e novos começos. Este é seu momento para passos ousados e iniciar projetos importantes.",
+      "keywords": ["Liderança", "Vitalidade", "Reconhecimento", "Ego"],
+      "advice": "Comece novos empreendimentos, peça promoções, esteja no centro das atenções",
+      "positive": ["Iniciar novos projetos", "Assinar contratos", "Tomar decisões importantes", "Fazer compras importantes", "Começar novas atividades"],
+      "negative": ["Ter medo de agir", "Adiar o importante", "Evitar responsabilidade"],
+      "warnings": ["Seja confiante em suas decisões", "Não deixe dúvidas pará-lo"]
+    },
+    "2": {
+      "name": "Lua",
+      "sanskrit": "Chandra",
+      "title": "Relacionamentos & Diplomacia",
+      "shortDesc": "Um período calmo e introspectivo cheio de intuição",
+      "fullDesc": "A energia da Lua traz sensibilidade emocional e receptividade. Não recomendado para iniciar novos negócios. Concentre-se em relacionamentos e diplomacia.",
+      "keywords": ["Diplomacia", "Sensibilidade", "Intuição", "Parceria"],
+      "advice": "Construa relacionamentos, visite teatros e museus, expanda seus horizontes",
+      "positive": ["Construir relacionamentos", "Visitar teatros e museus", "Expandir horizontes", "Estudar psicologia", "Ser diplomático"],
+      "negative": ["Começar um novo negócio", "Negociar assuntos importantes", "Ser categórico em julgamentos"],
+      "warnings": ["Evite conflitos", "Seja paciente"]
+    },
+    "3": {
+      "name": "Júpiter",
+      "sanskrit": "Guru",
+      "title": "Sistema & Sucesso",
+      "shortDesc": "Excelente período para lançar novos projetos",
+      "fullDesc": "A sabedoria expansiva de Júpiter traz crescimento e oportunidade. Momento perfeito para análise, estrutura e assinatura de contratos.",
+      "keywords": ["Sabedoria", "Expansão", "Otimismo", "Aprendizado"],
+      "advice": "Lance novos projetos, assine contratos, analise propostas, adquira conhecimento",
+      "positive": ["Lançar novos projetos", "Assinar contratos", "Analisar propostas", "Adquirir conhecimento", "Desenvolver intelecto"],
+      "negative": ["Antecipar eventos", "Mostrar ganância e jogo", "Agir impulsivamente"],
+      "warnings": ["Elimine preconceitos", "Analise tudo minuciosamente"]
+    },
+    "4": {
+      "name": "Rahu",
+      "sanskrit": "Rahu",
+      "title": "Ambição & Materialização",
+      "shortDesc": "Concentre-se em metas, saúde e trabalho interno",
+      "fullDesc": "A energia de Rahu (Nó Lunar Norte) amplifica desejos e buscas materiais. Bom para metas ambiciosas, mas cuidado com obsessões. Equivalente ocidental: Nó Norte / Cabeça do Dragão",
+      "keywords": ["Ambição", "Transformação", "Inovação", "Desejo"],
+      "advice": "Vá para o novo, crie soluções criativas, estabeleça metas ambiciosas",
+      "positive": ["Ir para o novo", "Criar soluções criativas", "Estabelecer metas ambiciosas", "Trabalhar em planos"],
+      "negative": ["Ceder a tentações", "Se envolver em disputas", "Ser descuidado com finanças"],
+      "warnings": ["Evite tentações", "Seja cuidadoso com finanças"]
+    },
+    "5": {
+      "name": "Mercúrio",
+      "sanskrit": "Budha",
+      "title": "Escala & Comunicação",
+      "shortDesc": "Melhor momento para negociações importantes",
+      "fullDesc": "Mercúrio apoia comunicação e networking. Muitos projetos darão resultados estáveis durante este período.",
+      "keywords": ["Comunicação", "Intelecto", "Adaptabilidade", "Comércio"],
+      "advice": "Conduza negociações, escale projetos, faça novos conhecimentos, comunique-se ativamente",
+      "positive": ["Conduzir negociações", "Escalar projetos", "Fazer novos conhecimentos", "Comunicar-se ativamente", "Falar publicamente"],
+      "negative": ["Ser indeciso", "Evitar comunicação", "Adiar reuniões importantes"],
+      "warnings": ["Seja atento aos detalhes", "Não dissipe sua energia"]
+    },
+    "6": {
+      "name": "Vênus",
+      "sanskrit": "Shukra",
+      "title": "Amor & Conforto",
+      "shortDesc": "Tempo para aproveitar a vida e concluir tarefas antigas",
+      "fullDesc": "Vênus traz harmonia e beleza. Momento para aproveitar a vida, concluir tarefas antigas, fazer compras de qualidade e investir.",
+      "keywords": ["Amor", "Beleza", "Harmonia", "Luxo"],
+      "advice": "Aproveite a vida, conclua tarefas antigas, faça compras de qualidade, invista",
+      "positive": ["Aproveitar a vida", "Concluir tarefas antigas", "Fazer compras de qualidade", "Investir", "Fazer uma viagem"],
+      "negative": ["Fazer gastos vazios", "Ser cruel", "Julgar outros"],
+      "warnings": ["Seja mais gentil com outros", "Concentre-se no positivo"]
+    },
+    "7": {
+      "name": "Ketu",
+      "sanskrit": "Ketu",
+      "title": "Transformação & Espiritualidade",
+      "shortDesc": "Crise como oportunidade, cura profunda",
+      "fullDesc": "Ketu (Nó Lunar Sul) traz insights espirituais através do desapego. Tempo para meditação, terapia e liberar padrões antigos. Equivalente ocidental: Nó Sul / Cauda do Dragão",
+      "keywords": ["Espiritualidade", "Desapego", "Cura", "Intuição"],
+      "advice": "Pratique espiritualidade, analise suas ações, passe tempo sozinho, medite",
+      "positive": ["Praticar espiritualidade", "Analisar suas ações", "Passar tempo sozinho", "Meditar"],
+      "negative": ["Tomar decisões importantes", "Conduzir negociações sérias", "Emprestar dinheiro"],
+      "warnings": ["Não queime pontes em relacionamentos", "Evite procedimentos médicos"]
+    },
+    "8": {
+      "name": "Saturno",
+      "sanskrit": "Shani",
+      "title": "Dinheiro & Esforço",
+      "shortDesc": "Excelente período para começar novas atividades",
+      "fullDesc": "Saturno recompensa disciplina e trabalho duro. Momento perfeito para assinar contratos e tomar decisões importantes. Apenas trabalhe duro e o sucesso seguirá!",
+      "keywords": ["Disciplina", "Responsabilidade", "Estrutura", "Karma"],
+      "advice": "Comece novas atividades, assine contratos, tome decisões importantes, trabalhe diligentemente",
+      "positive": ["Começar novas atividades", "Assinar contratos", "Tomar decisões importantes", "Fazer grandes compras", "Trabalhar diligentemente"],
+      "negative": ["Buscar vingança", "Ser preguiçoso", "Quebrar disciplina"],
+      "warnings": ["Siga estritamente a disciplina", "Não quebre leis e regras"]
+    },
+    "9": {
+      "name": "Marte",
+      "sanskrit": "Mangala",
+      "title": "Conclusão & Purificação",
+      "shortDesc": "Tempo para concluir em todas as áreas da vida",
+      "fullDesc": "Marte traz energia para terminar o que você começou. Alta intensidade emocional. Momento para fazer balanço e purificação.",
+      "keywords": ["Ação", "Coragem", "Conclusão", "Purificação"],
+      "advice": "Faça balanço, purifique o espaço, faça detox, pratique caridade",
+      "positive": ["Fazer balanço", "Purificar o espaço", "Fazer detox", "Praticar caridade", "Analisar relacionamentos"],
+      "negative": ["Começar novos projetos", "Mostrar agressão", "Quebrar regras"],
+      "warnings": ["Disciplina e esportes ajudarão a encontrar equilíbrio", "A retribuição por violações será rápida"]
+    }
+  },
+  "subscription": {
+    "title": "Assinatura",
+    "currentPlan": "Plano Atual",
+    "trialActive": "Teste Ativo",
+    "trialExpired": "Teste Expirado",
+    "trialDaysLeft": "{{days}} dias restantes",
+    "subscriptionExpired": "Assinatura Expirada",
+    "subscriptionExpiredMessage": "Sua assinatura expirou. Assine para continuar usando todos os recursos.",
+    "choosePlan": "Escolha Seu Plano",
+    "activate": "Ativar",
+    "activateWithCode": "Ativar com Código",
+    "enterCode": "Digite o Código de Ativação",
+    "codePlaceholder": "ex., MONTH-2026",
+    "invalidCode": "Código de ativação inválido",
+    "activationSuccess": "Assinatura ativada!",
+    "plans": {
+      "trial": {
+        "name": "3 Dias Grátis",
+        "description": "Experimente todos os recursos gratuitamente"
+      },
+      "month": {
+        "name": "Mensal",
+        "description": "Acesso básico"
+      },
+      "year": {
+        "name": "Anual",
+        "description": "Economize 58%"
+      },
+      "lifetime": {
+        "name": "Vitalício",
+        "description": "Acesso permanente para sempre"
+      }
+    },
+    "paymentInfo": "Entre em contato no Telegram para pagamento",
+    "contactForPayment": "Entre em contato para ativar sua assinatura",
+    "telegramButton": "Mensagem no Telegram",
+    "premiumFeature": "Recurso Premium",
+    "unlockWithSubscription": "Assine para desbloquear"
+  },
+  "settings": {
+    "title": "Configurações",
+    "profile": "Seu Perfil",
+    "theme": "Tema",
+    "lightTheme": "Claro",
+    "darkTheme": "Escuro",
+    "autoTheme": "Auto",
+    "accessibility": "Acessibilidade",
+    "highContrast": "Alto Contraste",
+    "highContrastDesc": "Para deficientes visuais",
+    "notifications": "Notificações",
+    "notificationsDesc": "Sobre dias importantes",
+    "language": "Idioma",
+    "languageDesc": "Selecione seu idioma preferido",
+    "export": "Exportar Dados",
+    "exportPDF": "Exportar para PDF",
+    "exportPDFDesc": "Salvar calendário como PDF",
+    "exportCSV": "Exportar para CSV",
+    "exportCSVDesc": "Salvar dados como CSV",
+    "contacts": "Contatos",
+    "telegram": "Telegram",
+    "instagram": "Instagram",
+    "phone": "Telefone",
+    "email": "Email",
+    "account": "Conta",
+    "logout": "Sair",
+    "logoutDesc": "Redefinir dados e sair",
+    "deleteData": "Excluir Todos os Dados",
+    "deleteDataDesc": "Redefinir aplicativo",
+    "version": "AstroNavigator v1.0"
+  },
+  "astroEvents": {
+    "title": "Eventos Astro",
+    "subtitle": "Influências planetárias que amplificam a energia do seu período",
+    "significantDates": "Datas Significativas",
+    "howItAffectsYou": "Como Isso Te Afeta",
+    "lunarNodes": "Nós Lunares ativos — eventos fatídicos",
+    "plutoRetrograde": "Plutão retrógrado — período de transformação profunda",
+    "uranusDirect": "Urano direto — mudanças inesperadas",
+    "newMoon": "Lua Nova — tempo de estabelecer intenções",
+    "fullMoon": "Lua Cheia — tempo de concluir tarefas",
+    "mercuryRetrograde": "Mercúrio retrógrado — verifique documentos",
+    "venusInTaurus": "Vênus em Touro — sensualidade amplificada",
+    "jupiterInPisces": "Júpiter em Peixes — intuição amplificada",
+    "saturnInAquarius": "Saturno em Aquário — estrutura e disciplina",
+    "marsInAries": "Marte em Áries — energia e ação"
+  },
+  "recommendations": {
+    "positive": "Ações Favoráveis",
+    "negative": "Evitar",
+    "warnings": "Avisos",
+    "favorableActions": "Ações Afortunadas",
+    "avoid": "O Que Evitar",
+    "focus": "Áreas de Foco",
+    "opportunities": "Oportunidades",
+    "challenges": "Desafios",
+    "astroEvents": "Eventos Astro"
+  },
+  "notifications": {
+    "trialEnding": "Teste Terminando Em Breve",
+    "trialEnded": "Período de Teste Terminado",
+    "subscriptionEnding": "Assinatura Terminando Em Breve",
+    "subscriptionEnded": "Assinatura Expirada",
+    "dailyReminder": "Bom Dia!",
+    "dailyReminderBody": "Verifique as recomendações de hoje no AstroNavigator",
+    "languageChanged": "Idioma alterado para {{language}}"
+  },
+  "errors": {
+    "generic": "Algo deu errado",
+    "network": "Erro de rede",
+    "invalidDate": "Data inválida",
+    "requiredField": "Campo obrigatório",
+    "futureDate": "Datas futuras não permitidas"
+  },
+  "share": {
+    "title": "Compartilhar com Amigos",
+    "subtitle": "Ajude seus entes queridos a descobrir sua energia pessoal",
+    "shareText": "Descubra sua energia pessoal com AstroNavigator! Meu calendário pessoal baseado na data de nascimento.",
+    "copyLink": "Copiar Link",
+    "shareVia": "Compartilhar via..."
+  },
+  "meta": {
+    "title": "AstroNavigator - Calendário Pessoal do Sucesso",
+    "description": "Calcule seus números de Ano, Mês e Dia pessoais. Planeje eventos importantes de acordo com as energias da numerologia védica."
+  }
+}

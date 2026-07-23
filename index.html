@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="description" content="Астронавигатор — персональный календарь по дате рождения. Планируйте важные события, дела и решения в соответствии с планетарными энергиями." />
+    <meta name="keywords" content="астрокалендарь, личный календарь, планетарные энергии, астрология, энергии дня, Татьяна Генюш" />
+    <meta name="author" content="Татьяна Генюш" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Астронавигатор — Личный календарь успеха" />
+    <meta property="og:description" content="Персональный календарь по дате рождения. Планируйте важные события в соответствии с планетарными энергиями." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://astrocalendar.ok.kimi.link" />
+    <meta property="og:image" content="https://astrocalendar.ok.kimi.link/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Астронавигатор — Личный календарь успеха" />
+    <meta name="twitter:description" content="Персональный календарь по дате рождения. Планируйте важные события в соответствии с планетарными энергиями." />
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✨%3C/text%3E%3C/svg%3E" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%230a0a0f' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-size='50'%3E✨%3C/text%3E%3C/svg%3E" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Астронавигатор" />
+    
+    <!-- Performance hints -->
+    <link rel="dns-prefetch" href="https://t.me" />
+    
+    <title>Астронавигатор — Личный календарь успеха</title>
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical styles for fast initial render */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #0a0a0f;
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Loading spinner */
+      .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(251, 191, 36, 0.3);
+        border-top-color: #fbbf24;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading spinner shown before JS loads -->
+      <div class="loading-spinner"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
