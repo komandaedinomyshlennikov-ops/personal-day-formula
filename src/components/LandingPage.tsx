@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { LanguageToggle } from './LanguageToggle';
@@ -11,364 +11,294 @@ interface LandingPageProps {
 export function LandingPage({ onStart }: LandingPageProps) {
   const { t, i18n } = useTranslation();
 
-  // Energy data with translations - пересчитывается при смене языка
-  const energies = useMemo(() => [
-    { 
-      num: 1, 
-      planet: t('energies.1.name'), 
-      eng: 'SUN',
-      color: '#fbbf24',
-      desc: t('energies.1.shortDesc')
-    },
-    { 
-      num: 2, 
-      planet: t('energies.2.name'), 
-      eng: 'MOON',
-      color: '#c0c0c0',
-      desc: t('energies.2.shortDesc')
-    },
-    { 
-      num: 3, 
-      planet: t('energies.3.name'), 
-      eng: 'JUPITER',
-      color: '#f59e0b',
-      desc: t('energies.3.shortDesc')
-    },
-    { 
-      num: 4, 
-      planet: t('energies.4.name'), 
-      eng: 'RAHU',
-      color: '#3b82f6',
-      desc: t('energies.4.shortDesc')
-    },
-    { 
-      num: 5, 
-      planet: t('energies.5.name'), 
-      eng: 'MERCURY',
-      color: '#06b6d4',
-      desc: t('energies.5.shortDesc')
-    },
-    { 
-      num: 6, 
-      planet: t('energies.6.name'), 
-      eng: 'VENUS',
-      color: '#ec4899',
-      desc: t('energies.6.shortDesc')
-    },
-    { 
-      num: 7, 
-      planet: t('energies.7.name'), 
-      eng: 'KETU',
-      color: '#6366f1',
-      desc: t('energies.7.shortDesc')
-    },
-    { 
-      num: 8, 
-      planet: t('energies.8.name'), 
-      eng: 'SATURN',
-      color: '#78716c',
-      desc: t('energies.8.shortDesc')
-    },
-    { 
-      num: 9, 
-      planet: t('energies.9.name'), 
-      eng: 'MARS',
-      color: '#ef4444',
-      desc: t('energies.9.shortDesc')
-    },
-  ], [t, i18n.language]);
+  const energies = useMemo(
+    () =>
+      [1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => ({
+        num,
+        planet: t(`energies.${num}.name`),
+        eng: ['SUN', 'MOON', 'JUPITER', 'RAHU', 'MERCURY', 'VENUS', 'KETU', 'SATURN', 'MARS'][
+          num - 1
+        ],
+        color: [
+          '#f5d78e',
+          '#d4d4d8',
+          '#fbbf24',
+          '#60a5fa',
+          '#22d3ee',
+          '#f472b6',
+          '#818cf8',
+          '#a8a29e',
+          '#f87171',
+        ][num - 1],
+        desc: t(`energies.${num}.shortDesc`),
+      })),
+    [t, i18n.language]
+  );
 
-  const features = useMemo(() => [
-    { title: t('landing.features.personalYear'), desc: t('landing.features.personalYearDesc') },
-    { title: t('landing.features.personalMonth'), desc: t('landing.features.personalMonthDesc') },
-    { title: t('landing.features.personalDay'), desc: t('landing.features.personalDayDesc') },
-    { title: t('landing.features.planetaryYear'), desc: t('landing.features.planetaryYearDesc') },
-  ], [t, i18n.language]);
+  const features = useMemo(
+    () => [
+      {
+        icon: <Stars size={18} className="text-amber-300" />,
+        title: t('landing.features.personalYear'),
+        desc: t('landing.features.personalYearDesc'),
+      },
+      {
+        icon: <CalendarHeart size={18} className="text-pink-300" />,
+        title: t('landing.features.personalMonth'),
+        desc: t('landing.features.personalMonthDesc'),
+      },
+      {
+        icon: <Compass size={18} className="text-violet-300" />,
+        title: t('landing.features.personalDay'),
+        desc: t('landing.features.personalDayDesc'),
+      },
+      {
+        icon: <Sparkles size={18} className="text-amber-200" />,
+        title: t('landing.features.planetaryYear'),
+        desc: t('landing.features.planetaryYearDesc'),
+      },
+    ],
+    [t, i18n.language]
+  );
 
-  const steps = useMemo(() => [
-    { num: '01', title: t('landing.step1'), desc: t('landing.step1Desc') },
-    { num: '02', title: t('landing.step2'), desc: t('landing.step2Desc') },
-    { num: '03', title: t('landing.step3'), desc: t('landing.step3Desc') },
-    { num: '04', title: t('landing.step4'), desc: t('landing.step4Desc') },
-  ], [t, i18n.language]);
+  const steps = useMemo(
+    () => [
+      { num: '01', title: t('landing.step1'), desc: t('landing.step1Desc') },
+      { num: '02', title: t('landing.step2'), desc: t('landing.step2Desc') },
+      { num: '03', title: t('landing.step3'), desc: t('landing.step3Desc') },
+      { num: '04', title: t('landing.step4'), desc: t('landing.step4Desc') },
+    ],
+    [t, i18n.language]
+  );
 
   return (
-    <div className="min-h-screen pb-20 overflow-x-hidden">
-      {/* Header with Language Toggle */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-3">
-        <div className="max-w-md mx-auto flex justify-end">
+    <div className="app-shell pb-28 overflow-x-hidden">
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none">
+        <div className="app-shell flex justify-between items-center pointer-events-auto">
+          <div className="chip border-white/10 bg-black/20 backdrop-blur-md">
+            <Sparkles size={12} className="text-amber-300" />
+            <span className="text-[11px] tracking-wide">{t('landing.badge')}</span>
+          </div>
           <LanguageToggle variant="pill" />
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative px-6 pt-20 pb-12 text-center min-h-[80vh] flex flex-col justify-center">
+      {/* Hero */}
+      <section className="relative px-5 pt-24 pb-10 text-center min-h-[88vh] flex flex-col justify-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-md mx-auto"
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-sm mx-auto w-full"
         >
-          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="mx-auto mb-8 w-20 h-20 rounded-[28px] flex items-center justify-center"
+            style={{
+              background:
+                'linear-gradient(145deg, rgba(245,215,142,0.25), rgba(167,139,250,0.2), rgba(244,114,182,0.15))',
+              border: '1px solid rgba(255,255,255,0.12)',
+              boxShadow: '0 12px 48px rgba(139,92,246,0.25)',
+            }}
           >
-            <Sparkles size={14} className="text-amber-400" />
-            <span className="text-sm text-gray-400">{t('landing.badge')}</span>
+            <span className="text-4xl" aria-hidden>
+              ✨
+            </span>
           </motion.div>
 
-          {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-5xl font-bold mb-2 tracking-tight"
-          >
-            <span className="text-white">{t('landing.title1')}</span>
-          </motion.h1>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-5xl font-bold mb-6 tracking-tight gradient-text"
-          >
+          <h1 className="font-display text-[2.75rem] sm:text-5xl leading-[1.05] mb-3 text-white">
+            {t('landing.title1')}
+          </h1>
+          <h1 className="font-display text-[2.75rem] sm:text-5xl leading-[1.05] mb-5 gradient-text">
             {t('landing.title2')}
-          </motion.h1>
+          </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-xl text-amber-400 font-medium mb-4"
-          >
+          <p className="text-amber-200/90 font-medium text-base mb-3 tracking-wide">
             {t('landing.subtitle')}
-          </motion.p>
-
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="text-gray-400 text-base leading-relaxed mb-10 max-w-sm mx-auto"
-          >
+          </p>
+          <p className="text-[var(--text-secondary)] text-[0.95rem] leading-relaxed mb-9 max-w-[20rem] mx-auto">
             {t('landing.description')}
-          </motion.p>
+          </p>
 
-          {/* CTA Button - Pill shape with extra rounding */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={onStart}
+            className="gradient-button w-full"
           >
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={onStart}
-              className="gradient-button w-full max-w-xs px-10 py-5"
-              style={{ borderRadius: '9999px' }}
-            >
-              {t('landing.startButton')}
-              <ChevronRight size={20} />
-            </motion.button>
-          </motion.div>
+            {t('landing.startButton')}
+            <ChevronRight size={18} />
+          </motion.button>
 
-          {/* Author */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="mt-10 text-gray-500 text-sm"
-          >
+          <p className="mt-8 text-[var(--text-muted)] text-sm">
             {t('landing.footer.author')}
-          </motion.p>
+          </p>
         </motion.div>
       </section>
 
-      {/* What is Section */}
-      <section className="px-6 py-16">
+      {/* What is */}
+      <section className="px-5 py-12">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-md mx-auto"
+          className="glass-card p-6 max-w-sm mx-auto text-center"
         >
-          <h2 className="text-2xl font-bold text-white text-center mb-6">
-            {t('landing.whatIs')}
-          </h2>
-          <p className="text-gray-400 text-center leading-relaxed">
+          <h2 className="section-title mb-3">{t('landing.whatIs')}</h2>
+          <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
             {t('landing.whatIsDesc')}
           </p>
         </motion.div>
       </section>
 
-      {/* Features Grid */}
-      <section className="px-6 py-12">
-        <div className="max-w-md mx-auto grid grid-cols-2 gap-4">
+      {/* Features */}
+      <section className="px-5 py-8">
+        <div className="max-w-sm mx-auto grid grid-cols-2 gap-3">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass-card p-4 rounded-xl"
+              transition={{ delay: index * 0.06 }}
+              className="glass-card p-4 rounded-2xl"
             >
-              <h3 className="text-white font-semibold text-sm mb-2">{feature.title}</h3>
-              <p className="text-gray-500 text-xs leading-relaxed">{feature.desc}</p>
+              <div className="mb-3 w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                {feature.icon}
+              </div>
+              <h3 className="text-white font-semibold text-sm mb-1.5 leading-snug">
+                {feature.title}
+              </h3>
+              <p className="text-[var(--text-muted)] text-xs leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Quote */}
-      <section className="px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+      <section className="px-5 py-10">
+        <motion.blockquote
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="max-w-md mx-auto text-center"
+          className="max-w-sm mx-auto text-center px-4"
         >
-          <p className="text-gray-400 italic leading-relaxed">
-            "{t('landing.quote')}"
+          <p className="font-display text-xl italic text-[var(--text-secondary)] leading-relaxed">
+            “{t('landing.quote')}”
           </p>
-        </motion.div>
+        </motion.blockquote>
       </section>
 
-      {/* How it Works */}
-      <section className="px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-md mx-auto"
-        >
-          <h2 className="text-2xl font-bold text-white text-center mb-10">
-            {t('landing.howItWorks')}
-          </h2>
-
-          <div className="space-y-6">
+      {/* Steps */}
+      <section className="px-5 py-12">
+        <div className="max-w-sm mx-auto">
+          <h2 className="section-title text-center mb-8">{t('landing.howItWorks')}</h2>
+          <div className="space-y-4">
             {steps.map((step, index) => (
               <motion.div
                 key={step.num}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -12 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-start gap-4"
+                transition={{ delay: index * 0.07 }}
+                className="flex items-start gap-4 glass-card p-4 rounded-2xl"
               >
-                <span className="text-3xl font-bold gradient-text">{step.num}</span>
+                <span className="font-display text-2xl gradient-text min-w-[2.2rem]">
+                  {step.num}
+                </span>
                 <div>
-                  <h3 className="text-white font-semibold mb-1">{step.title}</h3>
-                  <p className="text-gray-500 text-sm">{step.desc}</p>
+                  <h3 className="text-white font-semibold mb-0.5 text-[0.95rem]">{step.title}</h3>
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* 9 Energies Section */}
-      <section className="px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-md mx-auto"
-        >
-          <h2 className="text-2xl font-bold text-white text-center mb-3">
-            {t('landing.energiesTitle')}
-          </h2>
-          <p className="text-gray-400 text-center text-sm mb-10">
+      {/* Energies */}
+      <section className="px-5 py-12">
+        <div className="max-w-sm mx-auto">
+          <h2 className="section-title text-center mb-2">{t('landing.energiesTitle')}</h2>
+          <p className="text-center text-[var(--text-muted)] text-sm mb-8">
             {t('landing.energiesDesc')}
           </p>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-2.5">
             {energies.map((energy, index) => (
               <motion.div
                 key={energy.num}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.94 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="energy-card rounded-xl"
+                transition={{ delay: index * 0.03 }}
+                className="energy-card !p-3"
               >
-                <div 
-                  className="text-4xl font-bold mb-3"
-                  style={{ 
+                <div
+                  className="text-2xl font-bold mb-1 font-display"
+                  style={{
                     color: energy.color,
-                    textShadow: `0 0 20px ${energy.color}40`
+                    textShadow: `0 0 18px ${energy.color}55`,
                   }}
                 >
                   {energy.num}
                 </div>
-                <h3 className="text-white font-semibold mb-1">{energy.planet}</h3>
-                <p className="text-gray-500 text-xs uppercase tracking-wider mb-3">{energy.eng}</p>
-                <p className="text-gray-400 text-xs leading-relaxed">{energy.desc}</p>
+                <h3 className="text-white text-xs font-semibold leading-tight mb-0.5">
+                  {energy.planet}
+                </h3>
+                <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                  {energy.eng}
+                </p>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-6 py-16 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-md mx-auto"
-        >
-          <h2 className="text-2xl font-bold text-white mb-4">
-            {t('landing.ready')}
-          </h2>
-          <p className="text-gray-400 mb-8">
-            {t('landing.readyDesc')}
-          </p>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={onStart}
-            className="gradient-button px-10 py-5"
-            style={{ borderRadius: '9999px' }}
-          >
+      {/* Final CTA */}
+      <section className="px-5 py-14 text-center">
+        <div className="max-w-sm mx-auto glass-card p-7 rounded-3xl">
+          <h2 className="section-title mb-2">{t('landing.ready')}</h2>
+          <p className="text-[var(--text-secondary)] text-sm mb-6">{t('landing.readyDesc')}</p>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={onStart} className="gradient-button w-full">
             {t('landing.freeButton')}
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </motion.button>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-white/5">
-        <div className="max-w-md mx-auto text-center">
-          <p className="text-white font-semibold mb-1">{t('landing.footer.title')}</p>
-          <p className="text-gray-500 text-sm mb-4">{t('landing.footer.author')}</p>
-          
-          <div className="flex justify-center gap-4 mb-6">
-            <a 
-              href="https://t.me/tatianageniush" 
-              target="_blank" 
+      <footer className="px-5 py-10 border-t border-white/5">
+        <div className="max-w-sm mx-auto text-center">
+          <p className="font-display text-lg text-white mb-0.5">{t('landing.footer.title')}</p>
+          <p className="text-[var(--text-muted)] text-sm mb-4">{t('landing.footer.author')}</p>
+          <div className="flex justify-center gap-4 mb-5 text-sm">
+            <a
+              href="https://t.me/tatianageniush"
+              target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-amber-400 transition-colors text-sm"
+              className="text-amber-200/80 hover:text-amber-200 transition-colors"
             >
               {t('landing.footer.consultation')}
             </a>
-            <a 
-              href="tel:+375297801742" 
-              className="text-gray-400 hover:text-amber-400 transition-colors text-sm"
-            >
+            <a href="tel:+375297801742" className="text-[var(--text-muted)] hover:text-white transition-colors">
               +375 29 780 1742
             </a>
           </div>
-          
-          <p className="text-gray-600 text-xs">
+          <p className="text-[var(--text-muted)] text-[11px] opacity-70">
             {t('landing.footer.copyright')}
           </p>
         </div>
       </footer>
+
+      {/* Sticky mobile CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 pointer-events-none">
+        <div className="app-shell pointer-events-auto">
+          <button type="button" onClick={onStart} className="gradient-button w-full shadow-2xl">
+            {t('landing.startButton')}
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

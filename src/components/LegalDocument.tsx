@@ -15,16 +15,12 @@ export function LegalDocument({ kind }: LegalDocumentProps) {
   const updated = '2026-07-23';
 
   return (
-    <div className="min-h-screen pb-24">
-      <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
-        <Link
-          to="/settings"
-          className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-          aria-label="Back"
-        >
-          <ArrowLeft size={24} />
+    <div className="app-shell min-h-screen pb-16">
+      <header className="app-header">
+        <Link to="/settings" className="icon-btn" aria-label="Back">
+          <ArrowLeft size={20} />
         </Link>
-        <h1 className="text-lg font-bold text-white">
+        <h1 className="font-display text-xl text-white leading-tight">
           {kind === 'privacy'
             ? isRu
               ? 'Политика конфиденциальности'

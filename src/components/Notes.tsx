@@ -128,20 +128,16 @@ export function Notes({ onBack }: NotesProps) {
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
-        <button
-          type="button"
-          onClick={onBack}
-          className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={24} />
+    <div className="app-shell min-h-screen pb-10">
+      <header className="app-header">
+        <button type="button" onClick={onBack} className="icon-btn" aria-label="Back">
+          <ArrowLeft size={20} />
         </button>
-        <div>
-          <h1 className="text-lg font-bold text-white">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl text-white leading-tight">
             {t('notes.title', { defaultValue: 'Journal' })}
           </h1>
-          <p className="text-gray-400 text-xs">
+          <p className="text-[var(--text-muted)] text-xs truncate">
             {t('notes.subtitle', {
               defaultValue: 'Personal notes with keyword tips (not AI)',
             })}

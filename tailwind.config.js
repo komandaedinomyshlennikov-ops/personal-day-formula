@@ -4,6 +4,13 @@ module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+      },
+      maxWidth: {
+        phone: '430px',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

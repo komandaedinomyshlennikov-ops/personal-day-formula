@@ -1,117 +1,132 @@
-/* Астронавигатор - CSS Variables */
-/* Цветовая палитра скопирована из образца дизайна */
+/* Астронавигатор — design tokens
+   Target: women 25–45, wellness / digital psychology, mobile-first premium */
 
 :root {
-  /* Основные цвета фона - DARK (default) */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111118;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-card-hover: rgba(255, 255, 255, 0.06);
-  --bg-border: rgba(255, 255, 255, 0.08);
-  
-  /* Градиенты */
-  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --gradient-primary-hover: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-  --gradient-title: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #fbbf24 100%);
-  --gradient-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  
-  /* Акцентные цвета */
-  --accent-purple: #8b5cf6;
-  --accent-pink: #ec4899;
-  --accent-gold: #fbbf24;
-  --accent-gold-dark: #f59e0b;
-  
-  /* Текст - DARK */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.5);
-  --text-gold: #fbbf24;
-}
+  /* Background — deep night with violet undertone */
+  --bg-primary: #07060d;
+  --bg-secondary: #0f0d18;
+  --bg-elevated: #161322;
+  --bg-card: rgba(255, 255, 255, 0.045);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
+  --bg-border: rgba(255, 255, 255, 0.09);
+  --bg-border-strong: rgba(255, 255, 255, 0.16);
 
-/* LIGHT theme */
-:root.light {
-  /* Основные цвета фона - LIGHT */
-  --bg-primary: #f8f7fa;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(0, 0, 0, 0.03);
-  --bg-card-hover: rgba(0, 0, 0, 0.06);
-  --bg-border: rgba(0, 0, 0, 0.08);
-  
-  /* Градиенты - same for both themes */
-  --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --gradient-primary-hover: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-  --gradient-title: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #d97706 100%);
-  --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  
-  /* Акцентные цвета - slightly adjusted for light */
-  --accent-purple: #7c3aed;
-  --accent-pink: #db2777;
-  --accent-gold: #d97706;
-  --accent-gold-dark: #b45309;
-  
-  /* Текст - LIGHT */
-  --text-primary: #1a1a2e;
-  --text-secondary: rgba(26, 26, 46, 0.7);
-  --text-muted: rgba(26, 26, 46, 0.5);
-  --text-gold: #d97706;
-  
-  /* Цвета энергий */
-  --energy-1: #fbbf24;  /* Солнце - золотой */
-  --energy-2: #c0c0c0;  /* Луна - серебряный */
-  --energy-3: #f59e0b;  /* Юпитер - оранжевый */
-  --energy-4: #3b82f6;  /* Раху - синий */
-  --energy-5: #06b6d4;  /* Меркурий - бирюзовый */
-  --energy-6: #ec4899;  /* Венера - розовый */
-  --energy-7: #6366f1;  /* Кету - индиго */
-  --energy-8: #78716c;  /* Сатурн - серый */
-  --energy-9: #ef4444;  /* Марс - красный */
-  
-  /* Статусы */
-  --status-success: #22c55e;
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #9b6dff 0%, #e85aad 55%, #f0b429 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #8b5cf6 0%, #db2777 55%, #f59e0b 100%);
+  --gradient-title: linear-gradient(120deg, #f5e6c8 0%, #e8b4ff 40%, #c4b5fd 70%, #fbbf24 100%);
+  --gradient-gold: linear-gradient(135deg, #f5d78e 0%, #e8a838 50%, #c98a1a 100%);
+  --gradient-aurora: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.28), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(236, 72, 153, 0.12), transparent 45%),
+    radial-gradient(ellipse 50% 30% at 10% 20%, rgba(251, 191, 36, 0.08), transparent 40%);
+  --gradient-surface: linear-gradient(165deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+
+  /* Accents */
+  --accent-purple: #a78bfa;
+  --accent-pink: #f472b6;
+  --accent-gold: #f5d78e;
+  --accent-gold-dark: #d4a017;
+  --accent-champagne: #f5e6c8;
+
+  /* Text */
+  --text-primary: #f7f4ff;
+  --text-secondary: rgba(247, 244, 255, 0.72);
+  --text-muted: rgba(247, 244, 255, 0.48);
+  --text-gold: #f5d78e;
+
+  /* Energy colors (planets) */
+  --energy-1: #f5d78e;
+  --energy-2: #d4d4d8;
+  --energy-3: #fbbf24;
+  --energy-4: #60a5fa;
+  --energy-5: #22d3ee;
+  --energy-6: #f472b6;
+  --energy-7: #818cf8;
+  --energy-8: #a8a29e;
+  --energy-9: #f87171;
+
+  --status-success: #4ade80;
   --status-warning: #fbbf24;
-  --status-error: #ef4444;
-  
-  /* Скругления */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --status-error: #f87171;
+  --status-neutral: #facc15;
+
+  /* Radius — soft, friendly */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
   --radius-full: 9999px;
-  
-  /* Тени */
-  --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.3);
-  --shadow-glow-gold: 0 0 40px rgba(251, 191, 36, 0.3);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
-  
-  /* Отступы */
+
+  /* Shadows */
+  --shadow-glow: 0 8px 40px rgba(139, 92, 246, 0.35);
+  --shadow-glow-gold: 0 8px 36px rgba(245, 215, 142, 0.28);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.2);
+
+  /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
-  
-  /* Типографика */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  
-  /* Анимации */
+
+  /* Type */
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Motion */
   --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 350ms ease;
+  --transition-base: 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 420ms cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+
+  /* Layout */
+  --app-max: 430px;
+  --header-h: 56px;
+  --nav-h: 72px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* High contrast mode - DARK */
+:root.light {
+  --bg-primary: #f6f3fb;
+  --bg-secondary: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.72);
+  --bg-card-hover: rgba(255, 255, 255, 0.92);
+  --bg-border: rgba(88, 50, 140, 0.1);
+  --bg-border-strong: rgba(88, 50, 140, 0.18);
+
+  --gradient-title: linear-gradient(120deg, #6d28d9 0%, #db2777 50%, #b45309 100%);
+  --gradient-aurora: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(167, 139, 250, 0.35), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(244, 114, 182, 0.15), transparent 45%);
+
+  --accent-purple: #7c3aed;
+  --accent-pink: #db2777;
+  --accent-gold: #b45309;
+  --accent-gold-dark: #92400e;
+  --accent-champagne: #7c3aed;
+
+  --text-primary: #1a1230;
+  --text-secondary: rgba(26, 18, 48, 0.72);
+  --text-muted: rgba(26, 18, 48, 0.48);
+  --text-gold: #b45309;
+
+  --shadow-glow: 0 8px 32px rgba(124, 58, 237, 0.18);
+  --shadow-card: 0 8px 28px rgba(88, 50, 140, 0.1);
+  --shadow-soft: 0 4px 16px rgba(88, 50, 140, 0.08);
+}
+
 .high-contrast {
-  --text-secondary: rgba(255, 255, 255, 0.9);
-  --text-muted: rgba(255, 255, 255, 0.8);
-  --bg-border: rgba(255, 255, 255, 0.2);
+  --text-secondary: rgba(255, 255, 255, 0.92);
+  --text-muted: rgba(255, 255, 255, 0.82);
+  --bg-border: rgba(255, 255, 255, 0.28);
 }
 
-/* High contrast mode - LIGHT */
 :root.light.high-contrast {
-  --text-secondary: rgba(26, 26, 46, 0.95);
-  --text-muted: rgba(26, 26, 46, 0.85);
-  --bg-border: rgba(0, 0, 0, 0.2);
+  --text-secondary: rgba(26, 18, 48, 0.95);
+  --text-muted: rgba(26, 18, 48, 0.85);
+  --bg-border: rgba(0, 0, 0, 0.22);
 }

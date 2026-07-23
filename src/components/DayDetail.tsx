@@ -39,21 +39,16 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={onBack}
-          className="p-3 rounded-2xl hover:bg-white/10 text-gray-400 hover:text-white transition-colors bg-white/5 border border-white/10"
-        >
-          <ArrowLeft size={22} />
-        </motion.button>
-        <div>
-          <h1 className="text-lg font-bold text-white">
+    <div className="app-shell min-h-screen pb-10">
+      <header className="app-header">
+        <button type="button" onClick={onBack} className="icon-btn" aria-label="Back">
+          <ArrowLeft size={20} />
+        </button>
+        <div className="min-w-0">
+          <h1 className="font-display text-xl text-white leading-tight truncate">
             {formatDate(day.date, i18n.language === 'ru' ? 'ru-RU' : 'en-US')}
           </h1>
-          <p className="text-gray-400 text-sm">{getDayOfWeekName(day.date, t)}</p>
+          <p className="text-[var(--text-muted)] text-xs">{getDayOfWeekName(day.date, t)}</p>
         </div>
       </header>
 
@@ -81,55 +76,42 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
 
         {/* Tabs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex gap-2"
         >
-          <motion.button
-            whileTap={{ scale: 0.98 }}
+          <button
+            type="button"
             onClick={() => setActiveTab('personal')}
-            className={`flex-1 py-3 px-3 rounded-2xl font-semibold text-sm transition-all ${
-              activeTab === 'personal'
-                ? 'bg-gradient-to-r from-amber-500/30 to-amber-600/20 border border-amber-400/50 text-amber-400'
-                : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
-            }`}
+            className={`tab-pill ${activeTab === 'personal' ? 'tab-pill--on' : ''}`}
           >
             <span className="flex items-center justify-center gap-1">
               <span>{personalInfo.icon}</span>
-              <span className="hidden sm:inline">{t('dayDetail.personalDay')} {day.personalNumber}</span>
-              <span className="sm:hidden">{t('dayDetail.personalDay')} {day.personalNumber}</span>
+              <span>
+                {day.personalNumber}
+              </span>
             </span>
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('universal')}
-            className={`flex-1 py-3 px-3 rounded-2xl font-semibold text-sm transition-all ${
-              activeTab === 'universal'
-                ? 'bg-gradient-to-r from-purple-500/30 to-purple-600/20 border border-purple-400/50 text-purple-400'
-                : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
-            }`}
+            className={`tab-pill ${activeTab === 'universal' ? 'tab-pill--on' : ''}`}
           >
             <span className="flex items-center justify-center gap-1">
               <span>{generalInfo.icon}</span>
-              <span className="hidden sm:inline">{t('dayDetail.universalDay')} {day.generalNumber}</span>
-              <span className="sm:hidden">{t('dayDetail.universalDay')} {day.generalNumber}</span>
+              <span>{day.generalNumber}</span>
             </span>
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.98 }}
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('examples')}
-            className={`flex-1 py-3 px-3 rounded-2xl font-semibold text-sm transition-all ${
-              activeTab === 'examples'
-                ? 'bg-gradient-to-r from-green-500/30 to-emerald-600/20 border border-green-400/50 text-green-400'
-                : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
-            }`}
+            className={`tab-pill ${activeTab === 'examples' ? 'tab-pill--on' : ''}`}
           >
             <span className="flex items-center justify-center gap-1">
-              <BookOpen size={16} />
-              <span className="hidden sm:inline">{t('dayDetail.examples')}</span>
-              <span className="sm:hidden">{t('dayDetail.examples')}</span>
+              <BookOpen size={14} />
+              <span>{t('dayDetail.examples')}</span>
             </span>
-          </motion.button>
+          </button>
         </motion.div>
 
         {/* Tab Content */}

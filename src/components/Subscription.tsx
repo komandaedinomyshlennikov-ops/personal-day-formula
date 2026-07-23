@@ -32,16 +32,12 @@ export function Subscription({
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
-        <button
-          type="button"
-          onClick={onBack}
-          className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={24} />
+    <div className="app-shell min-h-screen pb-10">
+      <header className="app-header">
+        <button type="button" onClick={onBack} className="icon-btn" aria-label="Back">
+          <ArrowLeft size={20} />
         </button>
-        <h1 className="text-lg font-bold text-white">{t('nav.subscription')}</h1>
+        <h1 className="font-display text-xl text-white">{t('nav.subscription')}</h1>
       </header>
 
       <div className="px-4 py-6">

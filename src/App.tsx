@@ -312,13 +312,16 @@ function AppShell() {
       } ${userData.highContrast ? 'high-contrast' : ''}`}
     >
       <StarBackground />
+      <div className="app-aurora" aria-hidden />
       <Toaster
         position="top-center"
         toastOptions={{
           style: {
-            background: '#1a1a2e',
-            color: '#fff',
+            background: 'rgba(22, 19, 34, 0.95)',
+            color: '#f7f4ff',
             border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '16px',
+            backdropFilter: 'blur(12px)',
           },
         }}
       />
