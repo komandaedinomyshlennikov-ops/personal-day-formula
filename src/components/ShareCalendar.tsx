@@ -11,7 +11,7 @@ export function ShareCalendar({ onBack }: ShareCalendarProps) {
   const [copied, setCopied] = useState(false);
   const { t, i18n } = useTranslation();
   
-  const shareUrl = 'https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/';
+  const shareUrl = 'https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/';
   const shareText = i18n.language === 'ru' 
     ? 'Открой свою персональную энергетику с Астронавигатором! 🌟 Мой личный календарь по дате рождения.'
     : 'Check your daily energy with AstroNavigator! 🌟 My personal calendar based on birth date.';

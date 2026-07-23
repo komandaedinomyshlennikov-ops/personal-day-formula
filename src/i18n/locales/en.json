@@ -583,7 +583,12 @@
       "personalDayMonthYear": "Personal day/month/year",
       "dataExport": "Data export",
       "personalConsultation": "Personal consultation"
-    }
+    },
+    "howToPay": "How to get access",
+    "step1": "Choose a plan and open Telegram to pay",
+    "step2": "Receive an activation code from the author",
+    "step3": "Enter the code in the app (Have a code)",
+    "noCardData": "Card details are never entered in this app."
   },
   "settings": {
     "title": "Settings",
@@ -1509,5 +1514,26 @@
       "consultation": "Consultation",
       "copyright": "© 2026 AstroNavigator. All rights reserved."
     }
+  },
+  "legal": {
+    "section": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms / Offer",
+    "cookieTitle": "Cookies & analytics",
+    "cookieBody": "We store your birth date and preferences only in this browser (localStorage). Optional analytics is off until you accept.",
+    "cookieNoGa": "Analytics ID is not configured — only essential storage is used.",
+    "accept": "Accept",
+    "decline": "Essential only",
+    "analytics": "Analytics cookies"
+  },
+  "notes": {
+    "title": "Journal",
+    "subtitle": "Personal notes with keyword tips (not AI)",
+    "disclaimer": "Tips are rule-based keyword suggestions stored only on this device — not a neural network.",
+    "add": "Add note",
+    "placeholder": "How was your day? Plans, feelings, meetings…",
+    "empty": "No notes yet",
+    "tipLabel": "Tip",
+    "saving": "Saving…"
   }
 }

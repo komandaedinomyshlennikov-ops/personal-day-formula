@@ -16,12 +16,15 @@ import {
   User,
   Globe
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Switch } from '@/components/ui/switch';
 import { LanguageSelector } from './LanguageSelector';
 import { InstallPrompt } from './InstallPrompt';
 import type { UserData } from '@/types';
 import { parseDateOnly, toLocalDate } from '@/utils/date';
+import { getConsent, setConsent } from '@/lib/analytics';
+import { useState } from 'react';
 
 interface SettingsProps {
   userData: UserData;
@@ -49,6 +52,7 @@ export function Settings({
   onLanguageChange,
 }: SettingsProps) {
   const { t, i18n } = useTranslation();
+  const [consent, setConsentState] = useState(getConsent);
   const currentLang = i18n.language;
 
   // Handle language change with instant update
@@ -363,6 +367,56 @@ export function Settings({
                 <p className="text-gray-400 text-xs">{t('settings.email')}</p>
               </div>
             </a>
+          </div>
+        </motion.section>
+
+        {/* Legal & privacy */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+          className="glass-card overflow-hidden"
+        >
+          <div className="p-4 border-b border-white/5">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <FileText size={18} className="text-amber-400" />
+              {t('legal.section', { defaultValue: 'Legal' })}
+            </h3>
+          </div>
+          <div className="p-4 space-y-2">
+            <Link
+              to="/privacy"
+              className="block w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm"
+            >
+              {t('legal.privacy', { defaultValue: 'Privacy Policy' })}
+            </Link>
+            <Link
+              to="/terms"
+              className="block w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm"
+            >
+              {t('legal.terms', { defaultValue: 'Terms / Offer' })}
+            </Link>
+            <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/5">
+              <div>
+                <p className="text-white text-sm font-medium">
+                  {t('legal.analytics', { defaultValue: 'Analytics cookies' })}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {consent === 'accepted'
+                    ? t('legal.accept', { defaultValue: 'Accepted' })
+                    : consent === 'declined'
+                      ? t('legal.decline', { defaultValue: 'Essential only' })
+                      : t('legal.cookieTitle', { defaultValue: 'Not set' })}
+                </p>
+              </div>
+              <Switch
+                checked={consent === 'accepted'}
+                onCheckedChange={(on) => {
+                  setConsent(on ? 'accepted' : 'declined');
+                  setConsentState(on ? 'accepted' : 'declined');
+                }}
+              />
+            </div>
           </div>
         </motion.section>
 

@@ -62,14 +62,17 @@ export interface Note {
   aiRecommendation?: string;
 }
 
-export type ViewState = 
-  | 'onboarding' 
-  | 'landing' 
-  | 'calendar' 
-  | 'day-detail' 
-  | 'subscription' 
+export type ViewState =
+  | 'onboarding'
+  | 'landing'
+  | 'calendar'
+  | 'day-detail'
+  | 'subscription'
   | 'activation'
   | 'month-year-detail'
-  | 'ai-notes'
+  | 'notes'
+  | 'ai-notes' // legacy alias
   | 'share'
-  | 'settings';
+  | 'settings'
+  | 'privacy'
+  | 'terms';
