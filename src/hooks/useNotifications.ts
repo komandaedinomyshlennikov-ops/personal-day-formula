@@ -1,5 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { showSwNotification } from '@/pwa';
 
 interface NotificationData {
   title: string;
@@ -8,25 +10,99 @@ interface NotificationData {
   tag?: string;
 }
 
+const LAST_DAILY_KEY = 'astronavigator_last_daily_notification';
+const PREFS_KEY = 'astronavigator_notification_prefs';
+
+interface NotificationPrefs {
+  hour: number;
+  minute: number;
+  enabled: boolean;
+}
+
+function readPrefs(): NotificationPrefs {
+  try {
+    const raw = localStorage.getItem(PREFS_KEY);
+    if (raw) return { hour: 8, minute: 0, enabled: false, ...JSON.parse(raw) };
+  } catch {
+    /* ignore */
+  }
+  return { hour: 8, minute: 0, enabled: false };
+}
+
+function writePrefs(prefs: NotificationPrefs): void {
+  localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+}
+
 export function useNotifications() {
   const permissionRef = useRef<NotificationPermission>('default');
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { t, i18n } = useTranslation();
 
-  // Запрос разрешения на уведомления
+  useEffect(() => {
+    if ('Notification' in window) {
+      permissionRef.current = Notification.permission;
+    }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const checkPermission = useCallback((): boolean => {
+    if (!('Notification' in window)) return false;
+    return Notification.permission === 'granted';
+  }, []);
+
+  const sendNotification = useCallback(
+    async (data: NotificationData): Promise<boolean> => {
+      if (!checkPermission()) return false;
+
+      // Prefer Service Worker notification (better on mobile / PWA)
+      const viaSw = await showSwNotification({
+        title: data.title,
+        body: data.body,
+        tag: data.tag,
+        icon: data.icon || './icon-192x192.png',
+      });
+      if (viaSw) return true;
+
+      try {
+        const notification = new Notification(data.title, {
+          body: data.body,
+          icon: data.icon || './icon-192x192.png',
+          tag: data.tag || 'astronavigator',
+          requireInteraction: false,
+          silent: false,
+        });
+
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
+        return true;
+      } catch (error) {
+        console.error('Notification error:', error);
+        return false;
+      }
+    },
+    [checkPermission]
+  );
+
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!('Notification' in window)) {
-      toast.error('Уведомления не поддерживаются в этом браузере');
+      toast.error(t('notifications.notSupported'));
       return false;
     }
 
     try {
       const permission = await Notification.requestPermission();
       permissionRef.current = permission;
-      
+
       if (permission === 'granted') {
-        toast.success('Уведомления включены');
+        toast.success(t('notifications.permissionGranted'));
         return true;
-      } else if (permission === 'denied') {
-        toast.error('Уведомления заблокированы');
+      }
+      if (permission === 'denied') {
+        toast.error(t('notifications.permissionDenied'));
         return false;
       }
       return false;
@@ -34,126 +110,162 @@ export function useNotifications() {
       console.error('Notification permission error:', error);
       return false;
     }
-  }, []);
+  }, [t]);
 
-  // Проверка разрешения
-  const checkPermission = useCallback((): boolean => {
-    if (!('Notification' in window)) return false;
-    return Notification.permission === 'granted';
-  }, []);
-
-  // Отправка уведомления
-  const sendNotification = useCallback((data: NotificationData): boolean => {
-    if (!checkPermission()) return false;
-
-    try {
-      const notification = new Notification(data.title, {
-        body: data.body,
-        icon: data.icon || '/icon-192x192.png',
-        tag: data.tag || 'astronavigator',
-        requireInteraction: false,
-        silent: false,
-      });
-
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
+  const sendDayNotification = useCallback(
+    async (dayNumber: number, _isFavorable?: boolean) => {
+      const titles: Record<number, string> = {
+        1: t('energies.1.name', { defaultValue: '1' }),
+        2: t('energies.2.name', { defaultValue: '2' }),
+        3: t('energies.3.name', { defaultValue: '3' }),
+        4: t('energies.4.name', { defaultValue: '4' }),
+        5: t('energies.5.name', { defaultValue: '5' }),
+        6: t('energies.6.name', { defaultValue: '6' }),
+        7: t('energies.7.name', { defaultValue: '7' }),
+        8: t('energies.8.name', { defaultValue: '8' }),
+        9: t('energies.9.name', { defaultValue: '9' }),
       };
 
-      return true;
-    } catch (error) {
-      console.error('Notification error:', error);
-      return false;
-    }
-  }, [checkPermission]);
+      return sendNotification({
+        title: titles[dayNumber] || t('notifications.dailyReminder', { defaultValue: 'Your personal day' }),
+        body:
+          t(`energies.${dayNumber}.description`, {
+            defaultValue: t('notifications.dailyReminderBody', {
+              defaultValue: 'Check today recommendations in AstroNavigator',
+            }),
+          }) || '',
+        tag: `day-${dayNumber}`,
+      });
+    },
+    [sendNotification, t]
+  );
 
-  // Отправка уведомления о важном дне
-  const sendDayNotification = useCallback((dayNumber: number, _isFavorable?: boolean) => {
-    const titles: Record<number, string> = {
-      1: 'День новых начинаний',
-      2: 'День гармонии и отношений',
-      3: 'День расширения и роста',
-      4: 'День перемен и креатива',
-      5: 'День коммуникации',
-      6: 'День любви и красоты',
-      7: 'День духовности',
-      8: 'День дисциплины и труда',
-      9: 'День завершения',
-    };
-
-    const bodies: Record<number, string> = {
-      1: 'Отличное время для старта новых проектов и важных решений!',
-      2: 'Фокусируйтесь на отношениях и дипломатии сегодня.',
-      3: 'Энергия роста и обучения — используйте её с умом!',
-      4: 'Время креативных решений и нестандартного мышления.',
-      5: 'Активное общение и переговоры принесут успех.',
-      6: 'Наслаждайтесь жизнью и заботьтесь о близких.',
-      7: 'День для медитации и внутреннего поиска.',
-      8: 'Упорный труд сегодня принесёт отличные результаты.',
-      9: 'Время подводить итоги и завершать начатое.',
-    };
-
-    return sendNotification({
-      title: titles[dayNumber] || 'Ваш личный день',
-      body: bodies[dayNumber] || 'Проверьте рекомендации в календаре',
-      tag: `day-${dayNumber}`,
-    });
-  }, [sendNotification]);
-
-  // Планирование ежедневного уведомления
-  const scheduleDailyNotification = useCallback((hour: number = 8, minute: number = 0) => {
+  /** Fire once per calendar day when app is opened after preferred time. */
+  const maybeSendDailyOnOpen = useCallback(async () => {
     if (!checkPermission()) return;
 
+    const prefs = readPrefs();
+    if (!prefs.enabled) return;
+
     const now = new Date();
-    const scheduledTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute);
-    
-    if (scheduledTime <= now) {
-      scheduledTime.setDate(scheduledTime.getDate() + 1);
-    }
+    const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    if (localStorage.getItem(LAST_DAILY_KEY) === todayKey) return;
 
-    const delay = scheduledTime.getTime() - now.getTime();
+    const minutesNow = now.getHours() * 60 + now.getMinutes();
+    const target = prefs.hour * 60 + prefs.minute;
+    if (minutesNow < target) return;
 
-    setTimeout(() => {
-      sendNotification({
-        title: 'Доброе утро!',
-        body: 'Проверьте рекомендации на сегодня в Астронавигаторе',
-        tag: 'daily-reminder',
-      });
-      
-      // Повторять каждый день
-      setInterval(() => {
-        sendNotification({
-          title: 'Доброе утро!',
-          body: 'Проверьте рекомендации на сегодня в Астронавигаторе',
-          tag: 'daily-reminder',
-        });
-      }, 24 * 60 * 60 * 1000);
-    }, delay);
-  }, [checkPermission, sendNotification]);
-
-  // Уведомление о пробном периоде
-  const sendTrialNotification = useCallback((daysLeft: number) => {
-    if (daysLeft <= 0) {
-      return sendNotification({
-        title: 'Пробный период закончился',
-        body: 'Оформите подписку, чтобы продолжить пользоваться всеми функциями',
-        tag: 'trial-ended',
-      });
-    }
-
-    return sendNotification({
-      title: `Пробный период: ${daysLeft} ${daysLeft === 1 ? 'день' : 'дня'}`,
-      body: 'Не забудьте оформить подписку для продолжения',
-      tag: 'trial-reminder',
+    const ok = await sendNotification({
+      title: t('notifications.dailyReminder', { defaultValue: 'Good morning!' }),
+      body: t('notifications.dailyReminderBody', {
+        defaultValue: 'Check today recommendations in AstroNavigator',
+      }),
+      tag: 'daily-reminder',
     });
-  }, [sendNotification]);
+    if (ok) localStorage.setItem(LAST_DAILY_KEY, todayKey);
+  }, [checkPermission, sendNotification, t]);
 
-  // Инициализация при монтировании
-  useEffect(() => {
-    if ('Notification' in window) {
-      permissionRef.current = Notification.permission;
+  /**
+   * Schedule next local reminder while this tab/PWA session is alive.
+   * Honest model: no server push — documented in Settings disclaimer.
+   */
+  const scheduleDailyNotification = useCallback(
+    (hour: number = 8, minute: number = 0) => {
+      writePrefs({ hour, minute, enabled: true });
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+
+      if (!checkPermission()) return;
+
+      const now = new Date();
+      const scheduled = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hour,
+        minute,
+        0,
+        0
+      );
+      if (scheduled.getTime() <= now.getTime()) {
+        scheduled.setDate(scheduled.getDate() + 1);
+      }
+
+      const delay = scheduled.getTime() - now.getTime();
+      timerRef.current = setTimeout(() => {
+        void sendNotification({
+          title: t('notifications.dailyReminder', { defaultValue: 'Good morning!' }),
+          body: t('notifications.dailyReminderBody', {
+            defaultValue: 'Check today recommendations in AstroNavigator',
+          }),
+          tag: 'daily-reminder',
+        }).then((ok) => {
+          if (ok) {
+            const d = new Date();
+            localStorage.setItem(
+              LAST_DAILY_KEY,
+              `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
+            );
+          }
+          // Reschedule for next day while session lives
+          scheduleDailyNotification(hour, minute);
+        });
+      }, delay);
+    },
+    [checkPermission, sendNotification, t]
+  );
+
+  const disableDailyNotifications = useCallback(() => {
+    const prefs = readPrefs();
+    writePrefs({ ...prefs, enabled: false });
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
   }, []);
+
+  const sendTrialNotification = useCallback(
+    async (daysLeft: number) => {
+      if (daysLeft <= 0) {
+        return sendNotification({
+          title: t('notifications.trialEnded', { defaultValue: 'Trial ended' }),
+          body: t('notifications.subscriptionEnded', {
+            defaultValue: 'Subscribe to keep full access',
+          }),
+          tag: 'trial-ended',
+        });
+      }
+
+      return sendNotification({
+        title: `${t('subscription.plans.trial.name', { defaultValue: 'Trial' })}: ${daysLeft}`,
+        body: t('notifications.subscriptionEnded', {
+          defaultValue: 'Subscribe to continue',
+        }),
+        tag: 'trial-reminder',
+      });
+    },
+    [sendNotification, t]
+  );
+
+  // On language change, keep using translated strings next send
+  useEffect(() => {
+    void i18n.language;
+  }, [i18n.language]);
+
+  // When app becomes visible, try once-per-day reminder
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') {
+        void maybeSendDailyOnOpen();
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
+    void maybeSendDailyOnOpen();
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [maybeSendDailyOnOpen]);
 
   return {
     requestPermission,
@@ -161,7 +273,9 @@ export function useNotifications() {
     sendNotification,
     sendDayNotification,
     scheduleDailyNotification,
+    disableDailyNotifications,
     sendTrialNotification,
+    maybeSendDailyOnOpen,
     permission: permissionRef.current,
   };
 }

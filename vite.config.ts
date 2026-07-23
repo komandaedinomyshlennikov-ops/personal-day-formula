@@ -2,6 +2,7 @@ import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import { visualizer } from 'rollup-plugin-visualizer'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,6 +14,82 @@ export default defineConfig({
           ['babel-plugin-transform-remove-console', { exclude: ['error', 'warn'] }]
         ]
       }
+    }),
+    VitePWA({
+      registerType: 'prompt',
+      includeAssets: ['icon-192x192.png', 'icon-512x512.png', 'vite.svg'],
+      manifest: {
+        name: 'AstroNavigator — Personal Success Calendar',
+        short_name: 'AstroNavigator',
+        description:
+          'Personal calendar based on your birth date. Plan important events according to planetary energies.',
+        theme_color: '#0a0a0f',
+        background_color: '#0a0a0f',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: './',
+        scope: './',
+        lang: 'ru',
+        categories: ['lifestyle', 'productivity'],
+        icons: [
+          {
+            src: 'icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'document',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages',
+              networkTimeoutSeconds: 5,
+            },
+          },
+          {
+            urlPattern: ({ request }) =>
+              request.destination === 'script' ||
+              request.destination === 'style' ||
+              request.destination === 'worker',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'assets',
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: false,
+      },
     }),
     visualizer({
       open: false,
@@ -31,37 +108,32 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // React core
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
             return 'react-core';
           }
-          // Animation libraries
           if (id.includes('node_modules/framer-motion')) {
             return 'animations';
           }
-          // UI components
           if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/class-variance-authority') || id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) {
             return 'ui-libs';
           }
-          // i18n
           if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
             return 'i18n';
           }
-          // PDF and export utilities
           if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
             return 'export-utils';
           }
-          // Date utilities
           if (id.includes('node_modules/date-fns')) {
             return 'date-utils';
           }
-          // Icons
           if (id.includes('node_modules/lucide-react')) {
             return 'icons';
           }
-          // Notifications
           if (id.includes('node_modules/sonner')) {
             return 'notifications';
+          }
+          if (id.includes('node_modules/workbox') || id.includes('virtual:pwa')) {
+            return 'pwa';
           }
         },
         chunkFileNames: 'assets/js/[name]-[hash].js',

@@ -1,4 +1,124 @@
 {
+  "notifications": {
+    "permissionGranted": "Notifications enabled",
+    "permissionDenied": "Notifications blocked",
+    "notSupported": "Notifications are not supported in this browser",
+    "disclaimerTitle": "About notifications",
+    "disclaimerBody": "Daily reminders work while the browser can run the app (installed PWA or open tab). True push requires a server and is not used yet.",
+    "offlineReady": "App ready to work offline",
+    "updateAvailable": "Update available — reload to apply",
+    "trialEnding": "Trial Ending Soon",
+    "trialEnded": "Trial Period Ended",
+    "subscriptionEnding": "Subscription Ending Soon",
+    "subscriptionEnded": "Subscription Expired",
+    "dailyReminder": "Good Morning!",
+    "dailyReminderBody": "Check today's recommendations in AstroNavigator",
+    "languageChanged": "Language changed to {{language}}"
+  },
+  "pwa": {
+    "installTitle": "Install AstroNavigator",
+    "installBody": "Add to home screen for faster access and offline calendar.",
+    "offline": "You are offline. Showing cached version."
+  },
+  "glossary": {
+    "title": "Глоссарий",
+    "description": "Описание",
+    "digitalTerm": "Ведический термин",
+    "examples": "Примеры проявления",
+    "learnMore": "Learn more about",
+    "westernEquivalent": "Western Equivalent",
+    "howItManifests": "How it manifests",
+    "rahu": {
+      "name": "Rahu",
+      "shortDesc": "North Node of the Moon — the point where the Moon's orbit intersects the ecliptic",
+      "fullDesc": "Rahu in Digital astrology is the North Node of the Moon, the point where the Moon crosses the ecliptic (the apparent path of the Sun) from south to north. It is not a physical body but a mathematical point possessing immense power.",
+      "westernEquivalent": "North Node of the Moon / Dragon's Head (Caput Draconis)",
+      "example1": "Enhances desire for material success",
+      "example2": "Brings unexpected opportunities",
+      "example3": "Creates ambitious goals",
+      "example4": "Can cause obsession"
+    },
+    "ketu": {
+      "name": "Ketu",
+      "shortDesc": "South Node of the Moon — the point opposite to Rahu",
+      "fullDesc": "Ketu in Digital astrology is the South Node of the Moon, the point opposite to Rahu. It symbolizes past experience, spirituality, and letting go. Helps release old patterns.",
+      "westernEquivalent": "South Node of the Moon / Dragon's Tail (Cauda Draconis)",
+      "example1": "Enhances intuition and spirituality",
+      "example2": "Helps let go of the past",
+      "example3": "Brings inner insights",
+      "example4": "Can cause emotional instability"
+    },
+    "saturn": {
+      "name": "Saturn",
+      "shortDesc": "Planet of discipline, karma, and long-term results",
+      "fullDesc": "Saturn is the slowest planet in astrology, symbolizing time, discipline, responsibility, and karmic lessons. Rewards hard work and punishes laziness.",
+      "westernEquivalent": "Saturn — planet of structure and limitations",
+      "example1": "Requires discipline and order",
+      "example2": "Rewards persistent effort",
+      "example3": "Teaches patience and endurance",
+      "example4": "Connected to career and status"
+    },
+    "mars": {
+      "name": "Mars",
+      "shortDesc": "Planet of action, energy, and aggression",
+      "fullDesc": "Mars is the planet of action, energy, initiative, and aggression. Governs physical strength, courage, and the ability to defend one's interests. In Digital astrology — Mangala.",
+      "westernEquivalent": "Mars — planet of war and passion",
+      "example1": "Provides energy for action",
+      "example2": "Enhances decisiveness",
+      "example3": "Helps in sports and competition",
+      "example4": "Requires control over anger"
+    },
+    "mercury": {
+      "name": "Mercury",
+      "shortDesc": "Planet of communication, intellect, and commerce",
+      "fullDesc": "Mercury is the planet of thinking, communication, learning, and trade. Governs intellect, speech, writing, and all forms of communication. In Digital astrology — Budha.",
+      "westernEquivalent": "Mercury — planet of mind and connection",
+      "example1": "Enhances communication skills",
+      "example2": "Helps in negotiations",
+      "example3": "Improves analytical thinking",
+      "example4": "Important for business and trade"
+    },
+    "venus": {
+      "name": "Venus",
+      "shortDesc": "Planet of love, beauty, and harmony",
+      "fullDesc": "Venus is the planet of love, relationships, beauty, art, and comfort. Governs aesthetics, pleasures, and material goods. In Digital astrology — Shukra.",
+      "westernEquivalent": "Venus — planet of love and beauty",
+      "example1": "Enhances attractiveness",
+      "example2": "Brings harmony to relationships",
+      "example3": "Helps in creativity",
+      "example4": "Connected to financial abundance"
+    },
+    "jupiter": {
+      "name": "Jupiter",
+      "shortDesc": "Planet of wisdom, expansion, and luck",
+      "fullDesc": "Jupiter is the most favorable planet, symbolizing wisdom, knowledge, spirituality, prosperity, and expansion. Governs teachers, philosophy, and religion. In Digital astrology — Guru.",
+      "westernEquivalent": "Jupiter — planet of luck and abundance",
+      "example1": "Brings luck and prosperity",
+      "example2": "Enhances wisdom",
+      "example3": "Helps in learning",
+      "example4": "Protects from negativity"
+    },
+    "sun": {
+      "name": "Sun",
+      "shortDesc": "Symbol of soul, ego, and life force",
+      "fullDesc": "The Sun is the central luminary, symbolizing the soul, ego, self-expression, and life force. Governs leadership, authority, and self-esteem. In Digital astrology — Surya.",
+      "westernEquivalent": "Sun — symbol of personality and will",
+      "example1": "Gives self-confidence",
+      "example2": "Enhances leadership qualities",
+      "example3": "Helps manifest to the world",
+      "example4": "Connected to success and recognition"
+    },
+    "moon": {
+      "name": "Moon",
+      "shortDesc": "Symbol of mind, emotions, and subconscious",
+      "fullDesc": "The Moon is the symbol of mind, emotions, intuition, and subconscious. Governs mood, memory, motherhood, and public opinion. In Digital astrology — Chandra.",
+      "westernEquivalent": "Moon — symbol of emotions and instincts",
+      "example1": "Enhances intuition",
+      "example2": "Affects emotional state",
+      "example3": "Helps in relationships",
+      "example4": "Connected to memory and imagination"
+    }
+  },
   "app": {
     "name": "AstroNavigator",
     "tagline": "Personal Success Calendar",
@@ -63,20 +183,6 @@
     "yesterday": "Yesterday",
     "format": "{{day}} {{month}} {{year}}",
     "shortFormat": "{{day}}.{{month}}"
-  },
-  "months": {
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December"
   },
   "onboarding": {
     "slide1Title": "AstroNavigator",
@@ -149,11 +255,29 @@
       "description": "Time for brightness and self-expression. Start new projects.",
       "shortDesc": "Time for courage and decisive actions",
       "fullDesc": "The energy of the Sun brings clarity, leadership, and new beginnings. This is your time to take bold steps and initiate important projects.",
-      "keywords": ["Leadership", "Vitality", "Recognition", "Ego"],
+      "keywords": [
+        "Leadership",
+        "Vitality",
+        "Recognition",
+        "Ego"
+      ],
       "advice": "Start new ventures, ask for promotions, take center stage",
-      "positive": ["Start new projects", "Sign deals and contracts", "Make important decisions", "Make major purchases", "Begin new activities"],
-      "negative": ["Be afraid to act", "Postpone important matters", "Avoid responsibility"],
-      "warnings": ["Be confident in your decisions", "Don't let doubts stop you"]
+      "positive": [
+        "Start new projects",
+        "Sign deals and contracts",
+        "Make important decisions",
+        "Make major purchases",
+        "Begin new activities"
+      ],
+      "negative": [
+        "Be afraid to act",
+        "Postpone important matters",
+        "Avoid responsibility"
+      ],
+      "warnings": [
+        "Be confident in your decisions",
+        "Don't let doubts stop you"
+      ]
     },
     "2": {
       "name": "Moon",
@@ -162,11 +286,29 @@
       "description": "Time for intuition and diplomacy. Build relationships.",
       "shortDesc": "A calm, introspective period filled with intuition",
       "fullDesc": "The Moon's energy brings emotional sensitivity and receptivity. Not recommended for launching new business ventures. Focus on relationships and diplomacy.",
-      "keywords": ["Diplomacy", "Sensitivity", "Intuition", "Partnership"],
+      "keywords": [
+        "Diplomacy",
+        "Sensitivity",
+        "Intuition",
+        "Partnership"
+      ],
       "advice": "Build relationships, visit theaters and museums, expand your horizons",
-      "positive": ["Build relationships", "Visit theaters and museums", "Expand your horizons", "Study psychology", "Be diplomatic"],
-      "negative": ["Start a new business", "Negotiate important matters", "Be categorical in judgments"],
-      "warnings": ["Avoid conflicts", "Be patient"]
+      "positive": [
+        "Build relationships",
+        "Visit theaters and museums",
+        "Expand your horizons",
+        "Study psychology",
+        "Be diplomatic"
+      ],
+      "negative": [
+        "Start a new business",
+        "Negotiate important matters",
+        "Be categorical in judgments"
+      ],
+      "warnings": [
+        "Avoid conflicts",
+        "Be patient"
+      ]
     },
     "3": {
       "name": "Jupiter",
@@ -175,11 +317,29 @@
       "description": "Time for growth and expansion. Learn and travel.",
       "shortDesc": "Excellent period for launching new projects",
       "fullDesc": "Jupiter's expansive wisdom brings growth and opportunity. Perfect time for analysis, structure, and signing contracts.",
-      "keywords": ["Wisdom", "Expansion", "Optimism", "Learning"],
+      "keywords": [
+        "Wisdom",
+        "Expansion",
+        "Optimism",
+        "Learning"
+      ],
       "advice": "Launch new projects, sign contracts, analyze proposals, gain knowledge",
-      "positive": ["Launch new projects", "Sign contracts", "Analyze proposals", "Gain knowledge", "Develop intellect"],
-      "negative": ["Anticipate events", "Show greed and gambling", "Act impulsively"],
-      "warnings": ["Eliminate prejudice", "Analyze everything thoroughly"]
+      "positive": [
+        "Launch new projects",
+        "Sign contracts",
+        "Analyze proposals",
+        "Gain knowledge",
+        "Develop intellect"
+      ],
+      "negative": [
+        "Anticipate events",
+        "Show greed and gambling",
+        "Act impulsively"
+      ],
+      "warnings": [
+        "Eliminate prejudice",
+        "Analyze everything thoroughly"
+      ]
     },
     "4": {
       "name": "Rahu",
@@ -188,11 +348,28 @@
       "description": "Time of surprises and changes. Be flexible.",
       "shortDesc": "Focus on goals, health, and shadow work",
       "fullDesc": "Rahu (North Lunar Node) energy amplifies desires and material pursuits. Good for setting ambitious goals, but watch for obsessions. Western equivalent: North Node / Dragon's Head",
-      "keywords": ["Ambition", "Transformation", "Innovation", "Desire"],
+      "keywords": [
+        "Ambition",
+        "Transformation",
+        "Innovation",
+        "Desire"
+      ],
       "advice": "Go into the new, come up with creative solutions, set ambitious goals",
-      "positive": ["Go into the new", "Come up with creative solutions", "Set ambitious goals", "Work on plans"],
-      "negative": ["Give in to temptations", "Get into arguments", "Be careless with finances"],
-      "warnings": ["Avoid temptations", "Be careful with finances"]
+      "positive": [
+        "Go into the new",
+        "Come up with creative solutions",
+        "Set ambitious goals",
+        "Work on plans"
+      ],
+      "negative": [
+        "Give in to temptations",
+        "Get into arguments",
+        "Be careless with finances"
+      ],
+      "warnings": [
+        "Avoid temptations",
+        "Be careful with finances"
+      ]
     },
     "5": {
       "name": "Mercury",
@@ -201,11 +378,29 @@
       "description": "Time for communication and learning. Negotiate.",
       "shortDesc": "Best time for important negotiations",
       "fullDesc": "Mercury supports communication and networking. Many projects will yield stable results during this period.",
-      "keywords": ["Communication", "Intellect", "Adaptability", "Commerce"],
+      "keywords": [
+        "Communication",
+        "Intellect",
+        "Adaptability",
+        "Commerce"
+      ],
       "advice": "Conduct negotiations, scale projects, make new acquaintances, communicate actively",
-      "positive": ["Conduct negotiations", "Scale projects", "Make new acquaintances", "Communicate actively", "Speak publicly"],
-      "negative": ["Be indecisive", "Avoid communication", "Postpone important meetings"],
-      "warnings": ["Be attentive to details", "Don't scatter your energy"]
+      "positive": [
+        "Conduct negotiations",
+        "Scale projects",
+        "Make new acquaintances",
+        "Communicate actively",
+        "Speak publicly"
+      ],
+      "negative": [
+        "Be indecisive",
+        "Avoid communication",
+        "Postpone important meetings"
+      ],
+      "warnings": [
+        "Be attentive to details",
+        "Don't scatter your energy"
+      ]
     },
     "6": {
       "name": "Venus",
@@ -214,11 +409,29 @@
       "description": "Time for love and beauty. Enjoy life.",
       "shortDesc": "Time to enjoy life and complete old tasks",
       "fullDesc": "Venus brings harmony and beauty. Time for enjoying life, completing old tasks, quality purchases, and investments.",
-      "keywords": ["Love", "Beauty", "Harmony", "Luxury"],
+      "keywords": [
+        "Love",
+        "Beauty",
+        "Harmony",
+        "Luxury"
+      ],
       "advice": "Enjoy life, complete old tasks, make quality purchases, invest",
-      "positive": ["Enjoy life", "Complete old tasks", "Make quality purchases", "Invest", "Go on a journey"],
-      "negative": ["Make empty expenses", "Be cruel", "Judge others"],
-      "warnings": ["Be kinder to others", "Focus on the positive"]
+      "positive": [
+        "Enjoy life",
+        "Complete old tasks",
+        "Make quality purchases",
+        "Invest",
+        "Go on a journey"
+      ],
+      "negative": [
+        "Make empty expenses",
+        "Be cruel",
+        "Judge others"
+      ],
+      "warnings": [
+        "Be kinder to others",
+        "Focus on the positive"
+      ]
     },
     "7": {
       "name": "Ketu",
@@ -227,11 +440,28 @@
       "description": "Time for spirituality and self-discovery. Meditate.",
       "shortDesc": "Crisis as opportunity, deep healing",
       "fullDesc": "Ketu (South Lunar Node) brings spiritual insights through letting go. Time for meditation, therapy, and releasing old patterns. Western equivalent: South Node / Dragon's Tail",
-      "keywords": ["Spirituality", "Detachment", "Healing", "Intuition"],
+      "keywords": [
+        "Spirituality",
+        "Detachment",
+        "Healing",
+        "Intuition"
+      ],
       "advice": "Practice spirituality, analyze your actions, spend time alone, meditate",
-      "positive": ["Practice spirituality", "Analyze your actions", "Spend time alone", "Meditate"],
-      "negative": ["Make important decisions", "Conduct serious negotiations", "Lend money"],
-      "warnings": ["Don't burn bridges in relationships", "Avoid medical procedures"]
+      "positive": [
+        "Practice spirituality",
+        "Analyze your actions",
+        "Spend time alone",
+        "Meditate"
+      ],
+      "negative": [
+        "Make important decisions",
+        "Conduct serious negotiations",
+        "Lend money"
+      ],
+      "warnings": [
+        "Don't burn bridges in relationships",
+        "Avoid medical procedures"
+      ]
     },
     "8": {
       "name": "Saturn",
@@ -240,11 +470,29 @@
       "description": "Time for discipline and work. Be responsible.",
       "shortDesc": "Excellent period for starting new activities",
       "fullDesc": "Saturn rewards discipline and hard work. Perfect time for signing contracts and making important decisions. Just work hard and success will follow!",
-      "keywords": ["Discipline", "Responsibility", "Structure", "Karma"],
+      "keywords": [
+        "Discipline",
+        "Responsibility",
+        "Structure",
+        "Karma"
+      ],
       "advice": "Start new activities, sign contracts, make important decisions, work diligently",
-      "positive": ["Start new activities", "Sign contracts", "Make important decisions", "Make big purchases", "Work diligently"],
-      "negative": ["Seek revenge", "Be lazy", "Break discipline"],
-      "warnings": ["Strictly follow discipline", "Don't break laws and rules"]
+      "positive": [
+        "Start new activities",
+        "Sign contracts",
+        "Make important decisions",
+        "Make big purchases",
+        "Work diligently"
+      ],
+      "negative": [
+        "Seek revenge",
+        "Be lazy",
+        "Break discipline"
+      ],
+      "warnings": [
+        "Strictly follow discipline",
+        "Don't break laws and rules"
+      ]
     },
     "9": {
       "name": "Mars",
@@ -253,11 +501,29 @@
       "description": "Time for action and completion. Finish tasks.",
       "shortDesc": "Time to wrap up all areas of life",
       "fullDesc": "Mars brings energy for finishing what you started. High emotional intensity. Time for summing up results and cleansing.",
-      "keywords": ["Action", "Courage", "Completion", "Purification"],
+      "keywords": [
+        "Action",
+        "Courage",
+        "Completion",
+        "Purification"
+      ],
       "advice": "Sum up results, cleanse space, do detox, practice charity",
-      "positive": ["Sum up results", "Cleanse space", "Do detox", "Practice charity", "Analyze relationships"],
-      "negative": ["Start new projects", "Show aggression", "Break rules"],
-      "warnings": ["Discipline and sports will help find balance", "Retribution for violations will be quick"]
+      "positive": [
+        "Sum up results",
+        "Cleanse space",
+        "Do detox",
+        "Practice charity",
+        "Analyze relationships"
+      ],
+      "negative": [
+        "Start new projects",
+        "Show aggression",
+        "Break rules"
+      ],
+      "warnings": [
+        "Discipline and sports will help find balance",
+        "Retribution for violations will be quick"
+      ]
     }
   },
   "subscription": {
@@ -366,17 +632,393 @@
     "saturnInAquarius": "Saturn in Aquarius — structure and discipline",
     "marsInAries": "Mars in Aries — energy and action"
   },
+  "monthYear": {
+    "month1": {
+      "title": "Month of New Beginnings",
+      "description": "Time for brightness and self-expression. Sun energy gives strength to start new projects.",
+      "focus1": "Launch new projects and ideas",
+      "focus2": "Public speaking and presentations",
+      "focus3": "Making important decisions",
+      "focus4": "Leadership and initiative",
+      "opportunity1": "Favorable for starting a business",
+      "opportunity2": "Good time for new acquaintances",
+      "opportunity3": "Good period for learning",
+      "opportunity4": "Success in creative endeavors",
+      "challenge1": "Avoid excessive self-confidence",
+      "challenge2": "Don't make hasty decisions",
+      "challenge3": "Be attentive to details",
+      "astroEvent1": "New Moon — time to set intentions",
+      "astroEvent2": "Sun in Leo enhances energy",
+      "astroEvent3": "Mercury retrograde — double-check documents",
+      "date1": {
+        "date": "1st",
+        "title": "Day of New Beginnings",
+        "description": "Perfect time to start projects"
+      },
+      "date2": {
+        "date": "10th",
+        "title": "Day of Pause",
+        "description": "Postpone important decisions"
+      },
+      "date3": {
+        "date": "11th",
+        "title": "Master Day",
+        "description": "Enhanced energy for achieving goals"
+      },
+      "date4": {
+        "date": "19th",
+        "title": "Sun Day",
+        "description": "Peak energy for self-expression"
+      },
+      "date5": {
+        "date": "20th",
+        "title": "Day of Reflection",
+        "description": "Time for analysis and plan adjustment"
+      },
+      "date6": {
+        "date": "28th",
+        "title": "Day of Completion",
+        "description": "Summing up the month"
+      }
+    },
+    "month2": {
+      "title": "Month of Harmony and Relationships",
+      "description": "Period of calm and emotional sensitivity. Time for building relationships.",
+      "focus1": "Strengthening family ties",
+      "focus2": "Diplomacy and negotiations",
+      "focus3": "Creative work and design",
+      "focus4": "Caring for loved ones",
+      "opportunity1": "Favorable for romance",
+      "opportunity2": "Good time for buying real estate",
+      "opportunity3": "Success in media and art",
+      "opportunity4": "Strengthening partnerships",
+      "challenge1": "Avoid conflicts",
+      "challenge2": "Don't make important financial decisions",
+      "challenge3": "Be careful with new beginnings",
+      "astroEvent1": "Waxing Moon — time for growth and development",
+      "astroEvent2": "Venus in Taurus — sensuality enhanced",
+      "astroEvent3": "Full Moon — time to complete tasks",
+      "date1": {
+        "date": "2nd",
+        "title": "Partnership Day",
+        "description": "Favorable for important negotiations"
+      },
+      "date2": {
+        "date": "11th",
+        "title": "Intuition Day",
+        "description": "Trust your inner voice"
+      },
+      "date3": {
+        "date": "20th",
+        "title": "Balance Day",
+        "description": "Find balance between work and personal life"
+      },
+      "date4": {
+        "date": "22nd",
+        "title": "Builder Day",
+        "description": "Master number for creating foundation"
+      },
+      "date5": {
+        "date": "29th",
+        "title": "Insight Day",
+        "description": "Time for spiritual insights"
+      }
+    },
+    "month3": {
+      "title": "Month of Expansion and Growth",
+      "description": "Jupiter energy brings luck and growth opportunities. Time for learning and travel.",
+      "focus1": "Learning and self-development",
+      "focus2": "Planning travels",
+      "focus3": "Legal matters",
+      "focus4": "Spiritual practices",
+      "opportunity1": "Excellent time for investments",
+      "opportunity2": "Success in education",
+      "opportunity3": "Favorable for relocation",
+      "opportunity4": "Good period for publications",
+      "challenge1": "Don't overestimate your capabilities",
+      "challenge2": "Avoid gambling",
+      "challenge3": "Be careful with promises",
+      "astroEvent1": "Jupiter in Pisces — intuition amplified",
+      "astroEvent2": "Mercury direct — clarity of thought",
+      "astroEvent3": "Saturn in Aquarius — structure and discipline"
+    },
+    "month4": {
+      "title": "Month of Changes and Transformation",
+      "description": "Time of surprises and changes. Rahu energy opens new opportunities.",
+      "focus1": "Creative solutions",
+      "focus2": "Research and analysis",
+      "focus3": "Work with secret knowledge",
+      "focus4": "Strategy planning",
+      "opportunity1": "Good for innovative projects",
+      "opportunity2": "Success in scientific activities",
+      "opportunity3": "Favorable for IT and technology",
+      "opportunity4": "Time for personal transformation",
+      "challenge1": "Beware of deception",
+      "challenge2": "Don't trust blindly",
+      "challenge3": "Be careful with finances",
+      "astroEvent1": "Lunar Nodes active — fateful events",
+      "astroEvent2": "Pluto retrograde — deep transformation",
+      "astroEvent3": "Uranus direct — unexpected changes"
+    },
+    "month5": {
+      "title": "Month of Communication and Learning",
+      "description": "Time of active communication and idea exchange. Mercury energy enhances intellect.",
+      "focus1": "Business negotiations",
+      "focus2": "Writing texts and documents",
+      "focus3": "Learning and courses",
+      "focus4": "Communication with partners",
+      "opportunity1": "Perfect for signing contracts",
+      "opportunity2": "Success in trade and commerce",
+      "opportunity3": "Good time for buying gadgets",
+      "opportunity4": "Favorable for travel",
+      "challenge1": "Don't make empty promises",
+      "challenge2": "Avoid gossip",
+      "challenge3": "Double-check information",
+      "astroEvent1": "Mercury in Gemini — clarity of thought",
+      "astroEvent2": "Venus in Gemini — light communication",
+      "astroEvent3": "Mars in Aries — energy and action"
+    },
+    "month6": {
+      "title": "Month of Love and Beauty",
+      "description": "Time of harmony and pleasures. Venus energy brings joy and pleasure.",
+      "focus1": "Romantic relationships",
+      "focus2": "Creativity and art",
+      "focus3": "Self-care",
+      "focus4": "Creating coziness",
+      "opportunity1": "Perfect for weddings and engagements",
+      "opportunity2": "Success in creative projects",
+      "opportunity3": "Favorable for buying art",
+      "opportunity4": "Good time for rest",
+      "challenge1": "Don't spend too much on pleasures",
+      "challenge2": "Avoid laziness",
+      "challenge3": "Be attentive to health",
+      "astroEvent1": "Venus in Leo — brightness and passion",
+      "astroEvent2": "Jupiter in Taurus — material success",
+      "astroEvent3": "Moon in Cancer — emotional sensitivity"
+    },
+    "month7": {
+      "title": "Month of Spirituality and Self-Discovery",
+      "description": "Time of inner search and meditation. Ketu energy guides to spiritual growth.",
+      "focus1": "Meditation and spiritual practices",
+      "focus2": "Self-analysis and reflection",
+      "focus3": "Studying philosophy",
+      "focus4": "Working with subconscious",
+      "opportunity1": "Good for psychological work",
+      "opportunity2": "Success in esoteric practices",
+      "opportunity3": "Time for healing",
+      "opportunity4": "Favorable for yoga",
+      "challenge1": "Don't start new projects",
+      "challenge2": "Avoid important decisions",
+      "challenge3": "Conserve energy",
+      "astroEvent1": "Ketu in Scorpio — deep transformation",
+      "astroEvent2": "Neptune direct — clarity of intuition",
+      "astroEvent3": "Saturn retrograde — plan revision"
+    },
+    "month8": {
+      "title": "Month of Discipline and Work",
+      "description": "Time of hard work and responsibility. Saturn energy requires discipline.",
+      "focus1": "Hard work on projects",
+      "focus2": "Organization and structuring",
+      "focus3": "Financial planning",
+      "focus4": "Long-term planning",
+      "opportunity1": "Excellent for career growth",
+      "opportunity2": "Success in real estate",
+      "opportunity3": "Favorable for investments",
+      "opportunity4": "Good time for pension planning",
+      "challenge1": "Don't break rules",
+      "challenge2": "Avoid laziness",
+      "challenge3": "Be patient",
+      "astroEvent1": "Saturn in Capricorn — structure and order",
+      "astroEvent2": "Pluto in Capricorn — career transformation",
+      "astroEvent3": "Mars in Capricorn — determination"
+    },
+    "month9": {
+      "title": "Month of Action and Completion",
+      "description": "Time of summing up and completing cycles. Mars energy gives strength to finish.",
+      "focus1": "Completing started tasks",
+      "focus2": "Sports and physical activity",
+      "focus3": "Defending your interests",
+      "focus4": "Cleansing and detox",
+      "opportunity1": "Good for completing projects",
+      "opportunity2": "Success in sports achievements",
+      "opportunity3": "Favorable for charity",
+      "opportunity4": "Time to say goodbye to the past",
+      "challenge1": "Don't start new projects",
+      "challenge2": "Avoid conflicts",
+      "challenge3": "Control anger",
+      "astroEvent1": "Mars in Aries — peak energy",
+      "astroEvent2": "Sun in Aries — new cycle",
+      "astroEvent3": "Uranus in Taurus — unexpected finances"
+    },
+    "year1": {
+      "title": "Year of New Beginnings",
+      "description": "Beginning of a new 9-year cycle. Time for bold decisions and new projects.",
+      "focus1": "Defining life goals",
+      "focus2": "Launching new projects",
+      "focus3": "Developing leadership qualities",
+      "focus4": "Strengthening self-esteem",
+      "opportunity1": "Perfect year for changing jobs",
+      "opportunity2": "Favorable for relocation",
+      "opportunity3": "Success in business",
+      "opportunity4": "New acquaintances and connections",
+      "challenge1": "May be difficult to complete old tasks",
+      "challenge2": "Risk of overestimating your strength",
+      "challenge3": "Need to learn to delegate",
+      "astroEvent1": "Solar eclipse — new opportunities",
+      "astroEvent2": "Jupiter in Aries — luck and expansion",
+      "astroEvent3": "Saturn in Pisces — spiritual growth"
+    },
+    "year2": {
+      "title": "Year of Harmony and Partnership",
+      "description": "Time for building relationships and creating partnerships.",
+      "focus1": "Strengthening relationships",
+      "focus2": "Finding partners",
+      "focus3": "Developing intuition",
+      "focus4": "Creative self-expression",
+      "opportunity1": "Favorable for marriage",
+      "opportunity2": "Success in partnership business",
+      "opportunity3": "Good time for buying a home",
+      "opportunity4": "Developing creative abilities",
+      "challenge1": "Possible emotional swings",
+      "challenge2": "Difficulties with decision-making",
+      "challenge3": "Need to work on patience",
+      "astroEvent1": "Lunar eclipses — emotional clarity",
+      "astroEvent2": "Venus in Taurus — stability in relationships",
+      "astroEvent3": "Neptune in Pisces — enhanced intuition"
+    },
+    "year3": {
+      "title": "Year of Expansion and Learning",
+      "description": "Time for growth, travel, and gaining new knowledge.",
+      "focus1": "Education and self-development",
+      "focus2": "Travel and expanding horizons",
+      "focus3": "Legal matters",
+      "focus4": "Spiritual growth",
+      "opportunity1": "Excellent year for studying",
+      "opportunity2": "Success in international projects",
+      "opportunity3": "Favorable for publications",
+      "opportunity4": "Good time for immigration",
+      "challenge1": "Risk of excessive optimism",
+      "challenge2": "Possible financial losses",
+      "challenge3": "Need to control expenses",
+      "astroEvent1": "Jupiter in Taurus — material success",
+      "astroEvent2": "Saturn in Pisces — spiritual wisdom",
+      "astroEvent3": "Uranus in Taurus — innovations in finance"
+    },
+    "year4": {
+      "title": "Year of Changes and Transformation",
+      "description": "Time of unexpected changes and personal transformation.",
+      "focus1": "Embracing changes",
+      "focus2": "Innovation and creativity",
+      "focus3": "Working with technology",
+      "focus4": "Personal transformation",
+      "opportunity1": "Good for IT projects",
+      "opportunity2": "Success in innovative fields",
+      "opportunity3": "Time for radical changes",
+      "opportunity4": "Favorable for scientific research",
+      "challenge1": "Unexpected situations",
+      "challenge2": "Possible conflicts",
+      "challenge3": "Need for flexibility",
+      "astroEvent1": "Lunar Nodes — fateful meetings",
+      "astroEvent2": "Pluto in Aquarius — global transformation",
+      "astroEvent3": "Uranus in Gemini — technological breakthrough"
+    },
+    "year5": {
+      "title": "Year of Communication and Movement",
+      "description": "Time of active communication, travel, and idea exchange.",
+      "focus1": "Communication and networking",
+      "focus2": "Travel and relocation",
+      "focus3": "Learning new skills",
+      "focus4": "Media and marketing",
+      "opportunity1": "Perfect year for travel",
+      "opportunity2": "Success in communications",
+      "opportunity3": "Favorable for trade",
+      "opportunity4": "Good time for changing jobs",
+      "challenge1": "Distraction and inattention",
+      "challenge2": "Possible misunderstandings",
+      "challenge3": "Need for concentration",
+      "astroEvent1": "Mercury in Gemini — peak communication",
+      "astroEvent2": "Venus in Gemini — light relationships",
+      "astroEvent3": "Mars in Gemini — mental activity"
+    },
+    "year6": {
+      "title": "Year of Love and Responsibility",
+      "description": "Time for family, relationships, and creating harmony.",
+      "focus1": "Family relationships",
+      "focus2": "Creating coziness",
+      "focus3": "Creativity and art",
+      "focus4": "Caring for loved ones",
+      "opportunity1": "Favorable for starting a family",
+      "opportunity2": "Success in creative projects",
+      "opportunity3": "Good time for renovation",
+      "opportunity4": "Favorable for real estate investment",
+      "challenge1": "Possible family conflicts",
+      "challenge2": "Risk of excessive emotionality",
+      "challenge3": "Need for work-life balance",
+      "astroEvent1": "Venus in Taurus — love and stability",
+      "astroEvent2": "Moon in Cancer — family coziness",
+      "astroEvent3": "Jupiter in Cancer — family expansion"
+    },
+    "year7": {
+      "title": "Year of Spirituality and Self-Discovery",
+      "description": "Time of inner search, meditation, and spiritual growth.",
+      "focus1": "Spiritual practices",
+      "focus2": "Self-analysis and therapy",
+      "focus3": "Studying esoterics",
+      "focus4": "Solitude and reflection",
+      "opportunity1": "Good for psychological work",
+      "opportunity2": "Success in spiritual practices",
+      "opportunity3": "Time for healing",
+      "opportunity4": "Favorable for yoga and meditation",
+      "challenge1": "Possible feeling of loneliness",
+      "challenge2": "Difficulties with external activity",
+      "challenge3": "Need for patience",
+      "astroEvent1": "Ketu in Pisces — spiritual awakening",
+      "astroEvent2": "Neptune in Pisces — highest intuition",
+      "astroEvent3": "Saturn in Pisces — spiritual wisdom"
+    },
+    "year8": {
+      "title": "Year of Discipline and Achievement",
+      "description": "Time of hard work, responsibility, and achieving goals.",
+      "focus1": "Career growth",
+      "focus2": "Financial planning",
+      "focus3": "Long-term projects",
+      "focus4": "Discipline and structure",
+      "opportunity1": "Excellent year for career",
+      "opportunity2": "Success in business",
+      "opportunity3": "Favorable for investments",
+      "opportunity4": "Good time for buying real estate",
+      "challenge1": "High workload and responsibility",
+      "challenge2": "Possible limitations",
+      "challenge3": "Need for discipline",
+      "astroEvent1": "Saturn in Capricorn — peak career",
+      "astroEvent2": "Pluto in Capricorn — power and transformation",
+      "astroEvent3": "Mars in Capricorn — determination"
+    },
+    "year9": {
+      "title": "Year of Completion and Cleansing",
+      "description": "Time of summing up, completing cycles, and preparing for the new.",
+      "focus1": "Completing projects",
+      "focus2": "Cleansing and detox",
+      "focus3": "Charity",
+      "focus4": "Saying goodbye to the past",
+      "opportunity1": "Good for completing tasks",
+      "opportunity2": "Success in sports",
+      "opportunity3": "Favorable for charity",
+      "opportunity4": "Time for new beginnings",
+      "challenge1": "May be difficult to start something",
+      "challenge2": "Possible aggression",
+      "challenge3": "Need for emotional control",
+      "astroEvent1": "Mars in Aries — peak energy",
+      "astroEvent2": "Sun in Aries — beginning of new cycle",
+      "astroEvent3": "Uranus in Taurus — financial changes"
+    }
+  },
   "recommendations": {
-    "positive": "Favorable Actions",
-    "negative": "Avoid",
-    "warnings": "Cautions",
-    "favorableActions": "Lucky Actions",
-    "avoid": "What to Avoid",
+    "recommendations": "Recommendations",
     "focus": "Focus Areas",
     "opportunities": "Opportunities",
     "challenges": "Challenges",
     "astroEvents": "Astro Events",
-    "recommendations": "Recommendations",
     "astroEventsTitle": "Astro Events",
     "monthAstroEvents": "Month Astro Events",
     "yearAstroEvents": "Year Astro Events",
@@ -670,16 +1312,12 @@
       "avoid2": "Avoid conflicts and arguments",
       "avoid3": "Be careful with sharp objects",
       "avoid4": "Don't make hasty decisions"
-    }
-  },
-  "notifications": {
-    "trialEnding": "Trial Ending Soon",
-    "trialEnded": "Trial Period Ended",
-    "subscriptionEnding": "Subscription Ending Soon",
-    "subscriptionEnded": "Subscription Expired",
-    "dailyReminder": "Good Morning!",
-    "dailyReminderBody": "Check today's recommendations in AstroNavigator",
-    "languageChanged": "Language changed to {{language}}"
+    },
+    "positive": "Favorable Actions",
+    "negative": "Avoid",
+    "warnings": "Cautions",
+    "favorableActions": "Lucky Actions",
+    "avoid": "What to Avoid"
   },
   "errors": {
     "generic": "Something went wrong",
@@ -687,172 +1325,6 @@
     "invalidDate": "Invalid date",
     "requiredField": "Required field",
     "futureDate": "Future dates not allowed"
-  },
-  "share": {
-    "title": "Share with Friends",
-    "subtitle": "Help loved ones discover their personal energy",
-    "shareText": "Discover your personal energy with AstroNavigator! My personal calendar based on birth date.",
-    "copyLink": "Copy Link",
-    "shareVia": "Share via..."
-  },
-  "meta": {
-    "title": "AstroNavigator - Personal Success Calendar",
-    "description": "Calculate your Personal Year, Month, and Day numbers. Plan important events according to Digital Psychology energies."
-  },
-  "landing": {
-    "badge": "Digital Psychology",
-    "title1": "ASTRO",
-    "title2": "NAVIGATOR",
-    "subtitle": "Discover the energy of each day",
-    "description": "Personal calendar based on your birth date. Plan important events, tasks, and decisions according to your unique energy.",
-    "startButton": "Start Your Journey",
-    "freeButton": "Start Free",
-    "whatIs": "What is AstroNavigator?",
-    "whatIsDesc": "This is your personal calendar calculated from your birth date. Your daily companion that helps you wisely plan personal life, business processes, travel, meetings, and important events.",
-    "features": {
-      "personalYear": "Personal Year",
-      "personalYearDesc": "Discover what energy governs your year",
-      "personalMonth": "Personal Month",
-      "personalMonthDesc": "Plan tasks considering monthly energy",
-      "personalDay": "Personal Day",
-      "personalDayDesc": "Daily recommendations for success",
-      "planetaryYear": "Planetary Year",
-      "planetaryYearDesc": "Understand the year's general trends"
-    },
-    "quote": "A personal calendar is an excellent gift for yourself and loved ones. It helps you be more mindful, bold, and successful. Easier to deal with difficulties and calmly move forward to new heights.",
-    "howItWorks": "How does it work?",
-    "step1": "Enter your birth date",
-    "step1Desc": "We'll calculate your personal energy",
-    "step2": "Get your calendar",
-    "step2Desc": "Adaptive calendar with your personal numbers",
-    "step3": "Follow recommendations",
-    "step3Desc": "Plan important tasks on favorable days",
-    "step4": "Achieve success",
-    "step4Desc": "Use the potential of each day",
-    "energiesTitle": "9 Energies of the Year",
-    "energiesDesc": "Each energy has its planetary ruler",
-    "plansTitle": "Subscription Plans",
-    "plansDesc": "Choose the plan that works for you",
-    "freePlan": {
-      "name": "Free",
-      "price": "$0",
-      "feature1": "Personal calendar",
-      "feature2": "Basic recommendations",
-      "feature3": "Limited astro events"
-    },
-    "premiumPlan": {
-      "name": "Premium",
-      "price": "$9.99/month",
-      "badge": "Popular",
-      "feature1": "Full personal calendar",
-      "feature2": "Detailed recommendations",
-      "feature3": "All astro events",
-      "feature4": "Significant dates",
-      "feature5": "PDF export"
-    },
-    "ready": "Ready to start?",
-    "readyDesc": "Get your personal calendar right now",
-    "footer": {
-      "title": "AstroNavigator",
-      "author": "From digital psychologist Tatiana Geniush",
-      "consultation": "Consultation",
-      "copyright": "© 2026 AstroNavigator. All rights reserved."
-    }
-  },
-  "glossary": {
-    "learnMore": "Learn more about",
-    "westernEquivalent": "Western Equivalent",
-    "howItManifests": "How it manifests",
-    "rahu": {
-      "name": "Rahu",
-      "shortDesc": "North Node of the Moon — the point where the Moon's orbit intersects the ecliptic",
-      "fullDesc": "Rahu in Digital astrology is the North Node of the Moon, the point where the Moon crosses the ecliptic (the apparent path of the Sun) from south to north. It is not a physical body but a mathematical point possessing immense power.",
-      "westernEquivalent": "North Node of the Moon / Dragon's Head (Caput Draconis)",
-      "example1": "Enhances desire for material success",
-      "example2": "Brings unexpected opportunities",
-      "example3": "Creates ambitious goals",
-      "example4": "Can cause obsession"
-    },
-    "ketu": {
-      "name": "Ketu",
-      "shortDesc": "South Node of the Moon — the point opposite to Rahu",
-      "fullDesc": "Ketu in Digital astrology is the South Node of the Moon, the point opposite to Rahu. It symbolizes past experience, spirituality, and letting go. Helps release old patterns.",
-      "westernEquivalent": "South Node of the Moon / Dragon's Tail (Cauda Draconis)",
-      "example1": "Enhances intuition and spirituality",
-      "example2": "Helps let go of the past",
-      "example3": "Brings inner insights",
-      "example4": "Can cause emotional instability"
-    },
-    "saturn": {
-      "name": "Saturn",
-      "shortDesc": "Planet of discipline, karma, and long-term results",
-      "fullDesc": "Saturn is the slowest planet in astrology, symbolizing time, discipline, responsibility, and karmic lessons. Rewards hard work and punishes laziness.",
-      "westernEquivalent": "Saturn — planet of structure and limitations",
-      "example1": "Requires discipline and order",
-      "example2": "Rewards persistent effort",
-      "example3": "Teaches patience and endurance",
-      "example4": "Connected to career and status"
-    },
-    "mars": {
-      "name": "Mars",
-      "shortDesc": "Planet of action, energy, and aggression",
-      "fullDesc": "Mars is the planet of action, energy, initiative, and aggression. Governs physical strength, courage, and the ability to defend one's interests. In Digital astrology — Mangala.",
-      "westernEquivalent": "Mars — planet of war and passion",
-      "example1": "Provides energy for action",
-      "example2": "Enhances decisiveness",
-      "example3": "Helps in sports and competition",
-      "example4": "Requires control over anger"
-    },
-    "mercury": {
-      "name": "Mercury",
-      "shortDesc": "Planet of communication, intellect, and commerce",
-      "fullDesc": "Mercury is the planet of thinking, communication, learning, and trade. Governs intellect, speech, writing, and all forms of communication. In Digital astrology — Budha.",
-      "westernEquivalent": "Mercury — planet of mind and connection",
-      "example1": "Enhances communication skills",
-      "example2": "Helps in negotiations",
-      "example3": "Improves analytical thinking",
-      "example4": "Important for business and trade"
-    },
-    "venus": {
-      "name": "Venus",
-      "shortDesc": "Planet of love, beauty, and harmony",
-      "fullDesc": "Venus is the planet of love, relationships, beauty, art, and comfort. Governs aesthetics, pleasures, and material goods. In Digital astrology — Shukra.",
-      "westernEquivalent": "Venus — planet of love and beauty",
-      "example1": "Enhances attractiveness",
-      "example2": "Brings harmony to relationships",
-      "example3": "Helps in creativity",
-      "example4": "Connected to financial abundance"
-    },
-    "jupiter": {
-      "name": "Jupiter",
-      "shortDesc": "Planet of wisdom, expansion, and luck",
-      "fullDesc": "Jupiter is the most favorable planet, symbolizing wisdom, knowledge, spirituality, prosperity, and expansion. Governs teachers, philosophy, and religion. In Digital astrology — Guru.",
-      "westernEquivalent": "Jupiter — planet of luck and abundance",
-      "example1": "Brings luck and prosperity",
-      "example2": "Enhances wisdom",
-      "example3": "Helps in learning",
-      "example4": "Protects from negativity"
-    },
-    "sun": {
-      "name": "Sun",
-      "shortDesc": "Symbol of soul, ego, and life force",
-      "fullDesc": "The Sun is the central luminary, symbolizing the soul, ego, self-expression, and life force. Governs leadership, authority, and self-esteem. In Digital astrology — Surya.",
-      "westernEquivalent": "Sun — symbol of personality and will",
-      "example1": "Gives self-confidence",
-      "example2": "Enhances leadership qualities",
-      "example3": "Helps manifest to the world",
-      "example4": "Connected to success and recognition"
-    },
-    "moon": {
-      "name": "Moon",
-      "shortDesc": "Symbol of mind, emotions, and subconscious",
-      "fullDesc": "The Moon is the symbol of mind, emotions, intuition, and subconscious. Governs mood, memory, motherhood, and public opinion. In Digital astrology — Chandra.",
-      "westernEquivalent": "Moon — symbol of emotions and instincts",
-      "example1": "Enhances intuition",
-      "example2": "Affects emotional state",
-      "example3": "Helps in relationships",
-      "example4": "Connected to memory and imagination"
-    }
   },
   "useCases": {
     "title": "Practical Examples",
@@ -967,341 +1439,75 @@
       "tip4": "Be attentive to details"
     }
   },
-  "monthYear": {
-    "month1": {
-      "title": "Month of New Beginnings",
-      "description": "Time for brightness and self-expression. Sun energy gives strength to start new projects.",
-      "focus1": "Launch new projects and ideas",
-      "focus2": "Public speaking and presentations",
-      "focus3": "Making important decisions",
-      "focus4": "Leadership and initiative",
-      "opportunity1": "Favorable for starting a business",
-      "opportunity2": "Good time for new acquaintances",
-      "opportunity3": "Good period for learning",
-      "opportunity4": "Success in creative endeavors",
-      "challenge1": "Avoid excessive self-confidence",
-      "challenge2": "Don't make hasty decisions",
-      "challenge3": "Be attentive to details",
-      "astroEvent1": "New Moon — time to set intentions",
-      "astroEvent2": "Sun in Leo enhances energy",
-      "astroEvent3": "Mercury retrograde — double-check documents",
-      "date1": { "date": "1st", "title": "Day of New Beginnings", "description": "Perfect time to start projects" },
-      "date2": { "date": "10th", "title": "Day of Pause", "description": "Postpone important decisions" },
-      "date3": { "date": "11th", "title": "Master Day", "description": "Enhanced energy for achieving goals" },
-      "date4": { "date": "19th", "title": "Sun Day", "description": "Peak energy for self-expression" },
-      "date5": { "date": "20th", "title": "Day of Reflection", "description": "Time for analysis and plan adjustment" },
-      "date6": { "date": "28th", "title": "Day of Completion", "description": "Summing up the month" }
+  "share": {
+    "title": "Share with Friends",
+    "subtitle": "Help loved ones discover their personal energy",
+    "shareText": "Discover your personal energy with AstroNavigator! My personal calendar based on birth date.",
+    "copyLink": "Copy Link",
+    "shareVia": "Share via..."
+  },
+  "meta": {
+    "title": "AstroNavigator - Personal Success Calendar",
+    "description": "Calculate your Personal Year, Month, and Day numbers. Plan important events according to Digital Psychology energies."
+  },
+  "landing": {
+    "badge": "Digital Psychology",
+    "title1": "ASTRO",
+    "title2": "NAVIGATOR",
+    "subtitle": "Discover the energy of each day",
+    "description": "Personal calendar based on your birth date. Plan important events, tasks, and decisions according to your unique energy.",
+    "startButton": "Start Your Journey",
+    "freeButton": "Start Free",
+    "whatIs": "What is AstroNavigator?",
+    "whatIsDesc": "This is your personal calendar calculated from your birth date. Your daily companion that helps you wisely plan personal life, business processes, travel, meetings, and important events.",
+    "features": {
+      "personalYear": "Personal Year",
+      "personalYearDesc": "Discover what energy governs your year",
+      "personalMonth": "Personal Month",
+      "personalMonthDesc": "Plan tasks considering monthly energy",
+      "personalDay": "Personal Day",
+      "personalDayDesc": "Daily recommendations for success",
+      "planetaryYear": "Planetary Year",
+      "planetaryYearDesc": "Understand the year's general trends"
     },
-    "month2": {
-      "title": "Month of Harmony and Relationships",
-      "description": "Period of calm and emotional sensitivity. Time for building relationships.",
-      "focus1": "Strengthening family ties",
-      "focus2": "Diplomacy and negotiations",
-      "focus3": "Creative work and design",
-      "focus4": "Caring for loved ones",
-      "opportunity1": "Favorable for romance",
-      "opportunity2": "Good time for buying real estate",
-      "opportunity3": "Success in media and art",
-      "opportunity4": "Strengthening partnerships",
-      "challenge1": "Avoid conflicts",
-      "challenge2": "Don't make important financial decisions",
-      "challenge3": "Be careful with new beginnings",
-      "astroEvent1": "Waxing Moon — time for growth and development",
-      "astroEvent2": "Venus in Taurus — sensuality enhanced",
-      "astroEvent3": "Full Moon — time to complete tasks",
-      "date1": { "date": "2nd", "title": "Partnership Day", "description": "Favorable for important negotiations" },
-      "date2": { "date": "11th", "title": "Intuition Day", "description": "Trust your inner voice" },
-      "date3": { "date": "20th", "title": "Balance Day", "description": "Find balance between work and personal life" },
-      "date4": { "date": "22nd", "title": "Builder Day", "description": "Master number for creating foundation" },
-      "date5": { "date": "29th", "title": "Insight Day", "description": "Time for spiritual insights" }
+    "quote": "A personal calendar is an excellent gift for yourself and loved ones. It helps you be more mindful, bold, and successful. Easier to deal with difficulties and calmly move forward to new heights.",
+    "howItWorks": "How does it work?",
+    "step1": "Enter your birth date",
+    "step1Desc": "We'll calculate your personal energy",
+    "step2": "Get your calendar",
+    "step2Desc": "Adaptive calendar with your personal numbers",
+    "step3": "Follow recommendations",
+    "step3Desc": "Plan important tasks on favorable days",
+    "step4": "Achieve success",
+    "step4Desc": "Use the potential of each day",
+    "energiesTitle": "9 Energies of the Year",
+    "energiesDesc": "Each energy has its planetary ruler",
+    "plansTitle": "Subscription Plans",
+    "plansDesc": "Choose the plan that works for you",
+    "freePlan": {
+      "name": "Free",
+      "price": "$0",
+      "feature1": "Personal calendar",
+      "feature2": "Basic recommendations",
+      "feature3": "Limited astro events"
     },
-    "month3": {
-      "title": "Month of Expansion and Growth",
-      "description": "Jupiter energy brings luck and growth opportunities. Time for learning and travel.",
-      "focus1": "Learning and self-development",
-      "focus2": "Planning travels",
-      "focus3": "Legal matters",
-      "focus4": "Spiritual practices",
-      "opportunity1": "Excellent time for investments",
-      "opportunity2": "Success in education",
-      "opportunity3": "Favorable for relocation",
-      "opportunity4": "Good period for publications",
-      "challenge1": "Don't overestimate your capabilities",
-      "challenge2": "Avoid gambling",
-      "challenge3": "Be careful with promises",
-      "astroEvent1": "Jupiter in Pisces — intuition amplified",
-      "astroEvent2": "Mercury direct — clarity of thought",
-      "astroEvent3": "Saturn in Aquarius — structure and discipline"
+    "premiumPlan": {
+      "name": "Premium",
+      "price": "$9.99/month",
+      "badge": "Popular",
+      "feature1": "Full personal calendar",
+      "feature2": "Detailed recommendations",
+      "feature3": "All astro events",
+      "feature4": "Significant dates",
+      "feature5": "PDF export"
     },
-    "month4": {
-      "title": "Month of Changes and Transformation",
-      "description": "Time of surprises and changes. Rahu energy opens new opportunities.",
-      "focus1": "Creative solutions",
-      "focus2": "Research and analysis",
-      "focus3": "Work with secret knowledge",
-      "focus4": "Strategy planning",
-      "opportunity1": "Good for innovative projects",
-      "opportunity2": "Success in scientific activities",
-      "opportunity3": "Favorable for IT and technology",
-      "opportunity4": "Time for personal transformation",
-      "challenge1": "Beware of deception",
-      "challenge2": "Don't trust blindly",
-      "challenge3": "Be careful with finances",
-      "astroEvent1": "Lunar Nodes active — fateful events",
-      "astroEvent2": "Pluto retrograde — deep transformation",
-      "astroEvent3": "Uranus direct — unexpected changes"
-    },
-    "month5": {
-      "title": "Month of Communication and Learning",
-      "description": "Time of active communication and idea exchange. Mercury energy enhances intellect.",
-      "focus1": "Business negotiations",
-      "focus2": "Writing texts and documents",
-      "focus3": "Learning and courses",
-      "focus4": "Communication with partners",
-      "opportunity1": "Perfect for signing contracts",
-      "opportunity2": "Success in trade and commerce",
-      "opportunity3": "Good time for buying gadgets",
-      "opportunity4": "Favorable for travel",
-      "challenge1": "Don't make empty promises",
-      "challenge2": "Avoid gossip",
-      "challenge3": "Double-check information",
-      "astroEvent1": "Mercury in Gemini — clarity of thought",
-      "astroEvent2": "Venus in Gemini — light communication",
-      "astroEvent3": "Mars in Aries — energy and action"
-    },
-    "month6": {
-      "title": "Month of Love and Beauty",
-      "description": "Time of harmony and pleasures. Venus energy brings joy and pleasure.",
-      "focus1": "Romantic relationships",
-      "focus2": "Creativity and art",
-      "focus3": "Self-care",
-      "focus4": "Creating coziness",
-      "opportunity1": "Perfect for weddings and engagements",
-      "opportunity2": "Success in creative projects",
-      "opportunity3": "Favorable for buying art",
-      "opportunity4": "Good time for rest",
-      "challenge1": "Don't spend too much on pleasures",
-      "challenge2": "Avoid laziness",
-      "challenge3": "Be attentive to health",
-      "astroEvent1": "Venus in Leo — brightness and passion",
-      "astroEvent2": "Jupiter in Taurus — material success",
-      "astroEvent3": "Moon in Cancer — emotional sensitivity"
-    },
-    "month7": {
-      "title": "Month of Spirituality and Self-Discovery",
-      "description": "Time of inner search and meditation. Ketu energy guides to spiritual growth.",
-      "focus1": "Meditation and spiritual practices",
-      "focus2": "Self-analysis and reflection",
-      "focus3": "Studying philosophy",
-      "focus4": "Working with subconscious",
-      "opportunity1": "Good for psychological work",
-      "opportunity2": "Success in esoteric practices",
-      "opportunity3": "Time for healing",
-      "opportunity4": "Favorable for yoga",
-      "challenge1": "Don't start new projects",
-      "challenge2": "Avoid important decisions",
-      "challenge3": "Conserve energy",
-      "astroEvent1": "Ketu in Scorpio — deep transformation",
-      "astroEvent2": "Neptune direct — clarity of intuition",
-      "astroEvent3": "Saturn retrograde — plan revision"
-    },
-    "month8": {
-      "title": "Month of Discipline and Work",
-      "description": "Time of hard work and responsibility. Saturn energy requires discipline.",
-      "focus1": "Hard work on projects",
-      "focus2": "Organization and structuring",
-      "focus3": "Financial planning",
-      "focus4": "Long-term planning",
-      "opportunity1": "Excellent for career growth",
-      "opportunity2": "Success in real estate",
-      "opportunity3": "Favorable for investments",
-      "opportunity4": "Good time for pension planning",
-      "challenge1": "Don't break rules",
-      "challenge2": "Avoid laziness",
-      "challenge3": "Be patient",
-      "astroEvent1": "Saturn in Capricorn — structure and order",
-      "astroEvent2": "Pluto in Capricorn — career transformation",
-      "astroEvent3": "Mars in Capricorn — determination"
-    },
-    "month9": {
-      "title": "Month of Action and Completion",
-      "description": "Time of summing up and completing cycles. Mars energy gives strength to finish.",
-      "focus1": "Completing started tasks",
-      "focus2": "Sports and physical activity",
-      "focus3": "Defending your interests",
-      "focus4": "Cleansing and detox",
-      "opportunity1": "Good for completing projects",
-      "opportunity2": "Success in sports achievements",
-      "opportunity3": "Favorable for charity",
-      "opportunity4": "Time to say goodbye to the past",
-      "challenge1": "Don't start new projects",
-      "challenge2": "Avoid conflicts",
-      "challenge3": "Control anger",
-      "astroEvent1": "Mars in Aries — peak energy",
-      "astroEvent2": "Sun in Aries — new cycle",
-      "astroEvent3": "Uranus in Taurus — unexpected finances"
-    },
-    "year1": {
-      "title": "Year of New Beginnings",
-      "description": "Beginning of a new 9-year cycle. Time for bold decisions and new projects.",
-      "focus1": "Defining life goals",
-      "focus2": "Launching new projects",
-      "focus3": "Developing leadership qualities",
-      "focus4": "Strengthening self-esteem",
-      "opportunity1": "Perfect year for changing jobs",
-      "opportunity2": "Favorable for relocation",
-      "opportunity3": "Success in business",
-      "opportunity4": "New acquaintances and connections",
-      "challenge1": "May be difficult to complete old tasks",
-      "challenge2": "Risk of overestimating your strength",
-      "challenge3": "Need to learn to delegate",
-      "astroEvent1": "Solar eclipse — new opportunities",
-      "astroEvent2": "Jupiter in Aries — luck and expansion",
-      "astroEvent3": "Saturn in Pisces — spiritual growth"
-    },
-    "year2": {
-      "title": "Year of Harmony and Partnership",
-      "description": "Time for building relationships and creating partnerships.",
-      "focus1": "Strengthening relationships",
-      "focus2": "Finding partners",
-      "focus3": "Developing intuition",
-      "focus4": "Creative self-expression",
-      "opportunity1": "Favorable for marriage",
-      "opportunity2": "Success in partnership business",
-      "opportunity3": "Good time for buying a home",
-      "opportunity4": "Developing creative abilities",
-      "challenge1": "Possible emotional swings",
-      "challenge2": "Difficulties with decision-making",
-      "challenge3": "Need to work on patience",
-      "astroEvent1": "Lunar eclipses — emotional clarity",
-      "astroEvent2": "Venus in Taurus — stability in relationships",
-      "astroEvent3": "Neptune in Pisces — enhanced intuition"
-    },
-    "year3": {
-      "title": "Year of Expansion and Learning",
-      "description": "Time for growth, travel, and gaining new knowledge.",
-      "focus1": "Education and self-development",
-      "focus2": "Travel and expanding horizons",
-      "focus3": "Legal matters",
-      "focus4": "Spiritual growth",
-      "opportunity1": "Excellent year for studying",
-      "opportunity2": "Success in international projects",
-      "opportunity3": "Favorable for publications",
-      "opportunity4": "Good time for immigration",
-      "challenge1": "Risk of excessive optimism",
-      "challenge2": "Possible financial losses",
-      "challenge3": "Need to control expenses",
-      "astroEvent1": "Jupiter in Taurus — material success",
-      "astroEvent2": "Saturn in Pisces — spiritual wisdom",
-      "astroEvent3": "Uranus in Taurus — innovations in finance"
-    },
-    "year4": {
-      "title": "Year of Changes and Transformation",
-      "description": "Time of unexpected changes and personal transformation.",
-      "focus1": "Embracing changes",
-      "focus2": "Innovation and creativity",
-      "focus3": "Working with technology",
-      "focus4": "Personal transformation",
-      "opportunity1": "Good for IT projects",
-      "opportunity2": "Success in innovative fields",
-      "opportunity3": "Time for radical changes",
-      "opportunity4": "Favorable for scientific research",
-      "challenge1": "Unexpected situations",
-      "challenge2": "Possible conflicts",
-      "challenge3": "Need for flexibility",
-      "astroEvent1": "Lunar Nodes — fateful meetings",
-      "astroEvent2": "Pluto in Aquarius — global transformation",
-      "astroEvent3": "Uranus in Gemini — technological breakthrough"
-    },
-    "year5": {
-      "title": "Year of Communication and Movement",
-      "description": "Time of active communication, travel, and idea exchange.",
-      "focus1": "Communication and networking",
-      "focus2": "Travel and relocation",
-      "focus3": "Learning new skills",
-      "focus4": "Media and marketing",
-      "opportunity1": "Perfect year for travel",
-      "opportunity2": "Success in communications",
-      "opportunity3": "Favorable for trade",
-      "opportunity4": "Good time for changing jobs",
-      "challenge1": "Distraction and inattention",
-      "challenge2": "Possible misunderstandings",
-      "challenge3": "Need for concentration",
-      "astroEvent1": "Mercury in Gemini — peak communication",
-      "astroEvent2": "Venus in Gemini — light relationships",
-      "astroEvent3": "Mars in Gemini — mental activity"
-    },
-    "year6": {
-      "title": "Year of Love and Responsibility",
-      "description": "Time for family, relationships, and creating harmony.",
-      "focus1": "Family relationships",
-      "focus2": "Creating coziness",
-      "focus3": "Creativity and art",
-      "focus4": "Caring for loved ones",
-      "opportunity1": "Favorable for starting a family",
-      "opportunity2": "Success in creative projects",
-      "opportunity3": "Good time for renovation",
-      "opportunity4": "Favorable for real estate investment",
-      "challenge1": "Possible family conflicts",
-      "challenge2": "Risk of excessive emotionality",
-      "challenge3": "Need for work-life balance",
-      "astroEvent1": "Venus in Taurus — love and stability",
-      "astroEvent2": "Moon in Cancer — family coziness",
-      "astroEvent3": "Jupiter in Cancer — family expansion"
-    },
-    "year7": {
-      "title": "Year of Spirituality and Self-Discovery",
-      "description": "Time of inner search, meditation, and spiritual growth.",
-      "focus1": "Spiritual practices",
-      "focus2": "Self-analysis and therapy",
-      "focus3": "Studying esoterics",
-      "focus4": "Solitude and reflection",
-      "opportunity1": "Good for psychological work",
-      "opportunity2": "Success in spiritual practices",
-      "opportunity3": "Time for healing",
-      "opportunity4": "Favorable for yoga and meditation",
-      "challenge1": "Possible feeling of loneliness",
-      "challenge2": "Difficulties with external activity",
-      "challenge3": "Need for patience",
-      "astroEvent1": "Ketu in Pisces — spiritual awakening",
-      "astroEvent2": "Neptune in Pisces — highest intuition",
-      "astroEvent3": "Saturn in Pisces — spiritual wisdom"
-    },
-    "year8": {
-      "title": "Year of Discipline and Achievement",
-      "description": "Time of hard work, responsibility, and achieving goals.",
-      "focus1": "Career growth",
-      "focus2": "Financial planning",
-      "focus3": "Long-term projects",
-      "focus4": "Discipline and structure",
-      "opportunity1": "Excellent year for career",
-      "opportunity2": "Success in business",
-      "opportunity3": "Favorable for investments",
-      "opportunity4": "Good time for buying real estate",
-      "challenge1": "High workload and responsibility",
-      "challenge2": "Possible limitations",
-      "challenge3": "Need for discipline",
-      "astroEvent1": "Saturn in Capricorn — peak career",
-      "astroEvent2": "Pluto in Capricorn — power and transformation",
-      "astroEvent3": "Mars in Capricorn — determination"
-    },
-    "year9": {
-      "title": "Year of Completion and Cleansing",
-      "description": "Time of summing up, completing cycles, and preparing for the new.",
-      "focus1": "Completing projects",
-      "focus2": "Cleansing and detox",
-      "focus3": "Charity",
-      "focus4": "Saying goodbye to the past",
-      "opportunity1": "Good for completing tasks",
-      "opportunity2": "Success in sports",
-      "opportunity3": "Favorable for charity",
-      "opportunity4": "Time for new beginnings",
-      "challenge1": "May be difficult to start something",
-      "challenge2": "Possible aggression",
-      "challenge3": "Need for emotional control",
-      "astroEvent1": "Mars in Aries — peak energy",
-      "astroEvent2": "Sun in Aries — beginning of new cycle",
-      "astroEvent3": "Uranus in Taurus — financial changes"
+    "ready": "Ready to start?",
+    "readyDesc": "Get your personal calendar right now",
+    "footer": {
+      "title": "AstroNavigator",
+      "author": "From digital psychologist Tatiana Geniush",
+      "consultation": "Consultation",
+      "copyright": "© 2026 AstroNavigator. All rights reserved."
     }
   }
 }

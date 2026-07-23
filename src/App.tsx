@@ -49,7 +49,11 @@ function App() {
     subscriptionPlans,
   } = useUserData();
 
-  const { requestPermission, scheduleDailyNotification } = useNotifications();
+  const {
+    requestPermission,
+    scheduleDailyNotification,
+    disableDailyNotifications,
+  } = useNotifications();
   const { t, i18n } = useTranslation();
   const currentLanguage = i18n.language;
 
@@ -257,18 +261,24 @@ function App() {
         toggleNotifications();
         scheduleDailyNotification(8, 0);
         toast.success(t('settings.notifications'), {
-          description: t('notifications.dailyReminderBody'),
+          description: t('notifications.disclaimerBody'),
         });
       }
     } else {
+      disableDailyNotifications();
       toggleNotifications();
-      toast.info(t('notifications.subscriptionEnded'));
+      toast.info(t('settings.notifications'), {
+        description: t('notifications.permissionDenied', {
+          defaultValue: 'Notifications disabled',
+        }),
+      });
     }
   }, [
     userData.notificationsEnabled,
     requestPermission,
     toggleNotifications,
     scheduleDailyNotification,
+    disableDailyNotifications,
     t,
   ]);
 

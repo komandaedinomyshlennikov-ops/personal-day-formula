@@ -60,7 +60,7 @@ export function useUserData() {
       return defaultUserData;
     }
   });
-  const [isLoaded, setIsLoaded] = useState(true);
+  const [isLoaded] = useState(true);
 
   // Persist
   useEffect(() => {

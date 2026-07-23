@@ -238,6 +238,15 @@ export function Settings({
                 onCheckedChange={onToggleNotifications}
               />
             </div>
+
+            <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+              <p className="text-amber-300/90 text-xs font-medium mb-1">
+                {t('notifications.disclaimerTitle')}
+              </p>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                {t('notifications.disclaimerBody')}
+              </p>
+            </div>
           </div>
         </motion.section>
 

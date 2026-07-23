@@ -1,9 +1,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
 
-// Import all translations
+// Bundled translations (no HTTP backend — works offline / GitHub Pages)
 import enTranslations from './locales/en.json';
 import esTranslations from './locales/es.json';
 import ruTranslations from './locales/ru.json';
@@ -16,7 +15,6 @@ import zhTranslations from './locales/zh.json';
 import jaTranslations from './locales/ja.json';
 import arTranslations from './locales/ar.json';
 
-// Available languages with metadata
 export const availableLanguages = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', dir: 'ltr' },
   { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', dir: 'ltr' },
@@ -31,19 +29,16 @@ export const availableLanguages = [
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', dir: 'rtl' },
 ] as const;
 
-export type LanguageCode = typeof availableLanguages[number]['code'];
+export type LanguageCode = (typeof availableLanguages)[number]['code'];
 
-// Check if language is RTL
 export const isRTL = (lang: string): boolean => {
   return ['ar', 'he', 'ur'].includes(lang);
 };
 
-// Get language info
 export const getLanguageInfo = (code: string) => {
-  return availableLanguages.find(lang => lang.code === code) || availableLanguages[0];
+  return availableLanguages.find((lang) => lang.code === code) || availableLanguages[0];
 };
 
-// Resources object
 const resources = {
   en: { translation: enTranslations },
   es: { translation: esTranslations },
@@ -58,37 +53,40 @@ const resources = {
   ar: { translation: arTranslations },
 };
 
-// Initialize i18n
-i18n
-  .use(Backend)
+void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     fallbackLng: 'en',
     debug: false,
-    
     detection: {
       order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
       caches: ['localStorage', 'cookie'],
       lookupLocalStorage: 'astronavigator_language',
       lookupCookie: 'astronavigator_language',
     },
-    
     interpolation: {
       escapeValue: false,
     },
-    
     react: {
       useSuspense: false,
     },
+    // Incomplete locales fall back key-by-key to English
+    returnNull: false,
   });
 
-// Set HTML dir attribute for RTL support
 i18n.on('languageChanged', (lng) => {
   const dir = isRTL(lng) ? 'rtl' : 'ltr';
   document.documentElement.dir = dir;
   document.documentElement.lang = lng;
 });
+
+// Initial dir/lang
+if (typeof document !== 'undefined') {
+  const lng = i18n.language || 'en';
+  document.documentElement.dir = isRTL(lng) ? 'rtl' : 'ltr';
+  document.documentElement.lang = lng;
+}
 
 export default i18n;
