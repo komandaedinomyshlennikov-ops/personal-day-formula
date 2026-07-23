@@ -32,6 +32,7 @@ import { buildMonthCsv, buildPdfHtml, downloadCsv } from '@/utils/export';
 import { buildDayInfo, dayToPath } from '@/utils/dayInfo';
 import { SUPPORT_TELEGRAM } from '@/config/site';
 import { trackEvent, trackPageView, initAnalytics, getConsent } from '@/lib/analytics';
+import { normalizeLanguage, setAppLanguage, type LanguageCode } from '@/i18n';
 import type { DayInfo, Language } from '@/types';
 import { Toaster, toast } from 'sonner';
 
@@ -73,7 +74,7 @@ function AppShell() {
     disableDailyNotifications,
   } = useNotifications();
   const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = normalizeLanguage(i18n.language);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -86,11 +87,25 @@ function AppShell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
+  // Sync stored profile language → i18n (once loaded), without reload
   useEffect(() => {
-    if (isLoaded && userData.language && userData.language !== currentLanguage) {
-      void i18n.changeLanguage(userData.language);
+    if (!isLoaded) return;
+    const stored = normalizeLanguage(userData.language);
+    if (stored !== currentLanguage) {
+      void setAppLanguage(stored);
     }
-  }, [isLoaded, userData.language, currentLanguage, i18n]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on load / profile language
+  }, [isLoaded, userData.language]);
+
+  const handleLanguageChange = useCallback(
+    (lang: LanguageCode | string) => {
+      const next = normalizeLanguage(lang);
+      void setAppLanguage(next).then(() => {
+        setLanguage(next as Language);
+      });
+    },
+    [setLanguage]
+  );
 
   const handleOnboardingComplete = (date: string) => {
     setBirthDate(date);
@@ -110,11 +125,7 @@ function AppShell() {
 
   const handleSubscriptionSelect = (planId: string) => {
     if (planId === 'trial') {
-      toast.info(
-        t('subscription.trialActiveTitle', {
-          defaultValue: 'Пробный период уже активен',
-        })
-      );
+      toast.info(t('subscription.trialActiveTitle'));
       return;
     }
     navigate('/activation');
@@ -124,25 +135,16 @@ function AppShell() {
     const success = await activateWithCode(code);
     if (success) {
       trackEvent('subscription_activated');
-      toast.success(
-        t('subscription.activationSuccess', {
-          defaultValue: 'Подписка активирована',
-        }),
-        {
-          description: t('subscription.activeDesc', {
-            defaultValue: 'Полный доступ открыт',
-          }),
-        }
-      );
+      toast.success(t('subscription.activationSuccess'), {
+        description: t('subscription.activeDesc'),
+      });
       setShowExpiredModal(false);
       navigate('/calendar');
       return true;
     }
 
-    toast.error(t('subscription.invalidCode', { defaultValue: 'Неверный код' }), {
-      description: t('errors.generic', {
-        defaultValue: 'Проверьте код и попробуйте снова',
-      }),
+    toast.error(t('subscription.invalidCode'), {
+      description: t('errors.generic'),
     });
     return false;
   };
@@ -160,7 +162,7 @@ function AppShell() {
         import('html2canvas'),
       ]);
       const { year, month } = getExportPeriod();
-      const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+      const locale = currentLanguage === 'ru' ? 'ru-RU' : 'en-US';
       const bodyHtml = buildPdfHtml({
         birthDate: userData.birthDate,
         year,
@@ -189,10 +191,10 @@ function AppShell() {
       doc.addImage(imgData, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, 297));
       doc.save(`astronavigator-${year}-${String(month).padStart(2, '0')}.pdf`);
       trackEvent('export_pdf');
-      toast.success(t('settings.exportPdf', { defaultValue: 'PDF экспортирован' }));
+      toast.success(t('export.pdfOk'));
     } catch (error) {
       console.error('PDF export error:', error);
-      toast.error(t('errors.generic', { defaultValue: 'Ошибка при экспорте' }));
+      toast.error(t('export.pdfError'));
     }
   };
 
@@ -200,14 +202,14 @@ function AppShell() {
     if (!userData.birthDate) return;
     try {
       const { year, month } = getExportPeriod();
-      const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+      const locale = currentLanguage === 'ru' ? 'ru-RU' : 'en-US';
       const csv = buildMonthCsv(userData.birthDate, year, month, locale);
       downloadCsv(csv, `astronavigator-${year}-${String(month).padStart(2, '0')}.csv`);
       trackEvent('export_csv');
-      toast.success(t('settings.exportCsv', { defaultValue: 'CSV экспортирован' }));
+      toast.success(t('export.csvOk'));
     } catch (error) {
       console.error('CSV export error:', error);
-      toast.error(t('errors.generic', { defaultValue: 'Ошибка при экспорте' }));
+      toast.error(t('export.csvError'));
     }
   };
 
@@ -360,7 +362,10 @@ function AppShell() {
                 <Navigate to="/calendar" replace />
               ) : (
                 <PageTransition key="landing" direction="none">
-                  <LandingPage onStart={() => setShowBirthModal(true)} />
+                  <LandingPage
+                  onStart={() => setShowBirthModal(true)}
+                  onLanguageChange={handleLanguageChange}
+                />
                 </PageTransition>
               )
             }
@@ -480,7 +485,7 @@ function AppShell() {
                   onExportCSV={handleExportCSV}
                   onClearData={handleClearData}
                   onLogout={handleLogout}
-                  onLanguageChange={(lang) => setLanguage(lang as Language)}
+                  onLanguageChange={handleLanguageChange}
                 />
               </PageTransition>
             )}

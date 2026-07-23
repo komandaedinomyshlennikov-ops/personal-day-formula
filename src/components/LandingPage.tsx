@@ -3,12 +3,14 @@ import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass } from 'lucide-re
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { LanguageToggle } from './LanguageToggle';
+import type { LanguageCode } from '@/i18n';
 
 interface LandingPageProps {
   onStart: () => void;
+  onLanguageChange?: (lang: LanguageCode) => void;
 }
 
-export function LandingPage({ onStart }: LandingPageProps) {
+export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
 
   const energies = useMemo(
@@ -79,7 +81,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             <Sparkles size={12} className="text-amber-300" />
             <span className="text-[11px] tracking-wide">{t('landing.badge')}</span>
           </div>
-          <LanguageToggle variant="pill" />
+          <LanguageToggle variant="pill" onLanguageChange={onLanguageChange} />
         </div>
       </header>
 

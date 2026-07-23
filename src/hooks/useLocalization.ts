@@ -1,47 +1,46 @@
-import { useState, useEffect, useCallback } from 'react';
-import { type Language, getTranslations } from '@/i18n/translations';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { normalizeLanguage, setAppLanguage, type LanguageCode } from '@/i18n';
 
-const STORAGE_KEY = 'astronavigator_language';
-
+/**
+ * Thin adapter around react-i18next so legacy callers stay in sync
+ * with the global language (no separate store / no page reload).
+ */
 export function useLocalization() {
-  const [language, setLanguageState] = useState<Language>('ru');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { i18n, t: i18nT } = useTranslation();
+  const language = normalizeLanguage(i18n.language);
 
-  // Загрузка языка из localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && (stored === 'ru' || stored === 'en')) {
-      setLanguageState(stored as Language);
-    }
-    setIsLoaded(true);
+  const setLanguage = useCallback((lang: LanguageCode) => {
+    void setAppLanguage(lang);
   }, []);
 
-  // Сохранение языка в localStorage
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, language);
-    }
-  }, [language, isLoaded]);
-
-  // Установка языка
-  const setLanguage = useCallback((lang: Language) => {
-    setLanguageState(lang);
-  }, []);
-
-  // Переключение языка
   const toggleLanguage = useCallback(() => {
-    setLanguageState(prev => prev === 'ru' ? 'en' : 'ru');
-  }, []);
+    void setAppLanguage(language === 'ru' ? 'en' : 'ru');
+  }, [language]);
 
-  // Получение переводов
-  const t = getTranslations(language);
-
-  // Функция форматирования с плейсхолдерами
   const format = useCallback((text: string, values: Record<string, string | number>) => {
     return text.replace(/\{(\w+)\}/g, (match, key) => {
       return values[key]?.toString() ?? match;
     });
   }, []);
+
+  // Compatibility: string key path via i18n.t
+  const t = new Proxy(
+    {},
+    {
+      get(_target, prop: string) {
+        if (prop === 'toString') return () => '';
+        return new Proxy(
+          {},
+          {
+            get(_t2, prop2: string) {
+              return i18nT(`${prop}.${prop2}`);
+            },
+          }
+        );
+      },
+    }
+  ) as Record<string, Record<string, string>>;
 
   return {
     language,
@@ -49,7 +48,7 @@ export function useLocalization() {
     toggleLanguage,
     t,
     format,
-    isLoaded,
+    isLoaded: true,
     isRussian: language === 'ru',
     isEnglish: language === 'en',
   };

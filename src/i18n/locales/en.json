@@ -8,10 +8,10 @@
     "offlineReady": "App ready to work offline",
     "updateAvailable": "Update available — reload to apply",
     "trialEnding": "Trial Ending Soon",
-    "trialEnded": "Trial Period Ended",
+    "trialEnded": "Trial period ended",
     "subscriptionEnding": "Subscription Ending Soon",
-    "subscriptionEnded": "Subscription Expired",
-    "dailyReminder": "Good Morning!",
+    "subscriptionEnded": "Subscribe to keep full access",
+    "dailyReminder": "Good morning!",
     "dailyReminderBody": "Check today's recommendations in AstroNavigator",
     "languageChanged": "Language changed to {{language}}"
   },
@@ -21,10 +21,10 @@
     "offline": "You are offline. Showing cached version."
   },
   "glossary": {
-    "title": "Глоссарий",
-    "description": "Описание",
-    "digitalTerm": "Ведический термин",
-    "examples": "Примеры проявления",
+    "title": "Glossary",
+    "description": "Description",
+    "digitalTerm": "Digital psychology term",
+    "examples": "How it shows up",
     "learnMore": "Learn more about",
     "westernEquivalent": "Western Equivalent",
     "howItManifests": "How it manifests",
@@ -174,7 +174,9 @@
     "changeLanguage": "Change Language",
     "select": "Select",
     "copy": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "refresh": "Reload",
+    "delete": "Delete"
   },
   "dates": {
     "birthdatePlaceholder": "MM/DD/YYYY",
@@ -226,7 +228,8 @@
       "neutral": "Neutral",
       "completion": "Completion",
       "zeroDay": "10, 20, 30 — postpone"
-    }
+    },
+    "today": "Today"
   },
   "dayDetail": {
     "personalDay": "Personal Day",
@@ -530,17 +533,17 @@
     "title": "Subscription",
     "currentPlan": "Current Plan",
     "trialActive": "Trial Active",
-    "trialExpired": "Trial Expired",
+    "trialExpired": "Trial period ended",
     "trialDaysLeft": "{{days}} days left",
-    "subscriptionExpired": "Subscription Expired",
-    "subscriptionExpiredMessage": "Your subscription has expired. Subscribe to continue using all features.",
+    "subscriptionExpired": "Subscription ended",
+    "subscriptionExpiredMessage": "Renew access to keep using the calendar and recommendations.",
     "choosePlan": "Choose Your Plan",
     "activate": "Activate",
     "activateWithCode": "Activate with Code",
     "enterCode": "Enter Activation Code",
     "codePlaceholder": "e.g., MONTH-2026",
-    "invalidCode": "Invalid activation code",
-    "activationSuccess": "Subscription activated!",
+    "invalidCode": "Invalid code",
+    "activationSuccess": "Subscription activated",
     "plans": {
       "trial": {
         "name": "3 Days Free",
@@ -585,10 +588,15 @@
       "personalConsultation": "Personal consultation"
     },
     "howToPay": "How to get access",
-    "step1": "Choose a plan and open Telegram to pay",
+    "step1": "Choose a plan and pay via Telegram",
     "step2": "Receive an activation code from the author",
     "step3": "Enter the code in the app (Have a code)",
-    "noCardData": "Card details are never entered in this app."
+    "noCardData": "Card details are never entered in this app.",
+    "overdueDays": "Overdue by {{count}} day(s)",
+    "endedToday": "Ended today",
+    "plansShort": "Month, year, or lifetime",
+    "trialLabel": "Trial period",
+    "subLabel": "Subscription"
   },
   "settings": {
     "title": "Settings",
@@ -1318,18 +1326,20 @@
       "avoid3": "Be careful with sharp objects",
       "avoid4": "Don't make hasty decisions"
     },
-    "positive": "Favorable Actions",
+    "positive": "Favorable",
     "negative": "Avoid",
     "warnings": "Cautions",
-    "favorableActions": "Lucky Actions",
-    "avoid": "What to Avoid"
+    "favorableActions": "Favorable actions",
+    "avoid": "What to avoid"
   },
   "errors": {
     "generic": "Something went wrong",
     "network": "Network error",
     "invalidDate": "Invalid date",
     "requiredField": "Required field",
-    "futureDate": "Future dates not allowed"
+    "futureDate": "Future dates not allowed",
+    "tryAgain": "Please try refreshing the page",
+    "details": "Error details"
   },
   "useCases": {
     "title": "Practical Examples",
@@ -1449,7 +1459,8 @@
     "subtitle": "Help loved ones discover their personal energy",
     "shareText": "Discover your personal energy with AstroNavigator! My personal calendar based on birth date.",
     "copyLink": "Copy Link",
-    "shareVia": "Share via..."
+    "shareVia": "Share via...",
+    "message": "Check your daily energy with AstroNavigator! 🌟 My personal calendar based on birth date."
   },
   "meta": {
     "title": "AstroNavigator - Personal Success Calendar",
@@ -1528,12 +1539,33 @@
   },
   "notes": {
     "title": "Journal",
-    "subtitle": "Personal notes with keyword tips (not AI)",
-    "disclaimer": "Tips are rule-based keyword suggestions stored only on this device — not a neural network.",
+    "subtitle": "Notes with keyword tips (not AI)",
+    "disclaimer": "Tips are rule-based keyword suggestions. Data stays on this device — not a neural network.",
     "add": "Add note",
     "placeholder": "How was your day? Plans, feelings, meetings…",
     "empty": "No notes yet",
     "tipLabel": "Tip",
     "saving": "Saving…"
+  },
+  "export": {
+    "pdfOk": "PDF exported",
+    "csvOk": "CSV exported",
+    "pdfError": "Failed to export PDF",
+    "csvError": "Failed to export CSV"
+  },
+  "activation": {
+    "title": "Activate subscription",
+    "heading": "Enter activation code",
+    "hint": "After paying in Telegram you will receive an activation code",
+    "placeholder": "XXXX-XXXX",
+    "submit": "Activate",
+    "checking": "Checking…",
+    "empty": "Enter an activation code",
+    "invalid": "Invalid or expired activation code",
+    "error": "Could not verify the code. Please try again.",
+    "howTitle": "How to get a code",
+    "how1": "Choose a plan and tap “Pay in Telegram”",
+    "how2": "Pay using the author’s details",
+    "how3": "Receive the code and enter it here"
   }
 }

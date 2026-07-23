@@ -1,29 +1,29 @@
 {
   "notifications": {
-    "permissionGranted": "Notifications enabled",
-    "permissionDenied": "Notifications blocked",
-    "notSupported": "Notifications are not supported in this browser",
-    "disclaimerTitle": "About notifications",
-    "disclaimerBody": "Daily reminders work while the browser can run the app (installed PWA or open tab). True push requires a server and is not used yet.",
-    "offlineReady": "App ready to work offline",
-    "updateAvailable": "Update available — reload to apply",
+    "permissionGranted": "Уведомления включены",
+    "permissionDenied": "Уведомления заблокированы",
+    "notSupported": "Уведомления не поддерживаются в этом браузере",
+    "disclaimerTitle": "О уведомлениях",
+    "disclaimerBody": "Ежедневные напоминания работают, пока приложение открыто или установлено как PWA. Настоящий push-сервер пока не используется.",
+    "offlineReady": "Приложение готово к работе офлайн",
+    "updateAvailable": "Доступно обновление — перезагрузите страницу",
     "trialEnding": "Пробный период заканчивается",
     "trialEnded": "Пробный период закончился",
     "subscriptionEnding": "Подписка заканчивается",
-    "subscriptionEnded": "Подписка закончилась",
+    "subscriptionEnded": "Оформите подписку, чтобы продолжить",
     "dailyReminder": "Доброе утро!",
     "dailyReminderBody": "Проверьте рекомендации на сегодня в Астронавигаторе",
     "languageChanged": "Язык изменён на {{language}}"
   },
   "pwa": {
-    "installTitle": "Install AstroNavigator",
-    "installBody": "Add to home screen for faster access and offline calendar.",
-    "offline": "You are offline. Showing cached version."
+    "installTitle": "Установить Астронавигатор",
+    "installBody": "Добавьте на домашний экран — быстрее доступ и офлайн-календарь.",
+    "offline": "Нет сети. Показана сохранённая версия."
   },
   "glossary": {
     "title": "Глоссарий",
     "description": "Описание",
-    "digitalTerm": "Ведический термин",
+    "digitalTerm": "Термин цифровой психологии",
     "examples": "Примеры проявления",
     "learnMore": "Узнать больше о",
     "westernEquivalent": "Западный эквивалент",
@@ -174,7 +174,9 @@
     "changeLanguage": "Изменить язык",
     "select": "Выбрать",
     "copy": "Копировать",
-    "copied": "Скопировано!"
+    "copied": "Скопировано!",
+    "refresh": "Обновить",
+    "delete": "Удалить"
   },
   "dates": {
     "birthdatePlaceholder": "ДД.ММ.ГГГГ",
@@ -226,7 +228,8 @@
       "neutral": "Нейтрально",
       "completion": "Завершение",
       "zeroDay": "10, 20, 30 — отложить"
-    }
+    },
+    "today": "Сегодня"
   },
   "dayDetail": {
     "personalDay": "Личный день",
@@ -533,14 +536,14 @@
     "trialExpired": "Пробный период закончился",
     "trialDaysLeft": "Осталось {{days}} дней",
     "subscriptionExpired": "Подписка закончилась",
-    "subscriptionExpiredMessage": "Ваша подписка закончилась. Оформите подписку, чтобы продолжить пользоваться всеми функциями.",
+    "subscriptionExpiredMessage": "Продлите доступ, чтобы продолжить пользоваться календарём и рекомендациями.",
     "choosePlan": "Выберите план подписки",
     "activate": "Активировать",
     "activateWithCode": "Активировать по коду",
     "enterCode": "Введите код активации",
     "codePlaceholder": "Например: MONTH-2026",
-    "invalidCode": "Неверный код активации",
-    "activationSuccess": "Подписка активирована!",
+    "invalidCode": "Неверный код",
+    "activationSuccess": "Подписка активирована",
     "plans": {
       "trial": {
         "name": "3 дня бесплатно",
@@ -588,7 +591,12 @@
     "step1": "Выберите план и оплатите через Telegram",
     "step2": "Получите код активации от автора",
     "step3": "Введите код в приложении («Есть код»)",
-    "noCardData": "Данные карты в приложении не вводятся."
+    "noCardData": "Данные карты в приложении не вводятся.",
+    "overdueDays": "Просрочено на {{count}} дн.",
+    "endedToday": "Закончилась сегодня",
+    "plansShort": "Месяц, год или навсегда",
+    "trialLabel": "Пробный период",
+    "subLabel": "Подписка"
   },
   "settings": {
     "title": "Настройки",
@@ -1318,18 +1326,20 @@
       "avoid3": "Осторожно с острыми предметами",
       "avoid4": "Не принимайте поспешных решений"
     },
-    "positive": "Favorable Actions",
-    "negative": "Avoid",
-    "warnings": "Cautions",
-    "favorableActions": "Lucky Actions",
-    "avoid": "What to Avoid"
+    "positive": "Благоприятно",
+    "negative": "Избегать",
+    "warnings": "Предупреждения",
+    "favorableActions": "Благоприятные действия",
+    "avoid": "Чего избегать"
   },
   "errors": {
     "generic": "Что-то пошло не так",
     "network": "Ошибка сети",
     "invalidDate": "Некорректная дата",
     "requiredField": "Обязательное поле",
-    "futureDate": "Будущие даты не разрешены"
+    "futureDate": "Будущие даты не разрешены",
+    "tryAgain": "Попробуйте обновить страницу",
+    "details": "Подробности ошибки"
   },
   "useCases": {
     "title": "Примеры использования",
@@ -1449,7 +1459,8 @@
     "subtitle": "Помогите близким открыть свою личную энергию",
     "shareText": "Откройте свою личную энергию с Астронавигатором! Мой персональный календарь на основе даты рождения.",
     "copyLink": "Копировать ссылку",
-    "shareVia": "Поделиться через..."
+    "shareVia": "Поделиться через...",
+    "message": "Открой свою персональную энергетику с Астронавигатором! 🌟 Мой личный календарь по дате рождения."
   },
   "meta": {
     "title": "Астронавигатор - Личный календарь успеха",
@@ -1519,21 +1530,42 @@
     "section": "Правовая информация",
     "privacy": "Политика конфиденциальности",
     "terms": "Публичная оферта",
-    "cookieTitle": "Cookies и аналитика",
+    "cookieTitle": "Файлы cookie и аналитика",
     "cookieBody": "Дата рождения и настройки хранятся только в этом браузере (localStorage). Аналитика выключена, пока вы не согласитесь.",
-    "cookieNoGa": "ID аналитики не настроен — используются только необходимые данные.",
+    "cookieNoGa": "Аналитика не настроена — используются только необходимые данные.",
     "accept": "Принять",
     "decline": "Только необходимое",
     "analytics": "Cookies аналитики"
   },
   "notes": {
     "title": "Дневник",
-    "subtitle": "Заметки с подсказками по ключевым словам (не ИИ)",
-    "disclaimer": "Подсказки — правила по ключевым словам, данные только на устройстве. Это не нейросеть.",
+    "subtitle": "Заметки с подсказками (не нейросеть)",
+    "disclaimer": "Подсказки по ключевым словам. Данные только на устройстве — это не ИИ.",
     "add": "Добавить заметку",
     "placeholder": "Как прошёл день? Планы, чувства, встречи…",
     "empty": "Пока нет заметок",
     "tipLabel": "Подсказка",
     "saving": "Сохранение…"
+  },
+  "export": {
+    "pdfOk": "PDF экспортирован",
+    "csvOk": "CSV экспортирован",
+    "pdfError": "Ошибка при экспорте PDF",
+    "csvError": "Ошибка при экспорте CSV"
+  },
+  "activation": {
+    "title": "Активация подписки",
+    "heading": "Введите код активации",
+    "hint": "После оплаты в Telegram вы получите код для активации подписки",
+    "placeholder": "XXXX-XXXX",
+    "submit": "Активировать",
+    "checking": "Проверка…",
+    "empty": "Введите код активации",
+    "invalid": "Неверный или устаревший код активации",
+    "error": "Ошибка проверки кода. Попробуйте ещё раз.",
+    "howTitle": "Как получить код",
+    "how1": "Выберите план и нажмите «Оплатить в Telegram»",
+    "how2": "Оплатите по реквизитам автора",
+    "how3": "Получите код и введите его здесь"
   }
 }

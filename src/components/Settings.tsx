@@ -55,11 +55,7 @@ export function Settings({
   const [consent, setConsentState] = useState(getConsent);
   const currentLang = i18n.language;
 
-  // Handle language change with instant update
   const handleLanguageChange = (langCode: string) => {
-    // Change i18n language immediately
-    i18n.changeLanguage(langCode);
-    // Update user data via callback
     onLanguageChange?.(langCode);
   };
 

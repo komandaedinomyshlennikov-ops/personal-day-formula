@@ -1,94 +1,119 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import only RU and EN translations
 import enTranslations from './locales/en.json';
 import ruTranslations from './locales/ru.json';
 
-// Available languages with metadata
+/** App supports only RU + EN fully (100% key parity). */
 export const availableLanguages = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', dir: 'ltr' },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', dir: 'ltr' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', dir: 'ltr' as const },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', dir: 'ltr' as const },
 ] as const;
 
-export type LanguageCode = typeof availableLanguages[number]['code'];
+export type LanguageCode = (typeof availableLanguages)[number]['code'];
 
-// Get language info
+export const SUPPORTED_LANGS: LanguageCode[] = ['ru', 'en'];
+
+/** Normalize browser/i18n codes like en-US, ru-RU → en | ru */
+export function normalizeLanguage(code?: string | null): LanguageCode {
+  if (!code) return 'ru';
+  const base = code.toLowerCase().split('-')[0];
+  return base === 'en' ? 'en' : 'ru';
+}
+
 export const getLanguageInfo = (code: string) => {
-  return availableLanguages.find(lang => lang.code === code) || availableLanguages[1]; // Default to RU
+  const normalized = normalizeLanguage(code);
+  return availableLanguages.find((lang) => lang.code === normalized) || availableLanguages[0];
 };
 
-/**
- * Получение значения cookie по имени
- */
-const getCookie = (name: string): string | null => {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? match[2] : null;
-};
+export const isRTL = (_lang: string): boolean => false;
 
-// Расширение Window для __INITIAL_LANG__
-declare global {
-  interface Window {
-    __INITIAL_LANG__?: string;
-  }
+const STORAGE_KEY = 'astronavigator_language';
+const COOKIE_KEY = 'astro-lang';
+
+function writeCookie(name: string, value: string): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 /**
- * Определение начального языка (приоритет: Cookie > localStorage > Browser > RU)
+ * Persist + switch language without page reload.
+ * Updates i18n, html lang, localStorage, cookie.
  */
-const detectInitialLanguage = (): string => {
-  // Проверяем cookie
-  const cookieLang = getCookie('astro-lang');
-  if (cookieLang && ['ru', 'en'].includes(cookieLang)) {
-    return cookieLang;
-  }
-  
-  // Проверяем localStorage
+export async function setAppLanguage(code: string): Promise<LanguageCode> {
+  const lang = normalizeLanguage(code);
   try {
-    const savedLang = localStorage.getItem('astronavigator_language');
-    if (savedLang && ['ru', 'en'].includes(savedLang)) {
-      return savedLang;
-    }
-  } catch (e) {
-    // localStorage не доступен
+    localStorage.setItem(STORAGE_KEY, lang);
+  } catch {
+    /* private mode */
   }
-  
-  // Проверяем язык браузера
-  const browserLang = navigator.language.slice(0, 2).toLowerCase();
-  if (['ru', 'en'].includes(browserLang)) {
-    return browserLang;
+  writeCookie(COOKIE_KEY, lang);
+  await i18n.changeLanguage(lang);
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = 'ltr';
   }
-  
-  return 'ru'; // Default
-};
+  return lang;
+}
 
-// Resources object
 const resources = {
   en: { translation: enTranslations },
   ru: { translation: ruTranslations },
 };
 
-// Initialize i18n
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: detectInitialLanguage(), // Определяем язык при инициализации
-    fallbackLng: 'ru',
-    debug: false,
-    
-    interpolation: {
-      escapeValue: false,
-    },
-    
-    react: {
-      useSuspense: false,
-    },
-  });
-
-// Set HTML lang attribute
-i18n.on('languageChanged', (lng) => {
-  document.documentElement.lang = lng;
+void i18n.use(LanguageDetector).use(initReactI18next).init({
+  resources,
+  fallbackLng: 'ru',
+  supportedLngs: ['ru', 'en'],
+  nonExplicitSupportedLngs: true,
+  load: 'languageOnly',
+  debug: false,
+  // Prefer explicit stored language; avoid flash of wrong locale
+  detection: {
+    order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
+    caches: ['localStorage', 'cookie'],
+    lookupLocalStorage: STORAGE_KEY,
+    lookupCookie: COOKIE_KEY,
+    convertDetectedLanguage: (lng) => normalizeLanguage(lng),
+  },
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
+    // Re-render all bound components immediately on language change
+    bindI18n: 'languageChanged loaded',
+    bindI18nStore: 'added removed',
+  },
+  returnNull: false,
+  returnEmptyString: false,
+  // Never show raw keys when missing
+  parseMissingKeyHandler: (key) => {
+    if (import.meta.env.DEV) {
+      console.warn('[i18n] missing key:', key);
+    }
+    return '';
+  },
 });
+
+// Ensure we start on a supported language only
+const initial = normalizeLanguage(i18n.language);
+if (i18n.language !== initial) {
+  void i18n.changeLanguage(initial);
+}
+
+i18n.on('languageChanged', (lng) => {
+  const lang = normalizeLanguage(lng);
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = 'ltr';
+  }
+});
+
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = normalizeLanguage(i18n.language);
+  document.documentElement.dir = 'ltr';
+}
 
 export default i18n;
