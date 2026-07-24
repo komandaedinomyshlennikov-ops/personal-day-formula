@@ -106,11 +106,30 @@ export function InstallPrompt() {
       <div className="p-4 border-b border-white/5">
         <h3 className="text-white font-semibold flex items-center gap-2">
           <Download size={18} className="text-amber-400" />
-          {isRussian ? 'Установить приложение' : 'Install App'}
+          {isRussian ? 'На главный экран' : 'Add to Home Screen'}
         </h3>
       </div>
 
       <div className="p-4">
+        {/* Preview how the icon + label will look */}
+        <div className="flex items-center gap-3 mb-4 p-3 rounded-2xl bg-black/25 border border-white/8">
+          <img
+            src={`${import.meta.env.BASE_URL}icon-192x192.png`}
+            alt=""
+            width={56}
+            height={56}
+            className="w-14 h-14 rounded-[14px] shadow-lg shadow-violet-500/20 object-cover"
+          />
+          <div className="min-w-0">
+            <p className="text-white font-semibold text-sm">АстроНав</p>
+            <p className="text-[11px] text-[var(--text-muted)] leading-snug mt-0.5">
+              {isRussian
+                ? 'Подпись на экране телефона · ваш личный день'
+                : 'Home screen label · your personal day'}
+            </p>
+          </div>
+        </div>
+
         {isIOS ? (
           <div className="space-y-3">
             <p className="text-gray-300 text-sm">

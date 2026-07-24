@@ -17,20 +17,26 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icon-192x192.png', 'icon-512x512.png', 'vite.svg'],
+      includeAssets: [
+        'icon-192x192.png',
+        'icon-512x512.png',
+        'apple-touch-icon.png',
+        'favicon-32.png',
+        'vite.svg',
+      ],
       manifest: {
-        name: 'AstroNavigator — Personal Success Calendar',
-        short_name: 'AstroNavigator',
+        name: 'Астронавигатор — ваш личный день',
+        short_name: 'АстроНав',
         description:
-          'Personal calendar based on your birth date. Plan important events according to planetary energies.',
-        theme_color: '#0a0a0f',
-        background_color: '#0a0a0f',
+          'Персональный день по дате рождения: подсказка на сегодня и спокойный помощник.',
+        theme_color: '#07060d',
+        background_color: '#07060d',
         display: 'standalone',
         orientation: 'portrait',
         start_url: './',
         scope: './',
         lang: 'ru',
-        categories: ['lifestyle', 'productivity'],
+        categories: ['lifestyle', 'productivity', 'health'],
         icons: [
           {
             src: 'icon-192x192.png',
@@ -49,6 +55,12 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
+          },
+          {
+            src: 'apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png',
+            purpose: 'any',
           },
         ],
       },

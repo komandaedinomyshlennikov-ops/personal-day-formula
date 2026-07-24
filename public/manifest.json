@@ -1,14 +1,15 @@
 {
-  "name": "AstroNavigator - Personal Success Calendar",
-  "short_name": "AstroNavigator",
-  "description": "Personal calendar based on your birth date. Plan important events according to your unique energy.",
+  "name": "Астронавигатор — ваш личный день",
+  "short_name": "АстроНав",
+  "description": "Персональный день по дате рождения: подсказка на сегодня и спокойный помощник.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
+  "background_color": "#07060d",
+  "theme_color": "#07060d",
   "orientation": "portrait",
   "scope": "./",
   "lang": "ru",
+  "dir": "ltr",
   "icons": [
     {
       "src": "./icon-192x192.png",
@@ -27,7 +28,14 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "categories": ["lifestyle", "productivity"]
+  "categories": ["lifestyle", "productivity", "health"],
+  "screenshots": []
 }
