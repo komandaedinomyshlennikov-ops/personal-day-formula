@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b --pretty false"
+    "typecheck": "tsc -b --pretty false",
+    "coach:dev": "npm --prefix coach-api run dev",
+    "coach:deploy": "npm --prefix coach-api run deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

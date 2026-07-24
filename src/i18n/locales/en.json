@@ -1712,7 +1712,11 @@
     "checkInQuestion": "How well did today’s take match how the day went? (1 — barely, 5 — a lot)",
     "checkInNote": "What happened? (optional)",
     "checkInSaved": "Check-in saved",
-    "checkInEdit": "edit"
+    "checkInEdit": "edit",
+    "sourceLive": "Reply via Grok · interpretive helper",
+    "sourceReady": "Grok connected · offline falls back to local",
+    "sourceFallback": "Network/API unavailable · local helper",
+    "sourceLocal": "Local helper (API not configured)"
   },
   "trial": {
     "daysLeft": "Trial: {{count}} days left",

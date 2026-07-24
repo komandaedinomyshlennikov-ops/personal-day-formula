@@ -16,9 +16,13 @@ import {
 import {
   buildCoachOpening,
   FOCUS_CHIPS,
-  generateCoachReply,
   type CoachContext,
 } from '@/utils/coachEngine';
+import {
+  generateCoachReplySmart,
+  isCoachApiConfigured,
+  type CoachSource,
+} from '@/utils/coachApi';
 import { calculatePersonalDay } from '@/utils/numerology';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
 
@@ -49,7 +53,9 @@ export function DayCoach({
   const [state, setState] = useState<CoachState>(() => loadCoachState());
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [lastSource, setLastSource] = useState<CoachSource | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const apiOn = isCoachApiConfigured();
 
   const dateKey = dateKeyProp || getLocalDateKey();
   const personalNumber = useMemo(() => {
@@ -119,6 +125,8 @@ export function DayCoach({
     }
 
     setBusy(true);
+    setInput('');
+
     let next = appendMessage(state, {
       role: 'user',
       text: trimmed,
@@ -133,21 +141,31 @@ export function DayCoach({
       next = updateProfile(next, { goal: goalMatch[1].trim().slice(0, 120) });
     }
 
-    const reply = generateCoachReply(trimmed, { ...ctx, profile: next.profile, checkIns: next.checkIns }, t);
-    // Small delay so it feels like a conversation
-    window.setTimeout(() => {
-      next = appendMessage(next, {
-        role: 'assistant',
-        text: reply,
-        personalNumber,
-        dateKey,
-      });
-      setState(next);
-      saveCoachState(next);
-      setBusy(false);
-    }, 380);
+    setState(next);
+    saveCoachState(next);
 
-    setInput('');
+    const replyCtx: CoachContext = {
+      ...ctx,
+      profile: next.profile,
+      checkIns: next.checkIns,
+      recentMessages: next.messages.slice(-12),
+    };
+
+    void generateCoachReplySmart(trimmed, replyCtx, t)
+      .then((result) => {
+        setLastSource(result.source);
+        setState((prev) => {
+          const updated = appendMessage(prev, {
+            role: 'assistant',
+            text: result.text,
+            personalNumber,
+            dateKey,
+          });
+          saveCoachState(updated);
+          return updated;
+        });
+      })
+      .finally(() => setBusy(false));
   };
 
   const onChip = (focus: FocusArea) => {
@@ -188,11 +206,22 @@ export function DayCoach({
         <p className="text-[10px] leading-relaxed text-[var(--text-muted)] glass-card p-2.5 rounded-xl border border-white/8">
           {t('coach.trustLine')}
         </p>
-        {remaining !== null && (
-          <p className="text-[10px] text-amber-200/80 mt-1.5 px-1">
-            {t('coach.quotaLeft', { count: remaining })}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 px-1">
+          {remaining !== null && (
+            <p className="text-[10px] text-amber-200/80">
+              {t('coach.quotaLeft', { count: remaining })}
+            </p>
+          )}
+          <p className="text-[10px] text-[var(--text-muted)]">
+            {apiOn
+              ? lastSource === 'xai'
+                ? t('coach.sourceLive')
+                : lastSource === 'error-local'
+                  ? t('coach.sourceFallback')
+                  : t('coach.sourceReady')
+              : t('coach.sourceLocal')}
           </p>
-        )}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
