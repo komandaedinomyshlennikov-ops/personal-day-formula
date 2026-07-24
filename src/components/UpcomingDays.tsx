@@ -15,16 +15,12 @@ export function UpcomingDays({ days, onSelect }: UpcomingDaysProps) {
   const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
 
   return (
-    <div className="px-4 pt-3">
-      <div className="flex items-center justify-between mb-2 px-0.5">
-        <h3 className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-muted)] font-medium">
-          {t('calendar.upcomingTitle')}
-        </h3>
-        <span className="text-[10px] text-[var(--text-muted)] opacity-80">
-          {t('calendar.upcomingHint')}
-        </span>
+    <section className="home-upcoming">
+      <div className="home-section-label">
+        <h3>{t('calendar.upcomingTitle')}</h3>
+        <span className="text-[10px] text-[var(--text-muted)]">{t('calendar.upcomingHint')}</span>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-0.5 px-0.5 scrollbar-none">
+      <div className="upcoming-row">
         {days.map((day) => {
           const energy = getEnergyInfo(day.personalNumber, t);
           const { action, tone } = getDayActionLine(day.personalNumber, t);
@@ -34,44 +30,44 @@ export function UpcomingDays({ days, onSelect }: UpcomingDaysProps) {
             month: 'short',
           });
 
-          const border =
+          const toneClass =
             tone === 'favorable'
-              ? 'border-emerald-400/25'
+              ? 'border-emerald-400/30'
               : tone === 'challenging'
-                ? 'border-rose-400/25'
+                ? 'border-rose-400/30'
                 : 'border-white/10';
 
           return (
             <button
-              key={day.date.toISOString()}
+              key={`${day.date.getFullYear()}-${day.date.getMonth()}-${day.date.getDate()}`}
               type="button"
               onClick={() => onSelect(day)}
-              className={`glass-card shrink-0 w-[148px] p-3 rounded-2xl text-left border ${border} active:scale-[0.98] transition-transform`}
+              className={`upcoming-card ${toneClass}`}
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-1.5 min-w-0">
                 <span
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
-                  style={{ background: `${energy.color}22` }}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0"
+                  style={{ background: `${energy.color}26` }}
                 >
                   {energy.icon}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-white text-xs font-semibold capitalize leading-tight">
+                  <p className="text-white text-[11px] font-semibold capitalize leading-tight truncate">
                     {weekday}
                   </p>
-                  <p className="text-[10px] text-[var(--text-muted)]">{dateLabel}</p>
+                  <p className="text-[9px] text-[var(--text-muted)] truncate">{dateLabel}</p>
                 </div>
               </div>
-              <p className="text-[11px] text-amber-200/90 font-medium mb-1">
+              <p className="text-[10px] text-amber-200/90 font-semibold leading-tight">
                 {day.personalNumber} · {energy.planet}
               </p>
-              <p className="text-[11px] text-[var(--text-secondary)] leading-snug line-clamp-2">
+              <p className="text-[10px] text-[var(--text-secondary)] leading-snug line-clamp-2">
                 {action}
               </p>
             </button>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

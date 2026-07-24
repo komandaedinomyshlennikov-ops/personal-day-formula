@@ -13,15 +13,15 @@ export function StreakChip({ streak, totalDays }: StreakChipProps) {
 
   return (
     <div
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-orange-400/25 bg-orange-400/10"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-orange-400/25 bg-orange-400/10"
       title={
         totalDays
           ? t('streak.totalHint', { count: totalDays })
           : t('streak.hint')
       }
     >
-      <Flame size={13} className="text-orange-300" />
-      <span className="text-[11px] font-semibold text-orange-100/95">
+      <Flame size={11} className="text-orange-300" />
+      <span className="text-[10px] font-semibold text-orange-100/95 leading-none">
         {streak === 1
           ? t('streak.oneDay')
           : t('streak.days', { count: streak })}

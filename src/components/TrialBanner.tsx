@@ -29,10 +29,8 @@ export function TrialBanner({
     <button
       type="button"
       onClick={onOpenSubscription}
-      className={`mx-4 mt-2 block glass-card px-3.5 py-2.5 rounded-2xl text-left flex items-center gap-3 border ${
-        urgent
-          ? 'border-rose-400/40'
-          : 'border-amber-400/30'
+      className={`w-full glass-card px-3 py-2 rounded-2xl text-left flex items-center gap-2.5 border ${
+        urgent ? 'border-rose-400/40' : 'border-amber-400/30'
       }`}
       style={{
         background: urgent
@@ -41,19 +39,17 @@ export function TrialBanner({
       }}
     >
       <div
-        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+        className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
           urgent ? 'bg-rose-500/20' : 'bg-amber-400/15'
         }`}
       >
-        <Crown size={16} className={urgent ? 'text-rose-300' : 'text-amber-300'} />
+        <Crown size={14} className={urgent ? 'text-rose-300' : 'text-amber-300'} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-white text-sm font-semibold leading-snug">{label}</p>
-        <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
-          {t('trial.bannerHint')}
-        </p>
+        <p className="text-white text-[13px] font-semibold leading-snug">{label}</p>
+        <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{t('trial.bannerHint')}</p>
       </div>
-      <ChevronRight size={16} className="text-[var(--text-muted)] shrink-0" />
+      <ChevronRight size={15} className="text-[var(--text-muted)] shrink-0" />
     </button>
   );
 }

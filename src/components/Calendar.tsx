@@ -43,7 +43,6 @@ interface CalendarProps {
   onMonthClick: (monthNumber: number) => void;
   onYearClick: (yearNumber: number) => void;
   isSubscribed: boolean;
-  /** Days remaining on trial/sub; 0 hides banner */
   daysLeft?: number;
   isTrialActive?: boolean;
 }
@@ -77,14 +76,13 @@ const DayCell = ({
     >
       <span className="day-num text-[var(--text-primary)]">{day.date.getDate()}</span>
       {isZero && (
-        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-indigo-300" />
+        <span className="absolute top-0.5 right-0.5 w-1 h-1 rounded-full bg-indigo-300" />
       )}
       <span
         className="day-energy"
         style={{
-          backgroundColor: `${dayColor}28`,
+          backgroundColor: `${dayColor}2e`,
           color: dayColor,
-          boxShadow: `0 0 10px ${dayColor}22`,
         }}
       >
         {day.personalNumber}
@@ -110,10 +108,13 @@ export function Calendar({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
   const [legendOpen, setLegendOpen] = useState(false);
-  const [streak, setStreak] = useState<StreakState>({ streak: 0, lastDate: '', totalDays: 0 });
+  const [streak, setStreak] = useState<StreakState>({
+    streak: 0,
+    lastDate: '',
+    totalDays: 0,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Soft habit tracking — once per calendar mount / day
   useEffect(() => {
     setStreak(recordAppOpen());
   }, []);
@@ -189,7 +190,6 @@ export function Calendar({
     month === today.getMonth() + 1 &&
     year === today.getFullYear();
 
-  // Today energy for hero strip
   const todayInfo = monthData.find((d) => checkIsToday(d.date.getDate()));
   const todayEnergy = todayInfo
     ? getEnergyInfo(todayInfo.personalNumber, t)
@@ -203,253 +203,259 @@ export function Calendar({
     [birthDateString]
   );
 
+  const yearEnergy = getEnergyInfo(personalYear, t);
+  const monthEnergy = getEnergyInfo(personalMonth, t);
+
+  const todayToneBorder =
+    todayAction?.tone === 'favorable'
+      ? 'border-emerald-400/35'
+      : todayAction?.tone === 'challenging'
+        ? 'border-rose-400/35'
+        : 'border-amber-400/30';
+
+  const todayToneBg =
+    todayAction?.tone === 'favorable'
+      ? 'linear-gradient(135deg, rgba(74,222,128,0.14), rgba(167,139,250,0.07))'
+      : todayAction?.tone === 'challenging'
+        ? 'linear-gradient(135deg, rgba(248,113,113,0.14), rgba(167,139,250,0.07))'
+        : 'linear-gradient(135deg, rgba(245,215,142,0.14), rgba(167,139,250,0.08))';
+
   return (
     <div className="app-shell page-pad flex flex-col min-h-screen">
       <CoachMarks enabled />
-      {/* Header */}
-      <header className="app-header justify-between">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-200/20 to-violet-400/20 border border-white/10">
-            <Sparkles size={16} className="text-amber-200" />
+
+      {/* Compact sticky header */}
+      <header className="app-header justify-between !min-h-[52px] !py-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 rounded-[13px] flex items-center justify-center bg-gradient-to-br from-amber-200/20 to-violet-400/25 border border-white/10 shrink-0">
+            <Sparkles size={15} className="text-amber-200" />
           </div>
           <div className="min-w-0">
-            <p className="font-display text-lg leading-none text-white truncate">
+            <p className="font-display text-[1.05rem] leading-none text-white truncate">
               {t('landing.footer.title', { defaultValue: 'Астронавигатор' })}
             </p>
-            <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-[10px] text-[var(--text-muted)] tracking-wide uppercase">
-                {getTranslatedMonthName(month)} {year}
-              </p>
+            <div className="flex items-center gap-1.5 mt-1">
               <StreakChip streak={streak.streak} totalDays={streak.totalDays} />
+              {!streak.streak && (
+                <span className="text-[10px] text-[var(--text-muted)]">
+                  {getTranslatedMonthName(month)} {year}
+                </span>
+              )}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={onSubscription}
-            className={`icon-btn !w-auto !px-2.5 gap-1.5 ${
+            className={`icon-btn !w-10 !h-10 ${
               isSubscribed ? '!border-amber-400/40 !text-amber-200' : ''
             }`}
             title={t('nav.subscription')}
           >
-            <Crown size={15} />
+            <Crown size={16} />
             {!isSubscribed && (
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
             )}
           </button>
-          <button type="button" onClick={onSettings} className="icon-btn" title={t('nav.settings')}>
-            <Settings size={17} />
+          <button
+            type="button"
+            onClick={onSettings}
+            className="icon-btn !w-10 !h-10"
+            title={t('nav.settings')}
+          >
+            <Settings size={16} />
           </button>
         </div>
       </header>
 
-      {/* Trial / sub time left */}
-      {isSubscribed && daysLeft > 0 && daysLeft <= 14 && (
-        <TrialBanner
-          daysLeft={daysLeft}
-          isTrial={isTrialActive}
-          onOpenSubscription={onSubscription}
-        />
-      )}
+      {/* Scrollable main stack */}
+      <div className="home-body">
+        {isSubscribed && daysLeft > 0 && daysLeft <= 14 && (
+          <TrialBanner
+            daysLeft={daysLeft}
+            isTrial={isTrialActive}
+            onOpenSubscription={onSubscription}
+          />
+        )}
 
-      {/* Today strip — actionable */}
-      {todayEnergy && todayInfo && todayAction && (
-        <button
-          type="button"
-          data-coach="today"
-          onClick={() => onDaySelect(todayInfo)}
-          className={`mx-4 mt-3 glass-card p-3.5 rounded-2xl text-left flex items-center gap-3 ${
-            todayAction.tone === 'favorable'
-              ? 'border-emerald-400/30'
-              : todayAction.tone === 'challenging'
-                ? 'border-rose-400/30'
-                : 'border-amber-400/25'
-          }`}
-          style={{
-            background:
-              todayAction.tone === 'favorable'
-                ? 'linear-gradient(120deg, rgba(74,222,128,0.12), rgba(167,139,250,0.06))'
-                : todayAction.tone === 'challenging'
-                  ? 'linear-gradient(120deg, rgba(248,113,113,0.12), rgba(167,139,250,0.06))'
-                  : 'linear-gradient(120deg, rgba(245,215,142,0.12), rgba(167,139,250,0.08))',
-          }}
-        >
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0"
+        {/* Today hero */}
+        {todayEnergy && todayInfo && todayAction && (
+          <button
+            type="button"
+            data-coach="today"
+            onClick={() => onDaySelect(todayInfo)}
+            className={`today-hero ${todayToneBorder}`}
+            style={{ background: todayToneBg }}
+          >
+            <div
+              className="today-hero__icon"
+              style={{
+                background: `${todayEnergy.color}26`,
+                boxShadow: `0 0 22px ${todayEnergy.color}30`,
+              }}
+            >
+              {todayEnergy.icon}
+            </div>
+            <div className="min-w-0">
+              <p className="today-hero__meta">
+                {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
+              </p>
+              <p className="today-hero__action">{todayAction.action}</p>
+              <p className="today-hero__hint">{t('calendar.tapForDetails')}</p>
+            </div>
+            <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0 opacity-70" />
+          </button>
+        )}
+
+        {/* Next 3 days — equal columns */}
+        <UpcomingDays days={upcoming} onSelect={onDaySelect} />
+
+        {/* Year / Month — compact dual stats */}
+        <div className="stats-row">
+          <button
+            type="button"
+            onClick={() => onYearClick(personalYear)}
+            className="stat-mini"
             style={{
-              background: `${todayEnergy.color}22`,
-              boxShadow: `0 0 24px ${todayEnergy.color}33`,
+              background:
+                'linear-gradient(145deg, rgba(245,215,142,0.12), rgba(245,158,11,0.04))',
             }}
           >
-            {todayEnergy.icon}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] uppercase tracking-[0.14em] text-amber-200/80 mb-0.5">
-              {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
-            </p>
-            <p className="text-white font-semibold text-sm leading-snug line-clamp-2">
-              {todayAction.action}
-            </p>
-            <p className="text-[var(--text-muted)] text-[11px] mt-1">
-              {t('calendar.tapForDetails')}
-            </p>
-          </div>
-          <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0" />
-        </button>
-      )}
-
-      {/* Next 3 days */}
-      <UpcomingDays days={upcoming} onSelect={onDaySelect} />
-
-      {/* Year / Month chips */}
-      <div className="px-4 pt-3 grid grid-cols-2 gap-2.5">
-        <button
-          type="button"
-          onClick={() => onYearClick(personalYear)}
-          className="stat-pill"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(245,215,142,0.12), rgba(245,158,11,0.04))',
-          }}
-        >
-          <div className="flex items-center gap-1 mb-1">
-            <Sparkles size={11} className="text-amber-300" />
-            <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="stat-mini__label">
+              <Sparkles size={10} className="text-amber-300" />
               {t('calendar.personalYear')}
             </span>
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-display text-2xl text-white leading-none">{personalYear}</span>
-            <span className="text-amber-200/90 text-xs">
-              {getEnergyInfo(personalYear, t).planet}
+            <span>
+              <span className="stat-mini__value">{personalYear}</span>
+              <span className="stat-mini__planet text-amber-200/85">
+                {yearEnergy.planet}
+              </span>
             </span>
-          </div>
-        </button>
-        <button
-          type="button"
-          onClick={() => onMonthClick(personalMonth)}
-          className="stat-pill"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(167,139,250,0.14), rgba(244,114,182,0.05))',
-          }}
-        >
-          <div className="flex items-center gap-1 mb-1">
-            <Sparkles size={11} className="text-violet-300" />
-            <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+          </button>
+          <button
+            type="button"
+            onClick={() => onMonthClick(personalMonth)}
+            className="stat-mini"
+            style={{
+              background:
+                'linear-gradient(145deg, rgba(167,139,250,0.14), rgba(244,114,182,0.05))',
+            }}
+          >
+            <span className="stat-mini__label">
+              <Sparkles size={10} className="text-violet-300" />
               {t('calendar.personalMonth')}
             </span>
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-display text-2xl text-white leading-none">{personalMonth}</span>
-            <span className="text-violet-200/90 text-xs">
-              {getEnergyInfo(personalMonth, t).planet}
+            <span>
+              <span className="stat-mini__value">{personalMonth}</span>
+              <span className="stat-mini__planet text-violet-200/85">
+                {monthEnergy.planet}
+              </span>
             </span>
-          </div>
-        </button>
-      </div>
+          </button>
+        </div>
 
-      {/* Month switcher */}
-      <div className="px-4 pt-4 flex items-center justify-between">
-        <button type="button" onClick={handlePrevMonth} className="icon-btn" aria-label="Previous month">
-          <ChevronLeft size={20} />
-        </button>
-        <motion.div
-          key={`${year}-${month}`}
-          initial={{ opacity: 0, y: direction > 0 ? 8 : -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <h2 className="font-display text-2xl text-white leading-none">
-            {getTranslatedMonthName(month)}
-          </h2>
-          <p className="text-[var(--text-muted)] text-xs mt-1">{year}</p>
-        </motion.div>
-        <button type="button" onClick={handleNextMonth} className="icon-btn" aria-label="Next month">
-          <ChevronRight size={20} />
-        </button>
-      </div>
-
-      {/* Grid */}
-      <div ref={containerRef} className="flex-1 px-3 pt-3 pb-2">
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.18}
-          onDragEnd={handlePanEnd}
-          data-coach="grid"
-          className="touch-pan-y glass-card p-2.5 rounded-3xl"
-        >
-          <div className="grid grid-cols-7 gap-1 mb-1">
-            {weekDays.map((day) => (
-              <div
-                key={day}
-                className="text-center text-[10px] font-medium py-1.5 text-[var(--text-muted)] uppercase tracking-wide"
-              >
-                {day.slice(0, 2)}
-              </div>
-            ))}
-          </div>
-
-          <AnimatePresence mode="wait" initial={false}>
+        {/* Calendar panel — month nav + grid as one unit */}
+        <div ref={containerRef} className="cal-panel" data-coach="grid">
+          <div className="cal-panel__toolbar">
+            <button
+              type="button"
+              onClick={handlePrevMonth}
+              className="icon-btn !w-9 !h-9"
+              aria-label="Previous month"
+            >
+              <ChevronLeft size={18} />
+            </button>
             <motion.div
               key={`${year}-${month}`}
-              initial={{ opacity: 0, x: direction * 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -28 }}
-              transition={{ duration: 0.18 }}
-              className="grid grid-cols-7 gap-1"
+              initial={{ opacity: 0, y: direction > 0 ? 6 : -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="cal-panel__title"
             >
-              {Array.from({ length: adjustedFirstDay }).map((_, i) => (
-                <div key={`e-${i}`} className="aspect-square" />
-              ))}
-              {monthData.map((day) => (
-                <DayCell
-                  key={`${day.date.getFullYear()}-${day.date.getMonth()}-${day.date.getDate()}`}
-                  day={day}
-                  isToday={checkIsToday(day.date.getDate())}
-                  onClick={() => onDaySelect(day)}
-                />
-              ))}
+              <h2>{getTranslatedMonthName(month)}</h2>
+              <p>{year}</p>
             </motion.div>
-          </AnimatePresence>
-        </motion.div>
+            <button
+              type="button"
+              onClick={handleNextMonth}
+              className="icon-btn !w-9 !h-9"
+              aria-label="Next month"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
 
-        {/* Legend + expandable hints */}
-        <div data-coach="legend" className="mt-4">
+          <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.16}
+            onDragEnd={handlePanEnd}
+            className="cal-panel__body touch-pan-y"
+          >
+            <div className="cal-weekdays">
+              {weekDays.map((day) => (
+                <div key={day} className="cal-weekday">
+                  {day.slice(0, 2)}
+                </div>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`${year}-${month}`}
+                initial={{ opacity: 0, x: direction * 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -20 }}
+                transition={{ duration: 0.16 }}
+                className="cal-grid"
+              >
+                {Array.from({ length: adjustedFirstDay }).map((_, i) => (
+                  <div key={`e-${i}`} className="aspect-square" />
+                ))}
+                {monthData.map((day) => (
+                  <DayCell
+                    key={`${day.date.getFullYear()}-${day.date.getMonth()}-${day.date.getDate()}`}
+                    day={day}
+                    isToday={checkIsToday(day.date.getDate())}
+                    onClick={() => onDaySelect(day)}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
+        {/* Legend — compact */}
+        <div data-coach="legend" className="pb-1">
           <button
             type="button"
             onClick={() => setLegendOpen((v) => !v)}
-            className="w-full flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)] mb-2 hover:text-[var(--text-secondary)] transition-colors"
+            className="w-full flex items-center justify-center gap-1 text-[10px] text-[var(--text-muted)] mb-1.5 hover:text-[var(--text-secondary)] transition-colors py-0.5"
             aria-expanded={legendOpen}
           >
-            <Info size={12} />
+            <Info size={11} />
             <span>{t('calendar.legendTitle')}</span>
             <ChevronDown
-              size={14}
+              size={12}
               className={`transition-transform ${legendOpen ? 'rotate-180' : ''}`}
             />
-            <span className="text-amber-200/70">
-              {legendOpen ? t('calendar.legendLess') : t('calendar.legendMore')}
-            </span>
           </button>
 
-          <div className="flex flex-wrap justify-center gap-2">
-            <span className="chip" title={t('calendar.legendFavorableHint')}>
-              <span className="chip-dot bg-emerald-400" />
+          <div className="legend-bar">
+            <span className="legend-chip" title={t('calendar.legendFavorableHint')}>
+              <span className="chip-dot bg-emerald-400 !w-1.5 !h-1.5" />
               {t('calendar.legend.favorable')}
             </span>
-            <span className="chip" title={t('calendar.legendNeutralHint')}>
-              <span className="chip-dot bg-yellow-400" />
+            <span className="legend-chip" title={t('calendar.legendNeutralHint')}>
+              <span className="chip-dot bg-yellow-400 !w-1.5 !h-1.5" />
               {t('calendar.legend.neutral')}
             </span>
-            <span className="chip" title={t('calendar.legendCompletionHint')}>
-              <span className="chip-dot bg-rose-400" />
+            <span className="legend-chip" title={t('calendar.legendCompletionHint')}>
+              <span className="chip-dot bg-rose-400 !w-1.5 !h-1.5" />
               {t('calendar.legend.completion')}
             </span>
-            <span className="chip" title={t('calendar.legendZeroHint')}>
-              <span className="chip-dot bg-indigo-400" />
+            <span className="legend-chip" title={t('calendar.legendZeroHint')}>
+              <span className="chip-dot bg-indigo-400 !w-1.5 !h-1.5" />
               {t('calendar.legend.zeroDay')}
             </span>
           </div>
@@ -462,75 +468,60 @@ export function Calendar({
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <ul className="mt-3 mx-1 space-y-2 glass-card p-3 rounded-2xl text-left">
-                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
-                    <span className="chip-dot bg-emerald-400 mt-1 shrink-0" />
-                    <span>
-                      <strong className="text-white font-medium">
-                        {t('calendar.legend.favorable')}:
-                      </strong>{' '}
-                      {t('calendar.legendFavorableHint')}
-                    </span>
-                  </li>
-                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
-                    <span className="chip-dot bg-yellow-400 mt-1 shrink-0" />
-                    <span>
-                      <strong className="text-white font-medium">
-                        {t('calendar.legend.neutral')}:
-                      </strong>{' '}
-                      {t('calendar.legendNeutralHint')}
-                    </span>
-                  </li>
-                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
-                    <span className="chip-dot bg-rose-400 mt-1 shrink-0" />
-                    <span>
-                      <strong className="text-white font-medium">
-                        {t('calendar.legend.completion')}:
-                      </strong>{' '}
-                      {t('calendar.legendCompletionHint')}
-                    </span>
-                  </li>
-                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
-                    <span className="chip-dot bg-indigo-400 mt-1 shrink-0" />
-                    <span>
-                      <strong className="text-white font-medium">
-                        {t('calendar.legend.zeroDay')}:
-                      </strong>{' '}
-                      {t('calendar.legendZeroHint')}
-                    </span>
-                  </li>
+                <ul className="mt-2 space-y-1.5 glass-card p-3 rounded-2xl text-left">
+                  {(
+                    [
+                      ['bg-emerald-400', 'favorable', 'legendFavorableHint'],
+                      ['bg-yellow-400', 'neutral', 'legendNeutralHint'],
+                      ['bg-rose-400', 'completion', 'legendCompletionHint'],
+                      ['bg-indigo-400', 'zeroDay', 'legendZeroHint'],
+                    ] as const
+                  ).map(([dot, key, hint]) => (
+                    <li
+                      key={key}
+                      className="flex gap-2 text-[11px] text-[var(--text-secondary)] leading-snug"
+                    >
+                      <span className={`chip-dot ${dot} mt-1 shrink-0 !w-1.5 !h-1.5`} />
+                      <span>
+                        <strong className="text-white font-medium">
+                          {t(`calendar.legend.${key}`)}:
+                        </strong>{' '}
+                        {t(`calendar.${hint}`)}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
 
-        <p className="text-[var(--text-muted)] text-[11px] text-center mt-3 opacity-80">
-          {t('calendar.swipeHint')}
-        </p>
+          <p className="text-[var(--text-muted)] text-[10px] text-center mt-2 opacity-70">
+            {t('calendar.swipeHint')}
+          </p>
+        </div>
       </div>
 
       {/* Bottom nav */}
       <nav className="bottom-nav" aria-label="Main">
         <div className="bottom-nav-inner">
           <button type="button" className="nav-item nav-item--active" aria-current="page">
-            <CalendarDays size={20} />
+            <CalendarDays size={19} />
             <span>{t('nav.calendar', { defaultValue: 'Календарь' })}</span>
           </button>
           <button type="button" className="nav-item" onClick={onNotes}>
-            <BookOpen size={20} />
+            <BookOpen size={19} />
             <span>{t('nav.notes', { defaultValue: 'Дневник' })}</span>
           </button>
           <button type="button" className="nav-item" onClick={onShare}>
-            <Share2 size={20} />
+            <Share2 size={19} />
             <span>{t('calendar.share', { defaultValue: 'Share' })}</span>
           </button>
           <button type="button" className="nav-item" onClick={onSubscription}>
-            <Crown size={20} />
+            <Crown size={19} />
             <span>{t('nav.subscription', { defaultValue: 'Pro' })}</span>
           </button>
           <button type="button" className="nav-item" onClick={onSettings}>
-            <Settings size={20} />
+            <Settings size={19} />
             <span>{t('nav.settings', { defaultValue: 'Ещё' })}</span>
           </button>
         </div>
