@@ -38,15 +38,15 @@ export function LanguageToggle({
   if (variant === 'pill') {
     return (
       <div
-        className="relative inline-flex items-center p-1 bg-white/5 border border-white/10 rounded-full"
+        className="lang-toggle relative inline-flex items-center p-0.5 bg-black/40 border border-white/15 rounded-full backdrop-blur-md shadow-lg shrink-0"
         role="group"
         aria-label={t('settings.language', { defaultValue: 'Language' })}
       >
         <motion.div
-          className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-gradient-to-r from-violet-500/45 to-pink-500/45"
+          className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-full bg-gradient-to-r from-violet-500/55 to-pink-500/55"
           initial={false}
           animate={{
-            left: currentLang === 'ru' ? 4 : 'calc(50% + 0px)',
+            left: currentLang === 'ru' ? 2 : 'calc(50%)',
           }}
           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
         />
@@ -60,15 +60,15 @@ export function LanguageToggle({
               onClick={() => handleSwitch(lang.code)}
               disabled={isPending}
               className={`
-                relative z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                text-sm font-medium transition-colors duration-150
+                relative z-10 flex items-center justify-center gap-1 min-w-[2.75rem] min-h-9 px-2.5 py-1.5 rounded-full
+                text-xs font-semibold transition-colors duration-150
                 ${active ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
                 ${isPending ? 'opacity-70' : 'cursor-pointer'}
               `}
               aria-label={lang.code === 'ru' ? 'Русский' : 'English'}
               aria-pressed={active}
             >
-              <span className="text-base leading-none" aria-hidden>
+              <span className="text-sm leading-none" aria-hidden>
                 {lang.flag}
               </span>
               <span>{lang.label}</span>

@@ -94,18 +94,21 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
 
   return (
     <div className="app-shell pb-28 overflow-x-hidden">
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none">
-        <div className="app-shell flex justify-between items-center pointer-events-auto">
-          <div className="chip border-emerald-400/25 bg-black/30 backdrop-blur-md">
-            <Gift size={12} className="text-emerald-300" />
-            <span className="text-[11px] tracking-wide">{t('landing.badge')}</span>
+      {/* Fixed bar: language never overlays hero text */}
+      <header className="landing-topbar">
+        <div className="landing-topbar__inner">
+          <div className="landing-topbar__badge" title={t('landing.badge')}>
+            <Gift size={12} className="text-emerald-300 shrink-0" />
+            <span className="truncate">{t('landing.badge')}</span>
           </div>
-          <LanguageToggle variant="pill" onLanguageChange={onLanguageChange} />
+          <div className="landing-topbar__lang">
+            <LanguageToggle variant="pill" onLanguageChange={onLanguageChange} />
+          </div>
         </div>
       </header>
 
-      {/* Hero — compact, value-first */}
-      <section className="relative px-5 pt-20 pb-6 text-center">
+      {/* Hero — top padding clears fixed topbar + safe area */}
+      <section className="relative px-5 landing-hero pb-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

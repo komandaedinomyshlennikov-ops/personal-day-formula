@@ -241,6 +241,59 @@
     flex-shrink: 0;
   }
 
+  /* —— Landing top bar (language must not cover hero) —— */
+  .landing-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    max-width: var(--app-max);
+    margin: 0 auto;
+    padding: max(0.5rem, env(safe-area-inset-top)) 0.75rem 0.5rem;
+    background: linear-gradient(
+      180deg,
+      rgba(7, 6, 13, 0.94) 0%,
+      rgba(7, 6, 13, 0.82) 70%,
+      rgba(7, 6, 13, 0) 100%
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .landing-topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 44px;
+  }
+
+  .landing-topbar__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+    max-width: calc(100% - 7.5rem);
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(52, 211, 153, 0.28);
+    backdrop-filter: blur(8px);
+  }
+
+  .landing-topbar__lang {
+    flex-shrink: 0;
+  }
+
+  .landing-hero {
+    /* Clear sticky topbar (~56px) + breathing room */
+    padding-top: 0.75rem;
+  }
+
   /* —— Home (calendar) layout —— */
   .home-body {
     flex: 1;
