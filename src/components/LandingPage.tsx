@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass } from 'lucide-react';
+import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass, Shield, Clock, Gift } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { LanguageToggle } from './LanguageToggle';
 import type { LanguageCode } from '@/i18n';
+import { calculateUniversalDay, getEnergyInfo } from '@/utils/numerology';
+import { getDayActionLine } from '@/utils/actionableDay';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -12,6 +14,14 @@ interface LandingPageProps {
 
 export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
+
+  // Live demo: universal day (no birth date) — shows product immediately
+  const demo = useMemo(() => {
+    const num = calculateUniversalDay(new Date());
+    const energy = getEnergyInfo(num, t);
+    const { action, tone } = getDayActionLine(num, t);
+    return { num, energy, action, tone };
+  }, [t, i18n.language]);
 
   const energies = useMemo(
     () =>
@@ -73,56 +83,107 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
     [t, i18n.language]
   );
 
+  const toneBorder =
+    demo.tone === 'favorable'
+      ? 'border-emerald-400/35'
+      : demo.tone === 'challenging'
+        ? 'border-rose-400/35'
+        : 'border-amber-400/30';
+
   return (
     <div className="app-shell pb-28 overflow-x-hidden">
       <header className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none">
         <div className="app-shell flex justify-between items-center pointer-events-auto">
-          <div className="chip border-white/10 bg-black/20 backdrop-blur-md">
-            <Sparkles size={12} className="text-amber-300" />
+          <div className="chip border-emerald-400/25 bg-black/30 backdrop-blur-md">
+            <Gift size={12} className="text-emerald-300" />
             <span className="text-[11px] tracking-wide">{t('landing.badge')}</span>
           </div>
           <LanguageToggle variant="pill" onLanguageChange={onLanguageChange} />
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative px-5 pt-24 pb-10 text-center min-h-[88vh] flex flex-col justify-center">
+      {/* Hero — compact, value-first */}
+      <section className="relative px-5 pt-20 pb-6 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-sm mx-auto w-full"
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.15 }}
-            className="mx-auto mb-8 w-20 h-20 rounded-[28px] flex items-center justify-center"
-            style={{
-              background:
-                'linear-gradient(145deg, rgba(245,215,142,0.25), rgba(167,139,250,0.2), rgba(244,114,182,0.15))',
-              border: '1px solid rgba(255,255,255,0.12)',
-              boxShadow: '0 12px 48px rgba(139,92,246,0.25)',
-            }}
-          >
-            <span className="text-4xl" aria-hidden>
-              ✨
-            </span>
-          </motion.div>
-
-          <h1 className="font-display text-[2.75rem] sm:text-5xl leading-[1.05] mb-3 text-white">
+          <h1 className="font-display text-[2.4rem] sm:text-[2.75rem] leading-[1.05] mb-1 text-white">
             {t('landing.title1')}
-          </h1>
-          <h1 className="font-display text-[2.75rem] sm:text-5xl leading-[1.05] mb-5 gradient-text">
-            {t('landing.title2')}
+            <span className="gradient-text"> {t('landing.title2')}</span>
           </h1>
 
-          <p className="text-amber-200/90 font-medium text-base mb-3 tracking-wide">
+          <p className="text-amber-200/95 font-medium text-[0.98rem] mb-2 tracking-wide mt-3">
             {t('landing.subtitle')}
           </p>
-          <p className="text-[var(--text-secondary)] text-[0.95rem] leading-relaxed mb-9 max-w-[20rem] mx-auto">
+          <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-5 max-w-[21rem] mx-auto">
             {t('landing.description')}
           </p>
+
+          {/* Trust row */}
+          <div className="flex flex-wrap justify-center gap-2 mb-5">
+            <span className="chip">
+              <Clock size={11} className="text-amber-200" />
+              {t('landing.trust1')}
+            </span>
+            <span className="chip">
+              <Shield size={11} className="text-emerald-300" />
+              {t('landing.trust2')}
+            </span>
+            <span className="chip">
+              <Gift size={11} className="text-violet-300" />
+              {t('landing.trust3')}
+            </span>
+          </div>
+
+          {/* Product preview — aha without signup */}
+          <motion.button
+            type="button"
+            onClick={onStart}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            whileTap={{ scale: 0.985 }}
+            className={`w-full text-left glass-card p-4 rounded-3xl mb-5 border ${toneBorder}`}
+            style={{
+              background:
+                'linear-gradient(145deg, rgba(245,215,142,0.1), rgba(167,139,250,0.08))',
+            }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] uppercase tracking-[0.14em] text-amber-200/85">
+                {t('landing.previewLabel')}
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                {t('landing.previewToday')}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                style={{
+                  background: `${demo.energy.color}24`,
+                  boxShadow: `0 0 28px ${demo.energy.color}33`,
+                }}
+              >
+                {demo.energy.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-white font-semibold text-[0.95rem]">
+                  {demo.num} · {demo.energy.planet}
+                </p>
+                <p className="text-[var(--text-secondary)] text-xs leading-snug mt-0.5 line-clamp-2">
+                  {demo.action}
+                </p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
+                  {t('landing.previewPersonalHint')}
+                </p>
+              </div>
+              <ChevronRight size={18} className="text-amber-200/80 shrink-0" />
+            </div>
+          </motion.button>
 
           <motion.button
             whileTap={{ scale: 0.98 }}
@@ -132,22 +193,25 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
             {t('landing.startButton')}
             <ChevronRight size={18} />
           </motion.button>
+          <p className="mt-2.5 text-[11px] text-[var(--text-muted)]">
+            {t('landing.ctaHint')}
+          </p>
 
-          <p className="mt-8 text-[var(--text-muted)] text-sm">
+          <p className="mt-6 text-[var(--text-muted)] text-sm">
             {t('landing.footer.author')}
           </p>
         </motion.div>
       </section>
 
       {/* What is */}
-      <section className="px-5 py-12">
+      <section className="px-5 py-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="glass-card p-6 max-w-sm mx-auto text-center"
         >
-          <h2 className="section-title mb-3">{t('landing.whatIs')}</h2>
+          <h2 className="section-title mb-3 text-[1.45rem]">{t('landing.whatIs')}</h2>
           <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
             {t('landing.whatIsDesc')}
           </p>
@@ -155,15 +219,15 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       </section>
 
       {/* Features */}
-      <section className="px-5 py-8">
+      <section className="px-5 py-6">
         <div className="max-w-sm mx-auto grid grid-cols-2 gap-3">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.06 }}
+              transition={{ delay: index * 0.05 }}
               className="glass-card p-4 rounded-2xl"
             >
               <div className="mb-3 w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -179,7 +243,7 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       </section>
 
       {/* Quote */}
-      <section className="px-5 py-10">
+      <section className="px-5 py-8">
         <motion.blockquote
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -193,17 +257,19 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       </section>
 
       {/* Steps */}
-      <section className="px-5 py-12">
+      <section className="px-5 py-10">
         <div className="max-w-sm mx-auto">
-          <h2 className="section-title text-center mb-8">{t('landing.howItWorks')}</h2>
-          <div className="space-y-4">
+          <h2 className="section-title text-center mb-8 text-[1.5rem]">
+            {t('landing.howItWorks')}
+          </h2>
+          <div className="space-y-3">
             {steps.map((step, index) => (
               <motion.div
                 key={step.num}
-                initial={{ opacity: 0, x: -12 }}
+                initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.07 }}
+                transition={{ delay: index * 0.05 }}
                 className="flex items-start gap-4 glass-card p-4 rounded-2xl"
               >
                 <span className="font-display text-2xl gradient-text min-w-[2.2rem]">
@@ -219,21 +285,23 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Energies */}
-      <section className="px-5 py-12">
+      {/* Energies — compact, below fold */}
+      <section className="px-5 py-10">
         <div className="max-w-sm mx-auto">
-          <h2 className="section-title text-center mb-2">{t('landing.energiesTitle')}</h2>
-          <p className="text-center text-[var(--text-muted)] text-sm mb-8">
+          <h2 className="section-title text-center mb-2 text-[1.5rem]">
+            {t('landing.energiesTitle')}
+          </h2>
+          <p className="text-center text-[var(--text-muted)] text-sm mb-6">
             {t('landing.energiesDesc')}
           </p>
           <div className="grid grid-cols-3 gap-2.5">
             {energies.map((energy, index) => (
               <motion.div
                 key={energy.num}
-                initial={{ opacity: 0, scale: 0.94 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.03 }}
+                transition={{ delay: index * 0.02 }}
                 className="energy-card !p-3"
               >
                 <div
@@ -258,14 +326,15 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       </section>
 
       {/* Final CTA */}
-      <section className="px-5 py-14 text-center">
+      <section className="px-5 py-12 text-center">
         <div className="max-w-sm mx-auto glass-card p-7 rounded-3xl">
-          <h2 className="section-title mb-2">{t('landing.ready')}</h2>
-          <p className="text-[var(--text-secondary)] text-sm mb-6">{t('landing.readyDesc')}</p>
+          <h2 className="section-title mb-2 text-[1.5rem]">{t('landing.ready')}</h2>
+          <p className="text-[var(--text-secondary)] text-sm mb-5">{t('landing.readyDesc')}</p>
           <motion.button whileTap={{ scale: 0.98 }} onClick={onStart} className="gradient-button w-full">
             {t('landing.freeButton')}
             <ChevronRight size={18} />
           </motion.button>
+          <p className="mt-2.5 text-[11px] text-[var(--text-muted)]">{t('landing.ctaHint')}</p>
         </div>
       </section>
 
@@ -282,7 +351,10 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
             >
               {t('landing.footer.consultation')}
             </a>
-            <a href="tel:+375297801742" className="text-[var(--text-muted)] hover:text-white transition-colors">
+            <a
+              href="tel:+375297801742"
+              className="text-[var(--text-muted)] hover:text-white transition-colors"
+            >
               +375 29 780 1742
             </a>
           </div>
@@ -292,7 +364,7 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </footer>
 
-      {/* Sticky mobile CTA */}
+      {/* Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 pointer-events-none">
         <div className="app-shell pointer-events-auto">
           <button type="button" onClick={onStart} className="gradient-button w-full shadow-2xl">

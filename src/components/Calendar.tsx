@@ -21,6 +21,8 @@ import {
   isZeroDay,
 } from '@/utils/numerology';
 import { normalizeBirthDateString } from '@/utils/date';
+import { getDayActionLine } from '@/utils/actionableDay';
+import { CoachMarks } from '@/components/CoachMarks';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
@@ -173,9 +175,13 @@ export function Calendar({
   const todayEnergy = todayInfo
     ? getEnergyInfo(todayInfo.personalNumber, t)
     : null;
+  const todayAction = todayInfo
+    ? getDayActionLine(todayInfo.personalNumber, t)
+    : null;
 
   return (
     <div className="app-shell page-pad flex flex-col min-h-screen">
+      <CoachMarks enabled />
       {/* Header */}
       <header className="app-header justify-between">
         <div className="flex items-center gap-2 min-w-0">
@@ -211,15 +217,26 @@ export function Calendar({
         </div>
       </header>
 
-      {/* Today strip */}
-      {todayEnergy && todayInfo && (
+      {/* Today strip — actionable */}
+      {todayEnergy && todayInfo && todayAction && (
         <button
           type="button"
+          data-coach="today"
           onClick={() => onDaySelect(todayInfo)}
-          className="mx-4 mt-3 glass-card p-3.5 rounded-2xl text-left flex items-center gap-3 border-amber-400/20"
+          className={`mx-4 mt-3 glass-card p-3.5 rounded-2xl text-left flex items-center gap-3 ${
+            todayAction.tone === 'favorable'
+              ? 'border-emerald-400/30'
+              : todayAction.tone === 'challenging'
+                ? 'border-rose-400/30'
+                : 'border-amber-400/25'
+          }`}
           style={{
             background:
-              'linear-gradient(120deg, rgba(245,215,142,0.12), rgba(167,139,250,0.08))',
+              todayAction.tone === 'favorable'
+                ? 'linear-gradient(120deg, rgba(74,222,128,0.12), rgba(167,139,250,0.06))'
+                : todayAction.tone === 'challenging'
+                  ? 'linear-gradient(120deg, rgba(248,113,113,0.12), rgba(167,139,250,0.06))'
+                  : 'linear-gradient(120deg, rgba(245,215,142,0.12), rgba(167,139,250,0.08))',
           }}
         >
           <div
@@ -233,13 +250,13 @@ export function Calendar({
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] uppercase tracking-[0.14em] text-amber-200/80 mb-0.5">
-              {t('calendar.today', { defaultValue: 'Сегодня' })}
+              {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
             </p>
-            <p className="text-white font-semibold text-sm truncate">
-              {todayInfo.personalNumber} · {todayEnergy.planet}
+            <p className="text-white font-semibold text-sm leading-snug line-clamp-2">
+              {todayAction.action}
             </p>
-            <p className="text-[var(--text-muted)] text-xs truncate">
-              {todayEnergy.description}
+            <p className="text-[var(--text-muted)] text-[11px] mt-1">
+              {t('calendar.tapForDetails')}
             </p>
           </div>
           <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0" />
@@ -322,6 +339,7 @@ export function Calendar({
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.18}
           onDragEnd={handlePanEnd}
+          data-coach="grid"
           className="touch-pan-y glass-card p-2.5 rounded-3xl"
         >
           <div className="grid grid-cols-7 gap-1 mb-1">
@@ -360,7 +378,7 @@ export function Calendar({
         </motion.div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
+        <div data-coach="legend" className="mt-4 flex flex-wrap justify-center gap-2">
           <span className="chip">
             <span className="chip-dot bg-emerald-400" />
             {t('calendar.legend.favorable')}

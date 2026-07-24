@@ -229,7 +229,13 @@
       "completion": "Completion",
       "zeroDay": "10, 20, 30 — postpone"
     },
-    "today": "Today"
+    "today": "Today",
+    "actionDo": "Good today for",
+    "actionCareful": "Better today to",
+    "actionNeutral": "Focus today on",
+    "actionFallback": "Open day recommendations",
+    "tapForDetails": "Tap for details",
+    "openDay": "Open day"
   },
   "dayDetail": {
     "personalDay": "Personal Day",
@@ -1467,13 +1473,13 @@
     "description": "Calculate your Personal Year, Month, and Day numbers. Plan important events according to Digital Psychology energies."
   },
   "landing": {
-    "badge": "Digital Psychology",
+    "badge": "3 days free · no card",
     "title1": "ASTRO",
     "title2": "NAVIGATOR",
-    "subtitle": "Discover the energy of each day",
-    "description": "Personal calendar based on your birth date. Plan important events, tasks, and decisions according to your unique energy.",
-    "startButton": "Start Your Journey",
-    "freeButton": "Start Free",
+    "subtitle": "When to start things — and when to wait",
+    "description": "A personal calendar from your birth date: favorable and hard days, a clear tip for today. Ready in 1 minute.",
+    "startButton": "See today's energy",
+    "freeButton": "Start 3 free days",
     "whatIs": "What is AstroNavigator?",
     "whatIsDesc": "This is your personal calendar calculated from your birth date. Your daily companion that helps you wisely plan personal life, business processes, travel, meetings, and important events.",
     "features": {
@@ -1524,7 +1530,15 @@
       "author": "From digital psychologist Tatiana Geniush",
       "consultation": "Consultation",
       "copyright": "© 2026 AstroNavigator. All rights reserved."
-    }
+    },
+    "ctaHint": "No card · 3-day trial",
+    "previewLabel": "How it looks",
+    "previewToday": "Today (universal day)",
+    "previewPersonalHint": "Your personal day unlocks after birth date",
+    "previewCta": "Calculate my calendar",
+    "trust1": "1 minute",
+    "trust2": "No card",
+    "trust3": "3 days free"
   },
   "legal": {
     "section": "Legal",
@@ -1567,5 +1581,18 @@
     "how1": "Choose a plan and tap “Pay in Telegram”",
     "how2": "Pay using the author’s details",
     "how3": "Receive the code and enter it here"
+  },
+  "coach": {
+    "title": "Quick tour",
+    "step": "{{current}} of {{total}}",
+    "skip": "Skip",
+    "next": "Next",
+    "done": "Got it",
+    "todayTitle": "Your day is here",
+    "todayBody": "The top card shows today's energy and what to do. Tap it for the full breakdown.",
+    "colorsTitle": "Colors = day type",
+    "colorsBody": "Green — favorable, yellow — neutral, red — completion day, purple — pause days (10, 20, 30).",
+    "tapTitle": "Tap any day",
+    "tapBody": "You'll see personal and universal numbers, do/avoid tips, and examples."
   }
 }
