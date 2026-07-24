@@ -30,6 +30,7 @@ import { useUserData } from '@/hooks/useUserData';
 import { useNotifications } from '@/hooks/useNotifications';
 import { buildMonthCsv, buildPdfHtml, downloadCsv } from '@/utils/export';
 import { buildDayInfo, dayToPath } from '@/utils/dayInfo';
+import { getDaysLeft } from '@/utils/upcomingDays';
 import { SUPPORT_TELEGRAM } from '@/config/site';
 import { trackEvent, trackPageView, initAnalytics, getConsent } from '@/lib/analytics';
 import { normalizeLanguage, setAppLanguage, type LanguageCode } from '@/i18n';
@@ -294,6 +295,9 @@ function AppShell() {
   }
 
   const isSubscribed = checkSubscription();
+  const daysLeft = isSubscribed
+    ? getDaysLeft(userData.subscriptionEndDate)
+    : 0;
   const subscriptionEnded =
     !isSubscribed && !!userData.subscriptionEndDate && !!userData.birthDate;
   const daysOverdue = subscriptionEnded
@@ -395,6 +399,8 @@ function AppShell() {
                   onMonthClick={(n) => navigate(`/energy/month/${n}`)}
                   onYearClick={(n) => navigate(`/energy/year/${n}`)}
                   isSubscribed={isSubscribed}
+                  daysLeft={daysLeft}
+                  isTrialActive={userData.isTrialActive}
                 />
               </PageTransition>
             )}

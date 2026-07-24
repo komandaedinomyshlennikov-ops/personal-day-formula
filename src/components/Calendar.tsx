@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ import {
   Share2,
   BookOpen,
   CalendarDays,
+  ChevronDown,
+  Info,
 } from 'lucide-react';
 import {
   generateMonthData,
@@ -22,7 +24,10 @@ import {
 } from '@/utils/numerology';
 import { normalizeBirthDateString } from '@/utils/date';
 import { getDayActionLine } from '@/utils/actionableDay';
+import { getUpcomingDays } from '@/utils/upcomingDays';
 import { CoachMarks } from '@/components/CoachMarks';
+import { TrialBanner } from '@/components/TrialBanner';
+import { UpcomingDays } from '@/components/UpcomingDays';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
@@ -36,6 +41,9 @@ interface CalendarProps {
   onMonthClick: (monthNumber: number) => void;
   onYearClick: (yearNumber: number) => void;
   isSubscribed: boolean;
+  /** Days remaining on trial/sub; 0 hides banner */
+  daysLeft?: number;
+  isTrialActive?: boolean;
 }
 
 const DayCell = ({
@@ -93,10 +101,13 @@ export function Calendar({
   onMonthClick,
   onYearClick,
   isSubscribed,
+  daysLeft = 0,
+  isTrialActive = false,
 }: CalendarProps) {
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
+  const [legendOpen, setLegendOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const year = currentDate.getFullYear();
@@ -179,6 +190,11 @@ export function Calendar({
     ? getDayActionLine(todayInfo.personalNumber, t)
     : null;
 
+  const upcoming = useMemo(
+    () => getUpcomingDays(birthDateString, 3),
+    [birthDateString]
+  );
+
   return (
     <div className="app-shell page-pad flex flex-col min-h-screen">
       <CoachMarks enabled />
@@ -216,6 +232,15 @@ export function Calendar({
           </button>
         </div>
       </header>
+
+      {/* Trial / sub time left */}
+      {isSubscribed && daysLeft > 0 && daysLeft <= 14 && (
+        <TrialBanner
+          daysLeft={daysLeft}
+          isTrial={isTrialActive}
+          onOpenSubscription={onSubscription}
+        />
+      )}
 
       {/* Today strip — actionable */}
       {todayEnergy && todayInfo && todayAction && (
@@ -262,6 +287,9 @@ export function Calendar({
           <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0" />
         </button>
       )}
+
+      {/* Next 3 days */}
+      <UpcomingDays days={upcoming} onSelect={onDaySelect} />
 
       {/* Year / Month chips */}
       <div className="px-4 pt-3 grid grid-cols-2 gap-2.5">
@@ -377,24 +405,93 @@ export function Calendar({
           </AnimatePresence>
         </motion.div>
 
-        {/* Legend */}
-        <div data-coach="legend" className="mt-4 flex flex-wrap justify-center gap-2">
-          <span className="chip">
-            <span className="chip-dot bg-emerald-400" />
-            {t('calendar.legend.favorable')}
-          </span>
-          <span className="chip">
-            <span className="chip-dot bg-yellow-400" />
-            {t('calendar.legend.neutral')}
-          </span>
-          <span className="chip">
-            <span className="chip-dot bg-rose-400" />
-            {t('calendar.legend.completion')}
-          </span>
-          <span className="chip">
-            <span className="chip-dot bg-indigo-400" />
-            {t('calendar.legend.zeroDay')}
-          </span>
+        {/* Legend + expandable hints */}
+        <div data-coach="legend" className="mt-4">
+          <button
+            type="button"
+            onClick={() => setLegendOpen((v) => !v)}
+            className="w-full flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)] mb-2 hover:text-[var(--text-secondary)] transition-colors"
+            aria-expanded={legendOpen}
+          >
+            <Info size={12} />
+            <span>{t('calendar.legendTitle')}</span>
+            <ChevronDown
+              size={14}
+              className={`transition-transform ${legendOpen ? 'rotate-180' : ''}`}
+            />
+            <span className="text-amber-200/70">
+              {legendOpen ? t('calendar.legendLess') : t('calendar.legendMore')}
+            </span>
+          </button>
+
+          <div className="flex flex-wrap justify-center gap-2">
+            <span className="chip" title={t('calendar.legendFavorableHint')}>
+              <span className="chip-dot bg-emerald-400" />
+              {t('calendar.legend.favorable')}
+            </span>
+            <span className="chip" title={t('calendar.legendNeutralHint')}>
+              <span className="chip-dot bg-yellow-400" />
+              {t('calendar.legend.neutral')}
+            </span>
+            <span className="chip" title={t('calendar.legendCompletionHint')}>
+              <span className="chip-dot bg-rose-400" />
+              {t('calendar.legend.completion')}
+            </span>
+            <span className="chip" title={t('calendar.legendZeroHint')}>
+              <span className="chip-dot bg-indigo-400" />
+              {t('calendar.legend.zeroDay')}
+            </span>
+          </div>
+
+          <AnimatePresence>
+            {legendOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <ul className="mt-3 mx-1 space-y-2 glass-card p-3 rounded-2xl text-left">
+                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
+                    <span className="chip-dot bg-emerald-400 mt-1 shrink-0" />
+                    <span>
+                      <strong className="text-white font-medium">
+                        {t('calendar.legend.favorable')}:
+                      </strong>{' '}
+                      {t('calendar.legendFavorableHint')}
+                    </span>
+                  </li>
+                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
+                    <span className="chip-dot bg-yellow-400 mt-1 shrink-0" />
+                    <span>
+                      <strong className="text-white font-medium">
+                        {t('calendar.legend.neutral')}:
+                      </strong>{' '}
+                      {t('calendar.legendNeutralHint')}
+                    </span>
+                  </li>
+                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
+                    <span className="chip-dot bg-rose-400 mt-1 shrink-0" />
+                    <span>
+                      <strong className="text-white font-medium">
+                        {t('calendar.legend.completion')}:
+                      </strong>{' '}
+                      {t('calendar.legendCompletionHint')}
+                    </span>
+                  </li>
+                  <li className="flex gap-2 text-xs text-[var(--text-secondary)]">
+                    <span className="chip-dot bg-indigo-400 mt-1 shrink-0" />
+                    <span>
+                      <strong className="text-white font-medium">
+                        {t('calendar.legend.zeroDay')}:
+                      </strong>{' '}
+                      {t('calendar.legendZeroHint')}
+                    </span>
+                  </li>
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <p className="text-[var(--text-muted)] text-[11px] text-center mt-3 opacity-80">

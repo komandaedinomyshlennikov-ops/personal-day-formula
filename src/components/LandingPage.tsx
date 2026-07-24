@@ -1,11 +1,12 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass, Shield, Clock, Gift } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { LanguageToggle } from './LanguageToggle';
 import type { LanguageCode } from '@/i18n';
 import { calculateUniversalDay, getEnergyInfo } from '@/utils/numerology';
 import { getDayActionLine } from '@/utils/actionableDay';
+import { ChevronDown } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -14,6 +15,7 @@ interface LandingPageProps {
 
 export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
+  const [energiesOpen, setEnergiesOpen] = useState(false);
 
   // Live demo: universal day (no birth date) — shows product immediately
   const demo = useMemo(() => {
@@ -285,43 +287,66 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Energies — compact, below fold */}
-      <section className="px-5 py-10">
+      {/* Energies — collapsed by default (less scroll friction) */}
+      <section className="px-5 py-8">
         <div className="max-w-sm mx-auto">
-          <h2 className="section-title text-center mb-2 text-[1.5rem]">
-            {t('landing.energiesTitle')}
-          </h2>
-          <p className="text-center text-[var(--text-muted)] text-sm mb-6">
-            {t('landing.energiesDesc')}
-          </p>
-          <div className="grid grid-cols-3 gap-2.5">
-            {energies.map((energy, index) => (
+          <button
+            type="button"
+            onClick={() => setEnergiesOpen((v) => !v)}
+            className="w-full glass-card p-4 rounded-2xl flex items-center justify-between gap-3 text-left"
+            aria-expanded={energiesOpen}
+          >
+            <div>
+              <h2 className="font-display text-xl text-white leading-tight">
+                {t('landing.energiesTitle')}
+              </h2>
+              <p className="text-[var(--text-muted)] text-xs mt-1">
+                {t('landing.energiesDesc')}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0 text-amber-200/90 text-xs font-medium">
+              <span>
+                {energiesOpen ? t('landing.energiesHide') : t('landing.energiesToggle')}
+              </span>
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${energiesOpen ? 'rotate-180' : ''}`}
+              />
+            </div>
+          </button>
+
+          <AnimatePresence>
+            {energiesOpen && (
               <motion.div
-                key={energy.num}
-                initial={{ opacity: 0, scale: 0.96 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.02 }}
-                className="energy-card !p-3"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
               >
-                <div
-                  className="text-2xl font-bold mb-1 font-display"
-                  style={{
-                    color: energy.color,
-                    textShadow: `0 0 18px ${energy.color}55`,
-                  }}
-                >
-                  {energy.num}
+                <div className="grid grid-cols-3 gap-2.5 pt-4">
+                  {energies.map((energy) => (
+                    <div key={energy.num} className="energy-card !p-3">
+                      <div
+                        className="text-2xl font-bold mb-1 font-display"
+                        style={{
+                          color: energy.color,
+                          textShadow: `0 0 18px ${energy.color}55`,
+                        }}
+                      >
+                        {energy.num}
+                      </div>
+                      <h3 className="text-white text-xs font-semibold leading-tight mb-0.5">
+                        {energy.planet}
+                      </h3>
+                      <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                        {energy.eng}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-white text-xs font-semibold leading-tight mb-0.5">
-                  {energy.planet}
-                </h3>
-                <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
-                  {energy.eng}
-                </p>
               </motion.div>
-            ))}
-          </div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 

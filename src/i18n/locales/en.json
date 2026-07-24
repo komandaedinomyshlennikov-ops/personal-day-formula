@@ -235,7 +235,16 @@
     "actionNeutral": "Focus today on",
     "actionFallback": "Open day recommendations",
     "tapForDetails": "Tap for details",
-    "openDay": "Open day"
+    "openDay": "Open day",
+    "upcomingTitle": "Next 3 days",
+    "upcomingHint": "Look ahead",
+    "legendTitle": "How to read colors",
+    "legendMore": "Details",
+    "legendLess": "Hide",
+    "legendFavorableHint": "Good for starts, meetings, and decisions",
+    "legendNeutralHint": "Steady pace — no extremes",
+    "legendCompletionHint": "Finish and tidy up rather than start new things",
+    "legendZeroHint": "10, 20, 30 — pause days: postpone big moves if you can"
   },
   "dayDetail": {
     "personalDay": "Personal Day",
@@ -1538,7 +1547,9 @@
     "previewCta": "Calculate my calendar",
     "trust1": "1 minute",
     "trust2": "No card",
-    "trust3": "3 days free"
+    "trust3": "3 days free",
+    "energiesToggle": "Show 9 energies",
+    "energiesHide": "Hide 9 energies"
   },
   "legal": {
     "section": "Legal",
@@ -1594,5 +1605,12 @@
     "colorsBody": "Green — favorable, yellow — neutral, red — completion day, purple — pause days (10, 20, 30).",
     "tapTitle": "Tap any day",
     "tapBody": "You'll see personal and universal numbers, do/avoid tips, and examples."
+  },
+  "trial": {
+    "daysLeft": "Trial: {{count}} days left",
+    "oneDayLeft": "Trial: 1 day left",
+    "subDaysLeft": "Subscription: {{count}} days left",
+    "subOneDayLeft": "Subscription: 1 day left",
+    "bannerHint": "Tap to renew access"
   }
 }
