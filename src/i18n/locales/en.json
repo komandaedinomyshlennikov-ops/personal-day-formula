@@ -564,19 +564,43 @@
     "plans": {
       "trial": {
         "name": "3 Days Free",
-        "description": "Try all features for free"
+        "description": "Today, calendar & next days — no card needed"
       },
       "month": {
         "name": "Month",
-        "description": "Full Pro: depth + export"
+        "description": "Pro: plan the month, not only today",
+        "features": [
+          "Calendar and action tips for today",
+          "Any-day breakdown (same as trial)",
+          "Deep personal month & year insights",
+          "Significant dates & full astro context",
+          "Smart tips in your journal",
+          "PDF & CSV export for planning"
+        ]
       },
       "year": {
         "name": "Year",
-        "description": "Pro + Year tools 2026 · save 58%"
+        "description": "Pro + Year tools 2026 · save 58%",
+        "features": [
+          "Everything in Month (Pro)",
+          "Personal year compass — 12‑month focus",
+          "Best windows for 30 days (top start days)",
+          "Weekly digest: green vs hard days",
+          "Month/year depth + export + journal tips",
+          "Priority reply from the author in Telegram"
+        ]
       },
       "lifetime": {
         "name": "Lifetime",
-        "description": "All Year tools, no renewals"
+        "description": "All Year tools once — no renewals ever",
+        "features": [
+          "Everything in Year, forever",
+          "Year Compass, luck windows, weekly digest",
+          "Full Pro: month/year, export, journal",
+          "No monthly or yearly payments",
+          "Personal consultation with the author",
+          "Lifetime priority support"
+        ]
       }
     },
     "paymentInfo": "After payment in Telegram you will receive a code to activate your subscription",
@@ -595,6 +619,7 @@
     "accessUntil": "Access open until",
     "unlimited": "unlimited",
     "saveBadge": "Save 58%",
+    "lifetimeBadge": "Forever",
     "payInTelegram": "Pay in Telegram",
     "haveCode": "I already have an activation code",
     "features": {

@@ -198,11 +198,12 @@ export function Subscription({
           </ul>
         </div>
 
-        {/* Plans */}
+        {/* Plans — each tier has its own benefit list */}
         {!isPaid && (
           <div className="space-y-3">
             {paidPlans.map((plan, index) => {
               const isPopular = plan.popular || plan.id === 'year';
+              const isYearish = plan.id === 'year' || plan.id === 'lifetime';
               const telegramLink = TELEGRAM_PAYMENT_LINKS[plan.id] || SUPPORT_TELEGRAM;
               const planName = t(`subscription.plans.${plan.id}.name`, {
                 defaultValue: plan.name,
@@ -210,6 +211,13 @@ export function Subscription({
               const planDesc = t(`subscription.plans.${plan.id}.description`, {
                 defaultValue: plan.description,
               });
+              const planFeatures = t(`subscription.plans.${plan.id}.features`, {
+                returnObjects: true,
+                defaultValue: [],
+              });
+              const features = Array.isArray(planFeatures)
+                ? (planFeatures as string[])
+                : [];
 
               return (
                 <motion.div
@@ -220,7 +228,9 @@ export function Subscription({
                   className={`relative p-4 rounded-2xl border ${
                     isPopular
                       ? 'border-emerald-400/35 bg-gradient-to-br from-emerald-500/10 to-transparent'
-                      : 'glass-card border-white/10'
+                      : plan.id === 'lifetime'
+                        ? 'border-violet-400/30 bg-gradient-to-br from-violet-500/10 to-transparent'
+                        : 'glass-card border-white/10'
                   }`}
                 >
                   {isPopular && (
@@ -228,11 +238,18 @@ export function Subscription({
                       {t('subscription.saveBadge')}
                     </div>
                   )}
+                  {plan.id === 'lifetime' && (
+                    <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-violet-400 text-black text-[10px] font-bold">
+                      {t('subscription.lifetimeBadge')}
+                    </div>
+                  )}
 
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h3 className="text-white font-bold text-lg">{planName}</h3>
-                      <p className="text-[var(--text-muted)] text-xs mt-0.5">{planDesc}</p>
+                      <p className="text-[var(--text-muted)] text-xs mt-0.5 max-w-[14rem]">
+                        {planDesc}
+                      </p>
                     </div>
                     <div className="text-right shrink-0 pl-2">
                       <span className="text-2xl font-bold text-white">${plan.price}</span>
@@ -240,34 +257,24 @@ export function Subscription({
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 mb-4 text-xs text-[var(--text-secondary)]">
-                    <div className="flex items-center gap-2">
-                      <Check size={14} className="text-emerald-400 shrink-0" />
-                      {t('subscription.features.dailyRecommendations')}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check size={14} className="text-emerald-400 shrink-0" />
-                      {t('subscription.features.personalDayMonthYear')}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Check size={14} className="text-emerald-400 shrink-0" />
-                      {t('subscription.features.dataExport')}
-                    </div>
-                    {(plan.id === 'year' || plan.id === 'lifetime') && (
-                      <div className="flex items-center gap-2">
-                        <Sparkles size={14} className="text-violet-300 shrink-0" />
-                        <span className="text-violet-100/90">
-                          {t('subscription.features.yearTools')}
-                        </span>
-                      </div>
-                    )}
-                    {plan.id === 'lifetime' && (
-                      <div className="flex items-center gap-2">
-                        <Check size={14} className="text-emerald-400 shrink-0" />
-                        {t('subscription.features.personalConsultation')}
-                      </div>
-                    )}
-                  </div>
+                  <ul className="space-y-1.5 mb-4 text-xs text-[var(--text-secondary)]">
+                    {features.map((item, fi) => {
+                      // First line is usually “includes lower tier” — rest are exclusive extras
+                      const highlight = isYearish && fi > 0;
+                      return (
+                        <li key={`${plan.id}-${fi}`} className="flex items-start gap-2">
+                          {highlight ? (
+                            <Sparkles size={14} className="text-violet-300 shrink-0 mt-0.5" />
+                          ) : (
+                            <Check size={14} className="text-emerald-400 shrink-0 mt-0.5" />
+                          )}
+                          <span className={highlight ? 'text-violet-100/90' : undefined}>
+                            {item}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
 
                   <div className="space-y-2">
                     <a
