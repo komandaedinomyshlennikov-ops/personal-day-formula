@@ -1,46 +1,61 @@
-# AstroNavigator Coach API (SpaceXAI / xAI Grok)
+# AstroNavigator Coach API — free LLM (Groq + Llama)
 
-Server-side proxy so the browser never sees `XAI_API_KEY`.
+Server-side proxy so the browser never sees the API key.
+
+**Provider:** [Groq](https://console.groq.com) free tier  
+**Default model:** `llama-3.1-8b-instant` (fast, free)  
+**Optional:** `llama-3.3-70b-versatile` (better quality, still free-tier)
 
 ## Trust model
 
 1. **Formula** — calculated in the app  
 2. **Interpretation** — day story in the app  
-3. **Coach** — Grok explains / asks questions (does **not** claim destiny)
+3. **Coach** — Llama explains / asks questions (does **not** claim destiny)
 
 ## Setup
+
+1. Free key: https://console.groq.com → API Keys  
+2. Deploy worker:
 
 ```bash
 cd coach-api
 npm install
 npx wrangler login
-npx wrangler secret put XAI_API_KEY   # paste key from https://console.x.ai
+npx wrangler secret put GROQ_API_KEY
 npx wrangler deploy
 ```
 
-Copy the worker URL, e.g. `https://astronavigator-coach.<you>.workers.dev`
+Copy URL, e.g. `https://astronavigator-coach.<you>.workers.dev`
 
 ## Connect the app
 
-Root of monorepo:
+Root of monorepo `.env`:
 
 ```bash
-# .env (git-ignored)
 VITE_COACH_API_URL=https://astronavigator-coach.<you>.workers.dev
 ```
 
-Rebuild and deploy GitHub Pages. If `VITE_COACH_API_URL` is empty, the app uses the **local rule engine** fallback.
+If unset → app uses **local rule engine** (no LLM).
 
 ## Local dev
 
 ```bash
 # terminal 1
 cd coach-api && npm run dev
-# → http://127.0.0.1:8787
 
 # terminal 2
 cd .. && VITE_COACH_API_URL=http://127.0.0.1:8787 npm run dev
 ```
+
+## Switch model (optional)
+
+In `wrangler.toml`:
+
+```toml
+LLM_MODEL = "llama-3.3-70b-versatile"
+```
+
+Or any OpenAI-compatible free endpoint via `LLM_BASE_URL` + `GROQ_API_KEY` (or other bearer key).
 
 ## Test
 

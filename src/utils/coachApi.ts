@@ -1,5 +1,5 @@
 /**
- * Client for Coach API (SpaceXAI / xAI via server proxy).
+ * Client for Coach API (free Groq/Llama via server proxy).
  * Falls back to local rule engine when API is unavailable.
  */
 
@@ -11,7 +11,7 @@ import {
 import { getEnergyInfo } from '@/utils/numerology';
 import { getPersonalDayStory } from '@/utils/actionableDay';
 
-export type CoachSource = 'xai' | 'local' | 'error-local';
+export type CoachSource = 'llm' | 'local' | 'error-local';
 
 export interface CoachReplyResult {
   text: string;
@@ -57,7 +57,7 @@ function buildRemoteContext(ctx: CoachContext, t: TFunction) {
   };
 }
 
-/** Prefer Grok via worker; on any failure use local interpretive engine. */
+/** Prefer free LLM via worker; on any failure use local interpretive engine. */
 export async function generateCoachReplySmart(
   userText: string,
   ctx: CoachContext,
@@ -97,12 +97,12 @@ export async function generateCoachReplySmart(
       return { text: localReply(userText, ctx, t), source: 'error-local' };
     }
 
-    const data = (await res.json()) as { reply?: string };
+    const data = (await res.json()) as { reply?: string; source?: string };
     if (!data.reply?.trim()) {
       return { text: localReply(userText, ctx, t), source: 'error-local' };
     }
 
-    return { text: data.reply.trim(), source: 'xai' };
+    return { text: data.reply.trim(), source: 'llm' };
   } catch (e) {
     console.warn('[coach] API failed, local fallback', e);
     return { text: localReply(userText, ctx, t), source: 'error-local' };

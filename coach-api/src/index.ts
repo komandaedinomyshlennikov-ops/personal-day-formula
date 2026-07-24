@@ -1,10 +1,13 @@
 import { buildSystemPrompt, type CoachApiContext } from './systemPrompt';
 
 export interface Env {
-  XAI_API_KEY: string;
-  XAI_MODEL?: string;
-  XAI_BASE_URL?: string;
+  /** Free tier: https://console.groq.com */
+  GROQ_API_KEY?: string;
+  LLM_MODEL?: string;
+  LLM_BASE_URL?: string;
   ALLOWED_ORIGINS?: string;
+  /** @deprecated use GROQ_API_KEY */
+  XAI_API_KEY?: string;
 }
 
 interface ChatMessage {
@@ -21,6 +24,10 @@ interface CoachRequestBody {
 const MAX_MESSAGE = 1200;
 const MAX_HISTORY = 16;
 
+/** Free default: Groq + Llama (OpenAI-compatible) */
+const DEFAULT_BASE = 'https://api.groq.com/openai/v1';
+const DEFAULT_MODEL = 'llama-3.1-8b-instant';
+
 function corsHeaders(origin: string | null, allowed: string[]): HeadersInit {
   const ok =
     origin &&
@@ -36,11 +43,7 @@ function corsHeaders(origin: string | null, allowed: string[]): HeadersInit {
   };
 }
 
-function json(
-  data: unknown,
-  status: number,
-  cors: HeadersInit
-): Response {
+function json(data: unknown, status: number, cors: HeadersInit): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
@@ -48,6 +51,10 @@ function json(
       ...cors,
     },
   });
+}
+
+function resolveApiKey(env: Env): string | undefined {
+  return env.GROQ_API_KEY || env.XAI_API_KEY;
 }
 
 export default {
@@ -58,6 +65,9 @@ export default {
       .filter(Boolean);
     const origin = request.headers.get('Origin');
     const cors = corsHeaders(origin, allowed);
+    const apiKey = resolveApiKey(env);
+    const model = env.LLM_MODEL || DEFAULT_MODEL;
+    const base = (env.LLM_BASE_URL || DEFAULT_BASE).replace(/\/$/, '');
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors });
@@ -69,8 +79,9 @@ export default {
         {
           ok: true,
           service: 'astronavigator-coach',
-          model: env.XAI_MODEL || 'grok-4.5',
-          hasKey: Boolean(env.XAI_API_KEY),
+          provider: 'groq',
+          model,
+          hasKey: Boolean(apiKey),
         },
         200,
         cors
@@ -81,9 +92,12 @@ export default {
       return json({ error: 'Not found' }, 404, cors);
     }
 
-    if (!env.XAI_API_KEY) {
+    if (!apiKey) {
       return json(
-        { error: 'XAI_API_KEY not configured on server' },
+        {
+          error:
+            'GROQ_API_KEY not configured. Get a free key at https://console.groq.com and run: wrangler secret put GROQ_API_KEY',
+        },
         503,
         cors
       );
@@ -117,14 +131,11 @@ export default {
         content: String(m.content).slice(0, MAX_MESSAGE),
       }));
 
-    const model = env.XAI_MODEL || 'grok-4.5';
-    const base = (env.XAI_BASE_URL || 'https://api.x.ai/v1').replace(/\/$/, '');
-
     try {
-      const xaiRes = await fetch(`${base}/chat/completions`, {
+      const llmRes = await fetch(`${base}/chat/completions`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${env.XAI_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -139,20 +150,20 @@ export default {
         }),
       });
 
-      if (!xaiRes.ok) {
-        const errText = await xaiRes.text();
-        console.error('xAI error', xaiRes.status, errText.slice(0, 400));
+      if (!llmRes.ok) {
+        const errText = await llmRes.text();
+        console.error('LLM error', llmRes.status, errText.slice(0, 400));
         return json(
           {
             error: 'Upstream model error',
-            status: xaiRes.status,
+            status: llmRes.status,
           },
           502,
           cors
         );
       }
 
-      const data = (await xaiRes.json()) as {
+      const data = (await llmRes.json()) as {
         choices?: Array<{ message?: { content?: string } }>;
       };
       const reply = data.choices?.[0]?.message?.content?.trim();
@@ -164,7 +175,8 @@ export default {
         {
           reply,
           model,
-          source: 'xai',
+          source: 'llm',
+          provider: 'groq',
         },
         200,
         cors

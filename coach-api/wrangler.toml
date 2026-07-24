@@ -2,15 +2,13 @@ name = "astronavigator-coach"
 main = "src/index.ts"
 compatibility_date = "2026-01-01"
 
-# Secrets (set via CLI, never commit):
-#   wrangler secret put XAI_API_KEY
+# Free LLM: Groq + Llama (https://console.groq.com)
+#   wrangler secret put GROQ_API_KEY
 #
-# Optional vars:
-#   [vars]
-#   ALLOWED_ORIGINS = "https://komandaedinomyshlennikov-ops.github.io,http://localhost:5173"
-#   XAI_MODEL = "grok-4.5"
+# Optional stronger free-tier model:
+#   LLM_MODEL = "llama-3.3-70b-versatile"
 
 [vars]
 ALLOWED_ORIGINS = "https://komandaedinomyshlennikov-ops.github.io,http://localhost:5173,http://127.0.0.1:5173"
-XAI_MODEL = "grok-4.5"
-XAI_BASE_URL = "https://api.x.ai/v1"
+LLM_MODEL = "llama-3.1-8b-instant"
+LLM_BASE_URL = "https://api.groq.com/openai/v1"

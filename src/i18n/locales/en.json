@@ -1713,8 +1713,8 @@
     "checkInNote": "What happened? (optional)",
     "checkInSaved": "Check-in saved",
     "checkInEdit": "edit",
-    "sourceLive": "Reply via Grok · interpretive helper",
-    "sourceReady": "Grok connected · offline falls back to local",
+    "sourceLive": "Reply via Llama (Groq) · interpretive helper",
+    "sourceReady": "Free LLM connected · offline falls back to local",
     "sourceFallback": "Network/API unavailable · local helper",
     "sourceLocal": "Local helper (API not configured)"
   },

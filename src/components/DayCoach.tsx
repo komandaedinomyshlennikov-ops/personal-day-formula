@@ -214,7 +214,7 @@ export function DayCoach({
           )}
           <p className="text-[10px] text-[var(--text-muted)]">
             {apiOn
-              ? lastSource === 'xai'
+              ? lastSource === 'llm'
                 ? t('coach.sourceLive')
                 : lastSource === 'error-local'
                   ? t('coach.sourceFallback')
