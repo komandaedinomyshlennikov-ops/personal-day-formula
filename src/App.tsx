@@ -18,7 +18,7 @@ import { Calendar } from '@/components/Calendar';
 import { DayDetail } from '@/components/DayDetail';
 import { Subscription } from '@/components/Subscription';
 import { Settings } from '@/components/Settings';
-import { ActivationCode } from '@/components/ActivationCode';
+import { UnlockAccess } from '@/components/UnlockAccess';
 import { BirthDateModal } from '@/components/BirthDateModal';
 import { MonthYearDetail } from '@/components/MonthYearDetail';
 import { Notes } from '@/components/Notes';
@@ -138,31 +138,23 @@ function AppShell() {
     navigate(dayToPath(day.date));
   };
 
-  const handleSubscriptionSelect = (planId: string) => {
-    if (planId === 'trial') {
-      toast.info(t('subscription.trialActiveTitle'));
-      return;
-    }
-    navigate('/activation');
-  };
-
-  const handleActivation = async (code: string): Promise<boolean> => {
-    const success = await activateWithCode(code);
-    if (success) {
-      trackEvent('subscription_activated');
-      toast.success(t('subscription.activationSuccess'), {
-        description: t('subscription.activeDesc'),
-      });
-      setShowExpiredModal(false);
-      navigate('/calendar');
-      return true;
-    }
-
-    toast.error(t('subscription.invalidCode'), {
-      description: t('errors.generic'),
-    });
-    return false;
-  };
+  /** One-tap unlock from Telegram link: #/unlock?token=… */
+  const handleUnlockToken = useCallback(
+    async (token: string): Promise<boolean> => {
+      const success = await activateWithCode(token);
+      if (success) {
+        trackEvent('subscription_activated', { method: 'telegram_unlock_link' });
+        toast.success(t('subscription.activationSuccess'), {
+          description: t('subscription.activeDesc'),
+        });
+        setShowExpiredModal(false);
+        return true;
+      }
+      trackEvent('subscription_unlock_failed');
+      return false;
+    },
+    [activateWithCode, t]
+  );
 
   const getExportPeriod = () => {
     const now = new Date();
@@ -481,7 +473,6 @@ function AppShell() {
                         : null
                   }
                   accessTier={accessTier}
-                  onSelect={handleSubscriptionSelect}
                   onBack={() =>
                     navigate(userData.birthDate ? '/calendar' : '/')
                   }
@@ -492,13 +483,10 @@ function AppShell() {
           />
 
           <Route
-            path="/activation"
+            path="/unlock"
             element={
-              <PageTransition key="activation" direction="left">
-                <ActivationCode
-                  onActivate={handleActivation}
-                  onBack={() => navigate('/subscription')}
-                />
+              <PageTransition key="unlock" direction="none">
+                <UnlockAccess onUnlock={handleUnlockToken} />
               </PageTransition>
             }
           />

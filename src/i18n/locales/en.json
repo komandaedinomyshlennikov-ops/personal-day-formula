@@ -627,7 +627,7 @@
         ]
       }
     },
-    "paymentInfo": "After payment in Telegram you will receive a code to activate your subscription",
+    "paymentInfo": "Pay and confirm in Telegram. Access opens via the link from chat.",
     "contactForPayment": "Reach out to activate your subscription",
     "telegramButton": "Message on Telegram",
     "premiumFeature": "Premium Feature",
@@ -656,15 +656,16 @@
       "coach": "Day interpretation helper"
     },
     "howToPay": "How to get access",
-    "step1": "Choose a plan and pay via Telegram",
-    "step2": "Receive an activation code from the author",
-    "step3": "Enter the code in the app (Have a code)",
-    "noCardData": "Card details are never entered in this app.",
+    "step1": "Choose a plan and tap “Pay in Telegram”",
+    "step2": "Pay in the chat (transfer / as agreed) — no bank card in the app 💳",
+    "step3": "After payment you’ll get a link — open it and access unlocks (no code typing)",
+    "noCardData": "Bank card details are never entered in this app. Payment is only in Telegram.",
     "overdueDays": "Overdue by {{count}} day(s)",
     "endedToday": "Ended today",
     "plansShort": "Month, year, or lifetime",
     "trialLabel": "Trial period",
-    "subLabel": "Subscription"
+    "subLabel": "Subscription",
+    "paidNeedHelp": "Already paid? Message on Telegram"
   },
   "settings": {
     "title": "Settings",
@@ -1805,5 +1806,15 @@
     "replayTitle": "Show tips again",
     "replayDesc": "Short tour: today, colors, calendar, helper",
     "replayToast": "Opening home tour…"
+  },
+  "unlock": {
+    "loadingTitle": "Unlocking access…",
+    "loadingBody": "Checking the link from Telegram",
+    "okTitle": "You’re in!",
+    "okBody": "Subscription active. Opening the calendar…",
+    "failTitle": "Link didn’t work",
+    "failBody": "Message on Telegram — we’ll send a working unlock link.",
+    "writeTelegram": "Message on Telegram",
+    "backPlans": "Back to plans"
   }
 }

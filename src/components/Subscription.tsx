@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Crown, Sparkles, Send, X, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { SubscriptionPlan } from '@/types';
-import { TELEGRAM_PAYMENT_LINKS, SUPPORT_TELEGRAM } from '@/config/site';
+import { SUPPORT_TELEGRAM, buildTelegramPaymentUrl } from '@/config/site';
 import { trackEvent } from '@/lib/analytics';
 import type { AccessTier } from '@/utils/access';
 import { hasYearPerks, isPaidTier, isTrialTier } from '@/utils/access';
@@ -12,7 +12,6 @@ interface SubscriptionProps {
   plans: SubscriptionPlan[];
   currentPlanId: string | null;
   accessTier: AccessTier;
-  onSelect: (planId: string) => void;
   onBack: () => void;
   trialEndDate: string | null;
 }
@@ -21,7 +20,6 @@ export function Subscription({
   plans,
   currentPlanId: _currentPlanId,
   accessTier,
-  onSelect,
   onBack,
   trialEndDate,
 }: SubscriptionProps) {
@@ -31,10 +29,11 @@ export function Subscription({
   const isPaid = isPaidTier(accessTier);
   const isYear = hasYearPerks(accessTier);
   const paidPlans = plans.filter((p) => p.id !== 'trial');
+  const lang = i18n.language?.startsWith('ru') ? 'ru' : 'en';
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US');
+    return date.toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US');
   };
 
   const rows: { key: string; trial: boolean; pro: boolean; year: boolean }[] = [
@@ -66,7 +65,6 @@ export function Subscription({
       </header>
 
       <div className="px-4 py-5 space-y-5">
-        {/* Hero value */}
         <div className="text-center">
           <div
             className="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-3"
@@ -86,7 +84,6 @@ export function Subscription({
           </p>
         </div>
 
-        {/* Trial status */}
         {isTrialActive && trialEndDate && (
           <div className="glass-card p-4 rounded-2xl border border-emerald-400/25 bg-emerald-400/10">
             <div className="flex items-center gap-2 mb-2">
@@ -123,7 +120,6 @@ export function Subscription({
           </div>
         )}
 
-        {/* Why upgrade */}
         {!isPaid && (
           <div className="glass-card p-4 rounded-2xl border border-white/10">
             <h3 className="text-white font-semibold text-sm mb-1.5 flex items-center gap-1.5">
@@ -150,7 +146,6 @@ export function Subscription({
           </div>
         )}
 
-        {/* Comparison table */}
         <div className="glass-card rounded-2xl overflow-hidden border border-white/10">
           <div className="grid grid-cols-4 gap-0 text-[10px] font-semibold text-center border-b border-white/10 bg-white/[0.03]">
             <div className="p-2 text-left text-[var(--text-muted)]" />
@@ -179,7 +174,6 @@ export function Subscription({
           ))}
         </div>
 
-        {/* Year extras callout */}
         <div
           className="glass-card p-4 rounded-2xl border border-violet-400/30"
           style={{
@@ -199,13 +193,12 @@ export function Subscription({
           </ul>
         </div>
 
-        {/* Plans — each tier has its own benefit list */}
+        {/* Plans — Telegram only, no codes */}
         {!isPaid && (
           <div className="space-y-3">
             {paidPlans.map((plan, index) => {
               const isPopular = plan.popular || plan.id === 'year';
-              const isYearish = plan.id === 'year' || plan.id === 'lifetime';
-              const telegramLink = TELEGRAM_PAYMENT_LINKS[plan.id] || SUPPORT_TELEGRAM;
+              const telegramLink = buildTelegramPaymentUrl(plan.id, lang);
               const planName = t(`subscription.plans.${plan.id}.name`, {
                 defaultValue: plan.name,
               });
@@ -219,6 +212,7 @@ export function Subscription({
               const features = Array.isArray(planFeatures)
                 ? (planFeatures as string[])
                 : [];
+              const isYearish = plan.id === 'year' || plan.id === 'lifetime';
 
               return (
                 <motion.div
@@ -260,7 +254,6 @@ export function Subscription({
 
                   <ul className="space-y-1.5 mb-4 text-xs text-[var(--text-secondary)]">
                     {features.map((item, fi) => {
-                      // First line is usually “includes lower tier” — rest are exclusive extras
                       const highlight = isYearish && fi > 0;
                       return (
                         <li key={`${plan.id}-${fi}`} className="flex items-start gap-2">
@@ -277,35 +270,29 @@ export function Subscription({
                     })}
                   </ul>
 
-                  <div className="space-y-2">
-                    <a
-                      href={telegramLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="telegram-button w-full"
-                      onClick={() => trackEvent('payment_telegram_click', { plan: plan.id })}
-                    >
-                      <Send size={16} />
-                      {t('subscription.payInTelegram')}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        trackEvent('activation_open', { plan: plan.id });
-                        onSelect(plan.id);
-                      }}
-                      className="w-full py-3 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors"
-                    >
-                      {t('subscription.haveCode')}
-                    </button>
-                  </div>
+                  <a
+                    href={telegramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="telegram-button w-full"
+                    onClick={() => {
+                      trackEvent('payment_telegram_click', { plan: plan.id });
+                      try {
+                        sessionStorage.setItem('astronavigator_pending_plan', plan.id);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                  >
+                    <Send size={16} />
+                    {t('subscription.payInTelegram')}
+                  </a>
                 </motion.div>
               );
             })}
           </div>
         )}
 
-        {/* How to pay */}
         {!isPaid && (
           <ol className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2 text-xs text-[var(--text-secondary)]">
             <p className="text-white font-semibold text-sm mb-1">{t('subscription.howToPay')}</p>
@@ -325,6 +312,18 @@ export function Subscription({
               {t('subscription.noCardData')}
             </p>
           </ol>
+        )}
+
+        {!isPaid && (
+          <a
+            href={SUPPORT_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-center py-3 rounded-2xl border border-white/10 text-sm text-[var(--text-secondary)] hover:bg-white/5"
+            onClick={() => trackEvent('payment_support_click')}
+          >
+            {t('subscription.paidNeedHelp')}
+          </a>
         )}
 
         <p className="text-center text-[var(--text-muted)] text-[11px]">
