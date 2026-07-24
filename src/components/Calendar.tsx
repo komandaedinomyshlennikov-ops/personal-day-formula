@@ -370,6 +370,7 @@ export function Calendar({
         {onCoach && (
           <button
             type="button"
+            data-coach="discuss"
             onClick={onCoach}
             className="w-full flex items-center gap-3 glass-card p-3.5 rounded-2xl border border-violet-400/30 text-left"
             style={{

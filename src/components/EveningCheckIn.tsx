@@ -22,8 +22,6 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
   const [saved, setSaved] = useState(false);
 
   const dateKey = getLocalDateKey();
-  const hour = new Date().getHours();
-  const evening = hour >= 18 || hour < 5;
 
   useEffect(() => {
     const state = loadCoachState();
@@ -34,11 +32,6 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
       setSaved(true);
     }
   }, [dateKey]);
-
-  if (!evening && !open && !saved) {
-    // Soft: still show compact entry after 15:00 so people can log early
-    if (hour < 15) return null;
-  }
 
   const submit = () => {
     if (!match) return;
@@ -65,6 +58,7 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
     return (
       <button
         type="button"
+        data-coach="checkin"
         onClick={() => setOpen(true)}
         className="w-full text-left glass-card p-3 rounded-2xl border border-white/10 text-xs text-[var(--text-muted)]"
       >
@@ -77,6 +71,7 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
     return (
       <button
         type="button"
+        data-coach="checkin"
         onClick={() => setOpen(true)}
         className="w-full flex items-center gap-3 glass-card p-3.5 rounded-2xl border border-violet-400/25 text-left"
         style={{
@@ -98,7 +93,10 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
   }
 
   return (
-    <div className="glass-card p-4 rounded-2xl border border-violet-400/25 space-y-3">
+    <div
+      data-coach="checkin"
+      className="glass-card p-4 rounded-2xl border border-violet-400/25 space-y-3"
+    >
       <div className="flex items-center gap-2">
         <Moon size={16} className="text-violet-200" />
         <p className="text-white text-sm font-semibold">{t('coach.checkInTitle')}</p>

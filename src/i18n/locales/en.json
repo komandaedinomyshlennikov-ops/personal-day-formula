@@ -1779,5 +1779,31 @@
     "yearExtra3": "Personal year compass (career, love, resource focus)",
     "yearExtra4": "Priority chat with the author after yearly payment",
     "featCoach": "Helper (free limit / unlimited Pro)"
+  },
+  "tour": {
+    "badge": "How it works",
+    "welcomeTitle": "Welcome",
+    "welcomeBody": "It’s simple.\n\n1) The formula calculates your personal day from birth date.\n2) You get a short takeaway: what may fit today.\n3) The helper connects that to your plans.\n\nNot a horoscope and not an order — a cue to think.",
+    "welcomeTip": "Six short steps — under a minute.",
+    "todayTitle": "“Today” card",
+    "todayBody": "The main place on the screen.\n\n• Day number (1–9) — your personal rhythm for this date\n• Color dot — action / steady / pause\n• Short takeaway and 3 “may fit” points\n\nTap the card for the full day breakdown.",
+    "todayTip": "Start the morning here — one glance is often enough.",
+    "discussTitle": "Discuss the day",
+    "discussBody": "“Discuss today’s day” opens the helper.\n\nIt doesn’t “know fate”. It:\n• uses the day calculation;\n• asks questions (work, family, rest…);\n• helps you decide what to do.",
+    "colorsTitle": "Calendar colors",
+    "colorsBody": "Green — action day: starts, meetings, decisions (if ready).\n\nYellow — steady day: routine without extremes.\n\nRed — pause day: better to finish and protect energy if you can choose.\n\nIndigo (10, 20, 30) — go softer on big moves.",
+    "colorsTip": "Color is a cue, not a ban. You always decide.",
+    "gridTitle": "Month grid",
+    "gridBody": "Each square is a date and your personal day number.\n\n• Swipe left/right — change month\n• Tap a day — details\n• Today has a highlight ring\n\nPlan meetings and launches with a clear view ahead.",
+    "checkinTitle": "Evening check-in",
+    "checkinBody": "In the evening you can rate how well the take matched reality (1–5) and note what happened.\n\nThat’s your personal memory. Over time the helper can use your ratings — not “magic”.",
+    "checkinTip": "Even one check-in a week helps.",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "done": "Got it — start",
+    "replayTitle": "Show tips again",
+    "replayDesc": "Short tour: today, colors, calendar, helper",
+    "replayToast": "Opening home tour…"
   }
 }

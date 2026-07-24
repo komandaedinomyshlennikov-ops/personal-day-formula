@@ -17,15 +17,17 @@ import {
   Globe,
   Crown,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Switch } from '@/components/ui/switch';
 import { LanguageSelector } from './LanguageSelector';
 import { InstallPrompt } from './InstallPrompt';
+import { resetHomeTour } from '@/components/CoachMarks';
 import type { UserData } from '@/types';
 import { parseDateOnly, toLocalDate } from '@/utils/date';
 import { getConsent, setConsent } from '@/lib/analytics';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface SettingsProps {
   userData: UserData;
@@ -59,6 +61,7 @@ export function Settings({
   onUpgrade,
 }: SettingsProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [consent, setConsentState] = useState(getConsent);
   const [nameDraft, setNameDraft] = useState(userData.displayName || '');
   const currentLang = i18n.language;
@@ -155,6 +158,34 @@ export function Settings({
 
         {/* Install App Section */}
         <InstallPrompt />
+
+        {/* Replay home tour */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="glass-card overflow-hidden"
+        >
+          <button
+            type="button"
+            onClick={() => {
+              resetHomeTour();
+              toast.success(t('tour.replayToast'));
+              navigate('/calendar');
+            }}
+            className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-full bg-amber-400/15 border border-amber-400/25 flex items-center justify-center shrink-0">
+              <Globe size={18} className="text-amber-300" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-white font-medium text-sm">{t('tour.replayTitle')}</p>
+              <p className="text-[var(--text-muted)] text-xs mt-0.5">
+                {t('tour.replayDesc')}
+              </p>
+            </div>
+          </button>
+        </motion.section>
 
         {/* Theme Section */}
         <motion.section
