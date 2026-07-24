@@ -1,12 +1,22 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ChevronRight, CalendarHeart, Stars, Compass, Shield, Clock, Gift } from 'lucide-react';
+import {
+  Sparkles,
+  ChevronRight,
+  CalendarHeart,
+  Stars,
+  Compass,
+  Shield,
+  Clock,
+  Gift,
+  ChevronDown,
+  BookOpen,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { LanguageToggle } from './LanguageToggle';
 import type { LanguageCode } from '@/i18n';
 import { calculateUniversalDay, getEnergyInfo } from '@/utils/numerology';
 import { getDayActionLine } from '@/utils/actionableDay';
-import { ChevronDown } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -17,7 +27,6 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
   const [energiesOpen, setEnergiesOpen] = useState(false);
 
-  // Live demo: universal day (no birth date) — shows product immediately
   const demo = useMemo(() => {
     const num = calculateUniversalDay(new Date());
     const energy = getEnergyInfo(num, t);
@@ -87,14 +96,13 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
 
   const toneBorder =
     demo.tone === 'favorable'
-      ? 'border-emerald-400/35'
+      ? 'border-emerald-400/40'
       : demo.tone === 'challenging'
-        ? 'border-rose-400/35'
-        : 'border-amber-400/30';
+        ? 'border-rose-400/40'
+        : 'border-amber-400/35';
 
   return (
     <div className="app-shell pb-28 overflow-x-hidden">
-      {/* Fixed bar: language never overlays hero text */}
       <header className="landing-topbar">
         <div className="landing-topbar__inner">
           <div className="landing-topbar__badge" title={t('landing.badge')}>
@@ -107,28 +115,98 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </header>
 
-      {/* Hero — top padding clears fixed topbar + safe area */}
-      <section className="relative px-5 landing-hero pb-6 text-center">
+      {/* HERO — visual hierarchy: title → value → colors → CTA */}
+      <section className="relative px-5 landing-hero pb-8 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-sm mx-auto w-full"
         >
-          <h1 className="font-display text-[2.4rem] sm:text-[2.75rem] leading-[1.05] mb-1 text-white">
-            {t('landing.title1')}
-            <span className="gradient-text"> {t('landing.title2')}</span>
+          <p className="landing-kicker mb-3">{t('landing.kicker')}</p>
+
+          <h1 className="font-display landing-hero-title text-white mb-4">
+            {t('landing.heroTitle')}
+            <span className="block gradient-text mt-1">{t('landing.heroTitleAccent')}</span>
           </h1>
 
-          <p className="text-amber-200/95 font-medium text-[0.98rem] mb-2 tracking-wide mt-3">
-            {t('landing.subtitle')}
-          </p>
-          <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-5 max-w-[21rem] mx-auto">
-            {t('landing.description')}
+          <p className="text-[var(--text-secondary)] text-[0.95rem] leading-relaxed mb-5 max-w-[22rem] mx-auto">
+            {t('landing.heroLead')}
           </p>
 
-          {/* Trust row */}
-          <div className="flex flex-wrap justify-center gap-2 mb-5">
+          {/* Instant color system — 1-second comprehension */}
+          <ul className="landing-color-legend mb-6 text-left">
+            <li>
+              <span className="dot-fav" aria-hidden />
+              <span>{t('landing.legendGreen')}</span>
+            </li>
+            <li>
+              <span className="dot-neu" aria-hidden />
+              <span>{t('landing.legendYellow')}</span>
+            </li>
+            <li>
+              <span className="dot-hard" aria-hidden />
+              <span>{t('landing.legendRed')}</span>
+            </li>
+          </ul>
+
+          {/* Live preview card */}
+          <motion.button
+            type="button"
+            onClick={onStart}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            whileTap={{ scale: 0.985 }}
+            className={`w-full text-left glass-card p-4 rounded-3xl mb-5 border ${toneBorder} landing-preview-card`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] uppercase tracking-[0.14em] text-amber-200/90 font-semibold">
+                {t('landing.previewLabel')}
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                {t('landing.previewToday')}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                style={{
+                  background: `${demo.energy.color}28`,
+                  boxShadow: `0 0 32px ${demo.energy.color}40`,
+                }}
+              >
+                {demo.energy.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-white font-semibold text-[1.05rem]">
+                  {demo.num} · {demo.energy.planet}
+                </p>
+                <p className="text-[var(--text-secondary)] text-xs leading-snug mt-1 line-clamp-2">
+                  {demo.action}
+                </p>
+                <p className="text-[10px] text-amber-200/75 mt-1.5 font-medium">
+                  {t('landing.previewPersonalHint')}
+                </p>
+              </div>
+              <ChevronRight size={18} className="text-amber-200/80 shrink-0" />
+            </div>
+          </motion.button>
+
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.015, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onStart}
+            className="gradient-button gradient-button--hero w-full"
+          >
+            <Sparkles size={18} />
+            {t('landing.startButton')}
+            <ChevronRight size={18} />
+          </motion.button>
+          <p className="mt-3 text-[11px] text-[var(--text-muted)]">{t('landing.ctaHint')}</p>
+
+          <div className="flex flex-wrap justify-center gap-2 mt-5">
             <span className="chip">
               <Clock size={11} className="text-amber-200" />
               {t('landing.trust1')}
@@ -142,89 +220,31 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
               {t('landing.trust3')}
             </span>
           </div>
-
-          {/* Product preview — aha without signup */}
-          <motion.button
-            type="button"
-            onClick={onStart}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            whileTap={{ scale: 0.985 }}
-            className={`w-full text-left glass-card p-4 rounded-3xl mb-5 border ${toneBorder}`}
-            style={{
-              background:
-                'linear-gradient(145deg, rgba(245,215,142,0.1), rgba(167,139,250,0.08))',
-            }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] uppercase tracking-[0.14em] text-amber-200/85">
-                {t('landing.previewLabel')}
-              </span>
-              <span className="text-[10px] text-[var(--text-muted)]">
-                {t('landing.previewToday')}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                style={{
-                  background: `${demo.energy.color}24`,
-                  boxShadow: `0 0 28px ${demo.energy.color}33`,
-                }}
-              >
-                {demo.energy.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-white font-semibold text-[0.95rem]">
-                  {demo.num} · {demo.energy.planet}
-                </p>
-                <p className="text-[var(--text-secondary)] text-xs leading-snug mt-0.5 line-clamp-2">
-                  {demo.action}
-                </p>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
-                  {t('landing.previewPersonalHint')}
-                </p>
-              </div>
-              <ChevronRight size={18} className="text-amber-200/80 shrink-0" />
-            </div>
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={onStart}
-            className="gradient-button w-full"
-          >
-            {t('landing.startButton')}
-            <ChevronRight size={18} />
-          </motion.button>
-          <p className="mt-2.5 text-[11px] text-[var(--text-muted)]">
-            {t('landing.ctaHint')}
-          </p>
-
-          <p className="mt-6 text-[var(--text-muted)] text-sm">
-            {t('landing.footer.author')}
-          </p>
         </motion.div>
       </section>
 
-      {/* What is */}
-      <section className="px-5 py-10">
+      {/* Why return daily */}
+      <section className="px-5 pb-8">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="glass-card p-6 max-w-sm mx-auto text-center"
+          className="max-w-sm mx-auto glass-card p-5 rounded-3xl text-left border border-white/10"
         >
-          <h2 className="section-title mb-3 text-[1.45rem]">{t('landing.whatIs')}</h2>
+          <p className="text-[10px] uppercase tracking-[0.14em] text-violet-200/85 font-semibold mb-2">
+            {t('landing.habitLabel')}
+          </p>
+          <h2 className="font-display text-[1.55rem] text-white leading-tight mb-2">
+            {t('landing.habitTitle')}
+          </h2>
           <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
-            {t('landing.whatIsDesc')}
+            {t('landing.habitBody')}
           </p>
         </motion.div>
       </section>
 
       {/* Features */}
-      <section className="px-5 py-6">
+      <section className="px-5 py-4">
         <div className="max-w-sm mx-auto grid grid-cols-2 gap-3">
           {features.map((feature, index) => (
             <motion.div
@@ -247,27 +267,16 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Quote */}
-      <section className="px-5 py-8">
-        <motion.blockquote
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="max-w-sm mx-auto text-center px-4"
-        >
-          <p className="font-display text-xl italic text-[var(--text-secondary)] leading-relaxed">
-            “{t('landing.quote')}”
-          </p>
-        </motion.blockquote>
-      </section>
-
-      {/* Steps */}
+      {/* How it works + method trust */}
       <section className="px-5 py-10">
         <div className="max-w-sm mx-auto">
-          <h2 className="section-title text-center mb-8 text-[1.5rem]">
+          <h2 className="section-title text-center mb-2 text-[1.65rem]">
             {t('landing.howItWorks')}
           </h2>
-          <div className="space-y-3">
+          <p className="text-center text-[var(--text-muted)] text-sm mb-7 max-w-xs mx-auto">
+            {t('landing.howItWorksLead')}
+          </p>
+          <div className="space-y-3 mb-6">
             {steps.map((step, index) => (
               <motion.div
                 key={step.num}
@@ -287,10 +296,43 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
               </motion.div>
             ))}
           </div>
+
+          <div className="glass-card p-4 rounded-2xl border border-white/10">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                <BookOpen size={16} className="text-amber-200" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-sm mb-1">
+                  {t('landing.methodTitle')}
+                </h3>
+                <p className="text-[var(--text-secondary)] text-xs leading-relaxed mb-2">
+                  {t('landing.methodBody')}
+                </p>
+                <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                  {t('landing.methodDisclaimer')}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Energies — collapsed by default (less scroll friction) */}
+      {/* Quote */}
+      <section className="px-5 py-6">
+        <motion.blockquote
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="max-w-sm mx-auto text-center px-4"
+        >
+          <p className="font-display text-[1.45rem] italic text-[var(--text-secondary)] leading-relaxed">
+            “{t('landing.quote')}”
+          </p>
+        </motion.blockquote>
+      </section>
+
+      {/* Energies */}
       <section className="px-5 py-8">
         <div className="max-w-sm mx-auto">
           <button
@@ -303,9 +345,7 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
               <h2 className="font-display text-xl text-white leading-tight">
                 {t('landing.energiesTitle')}
               </h2>
-              <p className="text-[var(--text-muted)] text-xs mt-1">
-                {t('landing.energiesDesc')}
-              </p>
+              <p className="text-[var(--text-muted)] text-xs mt-1">{t('landing.energiesDesc')}</p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0 text-amber-200/90 text-xs font-medium">
               <span>
@@ -356,9 +396,16 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       {/* Final CTA */}
       <section className="px-5 py-12 text-center">
         <div className="max-w-sm mx-auto glass-card p-7 rounded-3xl">
-          <h2 className="section-title mb-2 text-[1.5rem]">{t('landing.ready')}</h2>
+          <h2 className="section-title mb-2 text-[1.65rem]">{t('landing.ready')}</h2>
           <p className="text-[var(--text-secondary)] text-sm mb-5">{t('landing.readyDesc')}</p>
-          <motion.button whileTap={{ scale: 0.98 }} onClick={onStart} className="gradient-button w-full">
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.015, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onStart}
+            className="gradient-button gradient-button--hero w-full"
+          >
+            <Sparkles size={18} />
             {t('landing.freeButton')}
             <ChevronRight size={18} />
           </motion.button>
@@ -386,6 +433,9 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
               +375 29 780 1742
             </a>
           </div>
+          <p className="text-[10px] text-[var(--text-muted)] leading-relaxed mb-3 max-w-xs mx-auto">
+            {t('landing.methodDisclaimer')}
+          </p>
           <p className="text-[var(--text-muted)] text-[11px] opacity-70">
             {t('landing.footer.copyright')}
           </p>
@@ -395,7 +445,12 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       {/* Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 pointer-events-none">
         <div className="app-shell pointer-events-auto">
-          <button type="button" onClick={onStart} className="gradient-button w-full shadow-2xl">
+          <button
+            type="button"
+            onClick={onStart}
+            className="gradient-button gradient-button--hero w-full shadow-2xl"
+          >
+            <Sparkles size={16} />
             {t('landing.startButton')}
             <ChevronRight size={18} />
           </button>

@@ -23,7 +23,7 @@ import {
   isZeroDay,
 } from '@/utils/numerology';
 import { normalizeBirthDateString } from '@/utils/date';
-import { getDayActionLine } from '@/utils/actionableDay';
+import { getDayActionLine, getPersonalDayStory } from '@/utils/actionableDay';
 import { getUpcomingDays } from '@/utils/upcomingDays';
 import { recordAppOpen, type StreakState } from '@/utils/streak';
 import { CoachMarks } from '@/components/CoachMarks';
@@ -206,6 +206,9 @@ export function Calendar({
   const todayAction = todayInfo
     ? getDayActionLine(todayInfo.personalNumber, t)
     : null;
+  const todayStory = todayInfo
+    ? getPersonalDayStory(todayInfo.personalNumber, t)
+    : null;
 
   const upcoming = useMemo(
     () => getUpcomingDays(birthDateString, 3),
@@ -217,17 +220,24 @@ export function Calendar({
 
   const todayToneBorder =
     todayAction?.tone === 'favorable'
-      ? 'border-emerald-400/35'
+      ? 'border-emerald-400/45'
       : todayAction?.tone === 'challenging'
-        ? 'border-rose-400/35'
-        : 'border-amber-400/30';
+        ? 'border-rose-400/45'
+        : 'border-amber-400/40';
 
   const todayToneBg =
     todayAction?.tone === 'favorable'
-      ? 'linear-gradient(135deg, rgba(74,222,128,0.14), rgba(167,139,250,0.07))'
+      ? 'linear-gradient(135deg, rgba(74,222,128,0.2), rgba(167,139,250,0.08))'
       : todayAction?.tone === 'challenging'
-        ? 'linear-gradient(135deg, rgba(248,113,113,0.14), rgba(167,139,250,0.07))'
-        : 'linear-gradient(135deg, rgba(245,215,142,0.14), rgba(167,139,250,0.08))';
+        ? 'linear-gradient(135deg, rgba(248,113,113,0.18), rgba(167,139,250,0.08))'
+        : 'linear-gradient(135deg, rgba(250,204,21,0.16), rgba(167,139,250,0.08))';
+
+  const toneDotClass =
+    todayAction?.tone === 'favorable'
+      ? 'tone-dot tone-dot--fav'
+      : todayAction?.tone === 'challenging'
+        ? 'tone-dot tone-dot--hard'
+        : 'tone-dot tone-dot--neu';
 
   return (
     <div className="app-shell page-pad flex flex-col min-h-screen">
@@ -280,37 +290,63 @@ export function Calendar({
           />
         )}
 
-        {/* Today hero */}
-        {todayEnergy && todayInfo && todayAction && (
+        {/* Today hero — personal story of the day */}
+        {todayEnergy && todayInfo && todayAction && todayStory && (
           <button
             type="button"
             data-coach="today"
             onClick={() => onDaySelect(todayInfo)}
-            className={`today-hero ${todayToneBorder}`}
+            className={`today-hero today-hero--story ${todayToneBorder}`}
             style={{ background: todayToneBg }}
           >
-            <div
-              className="today-hero__icon"
-              style={{
-                background: `${todayEnergy.color}26`,
-                boxShadow: `0 0 22px ${todayEnergy.color}30`,
-              }}
-            >
-              {todayEnergy.icon}
+            <div className="today-hero__top">
+              <div
+                className="today-hero__icon"
+                style={{
+                  background: `${todayEnergy.color}2e`,
+                  boxShadow: `0 0 26px ${todayEnergy.color}38`,
+                }}
+              >
+                {todayEnergy.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={toneDotClass} />
+                  <span className="today-hero__badge">{todayStory.toneLabel}</span>
+                  <span className="today-hero__meta">
+                    {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
+                  </span>
+                </div>
+                <p className="today-hero__story-title">{todayStory.storyTitle}</p>
+                <p className="today-hero__action">{todayAction.action}</p>
+              </div>
+              <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0 opacity-70 self-center" />
             </div>
-            <div className="min-w-0">
-              <p className="today-hero__meta">
-                {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
-              </p>
-              <p className="today-hero__action">{todayAction.action}</p>
-              <p className="today-hero__hint">{t('calendar.tapForDetails')}</p>
-            </div>
-            <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0 opacity-70" />
+            {todayStory.doList.length > 0 && (
+              <ul className="today-hero__do-list">
+                {todayStory.doList.map((item) => (
+                  <li key={item}>
+                    <span className="text-emerald-300">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="today-hero__hint">{t('calendar.tapForDetails')}</p>
           </button>
         )}
 
-        {/* Next 3 days — equal columns */}
+        {/* Next 3 days — habit loop */}
         <UpcomingDays days={upcoming} onSelect={onDaySelect} />
+
+        {streak.streak > 0 && (
+          <p className="habit-nudge">
+            {t('calendar.habitNudge', {
+              count: streak.streak,
+              defaultValue: 'Day {{count}} in a row — come back tomorrow for a new energy',
+            })}
+          </p>
+        )}
 
         {/* Year tools for annual plan OR teaser for others */}
         {yearPerks ? (

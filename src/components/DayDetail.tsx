@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import type { DayInfo } from '@/types';
 import { getEnergyInfo, formatDate, getDayOfWeekName, isZeroDay } from '@/utils/numerology';
 import { getAstroRecommendations } from '@/data/astroRecommendations';
+import { getDayActionLine, getPersonalDayStory } from '@/utils/actionableDay';
 import { buildDayShareText, shareText } from '@/utils/shareDay';
 import { GlossaryTooltip } from './GlossaryTooltip';
 import { UseCaseExamples } from './UseCaseExamples';
@@ -26,16 +27,38 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
   const generalInfo = getEnergyInfo(day.generalNumber, t);
   const personalInfo = getEnergyInfo(day.personalNumber, t);
   const astroRecs = getAstroRecommendations(day.generalNumber, t);
+  const story = getPersonalDayStory(day.personalNumber, t);
+  const actionLine = getDayActionLine(day.personalNumber, t);
   const isZero = isZeroDay(day.date);
   const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
-  
-  // Get translated day favorability text
+
+  const storyBg =
+    story.tone === 'favorable'
+      ? 'linear-gradient(145deg, rgba(74,222,128,0.16), rgba(167,139,250,0.08))'
+      : story.tone === 'challenging'
+        ? 'linear-gradient(145deg, rgba(248,113,113,0.14), rgba(167,139,250,0.08))'
+        : 'linear-gradient(145deg, rgba(250,204,21,0.14), rgba(167,139,250,0.08))';
+
+  const storyBorder =
+    story.tone === 'favorable'
+      ? 'border-emerald-400/35'
+      : story.tone === 'challenging'
+        ? 'border-rose-400/35'
+        : 'border-amber-400/35';
+
+  const toneDotClass =
+    story.tone === 'favorable'
+      ? 'tone-dot tone-dot--fav'
+      : story.tone === 'challenging'
+        ? 'tone-dot tone-dot--hard'
+        : 'tone-dot tone-dot--neu';
+
   const getFavorableText = () => {
     if (day.isFavorable) return t('calendar.favorable');
     if (day.isUnfavorable) return t('calendar.completion');
     return t('calendar.neutral');
   };
-  
+
   const getFavorableDescription = () => {
     if (day.isFavorable) return t('dayDetail.favorableDesc');
     if (day.isUnfavorable) return t('dayDetail.completionDesc');
@@ -80,6 +103,57 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
       </header>
 
       <div className="px-4 py-4 space-y-4">
+        {/* Personal story of the day — emotional first impression */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`glass-card p-5 rounded-3xl border ${storyBorder}`}
+          style={{ background: storyBg }}
+        >
+          <div className="flex items-start gap-3.5 mb-3">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+              style={{
+                backgroundColor: `${personalInfo.color}30`,
+                boxShadow: `0 0 30px ${personalInfo.color}40`,
+              }}
+            >
+              {personalInfo.icon}
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span className={toneDotClass} />
+                <span className="text-[11px] font-semibold text-white/90">
+                  {story.toneLabel}
+                </span>
+                <span className="text-[11px] text-[var(--text-muted)]">
+                  {day.personalNumber} · {personalInfo.planet}
+                </span>
+              </div>
+              <h2 className="font-display text-[1.55rem] leading-tight text-white">
+                {story.storyTitle}
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] mt-1.5 leading-relaxed">
+                {story.storyBody}
+              </p>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-amber-100/95 mb-2.5">{actionLine.action}</p>
+          {story.doList.length > 0 && (
+            <ul className="space-y-1.5">
+              {story.doList.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 text-sm text-[var(--text-secondary)]"
+                >
+                  <span className="text-emerald-300 mt-0.5">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </motion.div>
+
         {/* Zero Day Warning */}
         {isZero && (
           <motion.div
