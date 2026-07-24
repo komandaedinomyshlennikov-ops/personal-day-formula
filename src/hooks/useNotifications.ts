@@ -36,14 +36,19 @@ function writePrefs(prefs: NotificationPrefs): void {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
 }
 
-function readBirthDate(): string | null {
+function readUserProfile(): { birthDate: string | null; displayName?: string } {
   try {
     const raw = localStorage.getItem('astronavigator_user');
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { birthDate?: string };
-    return parsed.birthDate ? normalizeBirthDateString(parsed.birthDate) : null;
+    if (!raw) return { birthDate: null };
+    const parsed = JSON.parse(raw) as { birthDate?: string; displayName?: string };
+    return {
+      birthDate: parsed.birthDate
+        ? normalizeBirthDateString(parsed.birthDate)
+        : null,
+      displayName: parsed.displayName?.trim() || undefined,
+    };
   } catch {
-    return null;
+    return { birthDate: null };
   }
 }
 
@@ -102,18 +107,26 @@ export function useNotifications() {
 
   /** Build morning payload: same actionable line as home "Today" strip */
   const buildMorningPayload = useCallback((): NotificationData => {
-    const birth = readBirthDate();
+    const { birthDate: birth, displayName } = readUserProfile();
     if (birth) {
       try {
         const now = new Date();
         const personal = calculatePersonalDay(birth, now);
         const energy = getEnergyInfo(personal, t);
         const { action } = getDayActionLine(personal, t);
+        const title = displayName
+          ? t('notifications.dailyTitleNamed', {
+              name: displayName,
+              number: personal,
+              planet: energy.planet,
+              defaultValue: `${displayName}, today ${personal} · ${energy.planet}`,
+            })
+          : t('notifications.dailyTitle', {
+              number: personal,
+              planet: energy.planet,
+            });
         return {
-          title: t('notifications.dailyTitle', {
-            number: personal,
-            planet: energy.planet,
-          }),
+          title,
           body: action,
           tag: 'daily-reminder',
         };

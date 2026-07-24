@@ -38,6 +38,7 @@ interface SettingsProps {
   onClearData: () => void;
   onLogout: () => void;
   onLanguageChange?: (lang: string) => void;
+  onDisplayNameChange?: (name: string) => void;
   exportUnlocked?: boolean;
   onUpgrade?: () => void;
 }
@@ -53,11 +54,13 @@ export function Settings({
   onClearData,
   onLogout,
   onLanguageChange,
+  onDisplayNameChange,
   exportUnlocked = true,
   onUpgrade,
 }: SettingsProps) {
   const { t, i18n } = useTranslation();
   const [consent, setConsentState] = useState(getConsent);
+  const [nameDraft, setNameDraft] = useState(userData.displayName || '');
   const currentLang = i18n.language;
 
   const handleLanguageChange = (langCode: string) => {
@@ -78,14 +81,16 @@ export function Settings({
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-4"
+          className="glass-card p-4 space-y-3"
         >
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400/30 to-amber-600/10 flex items-center justify-center">
               <User size={24} className="text-amber-400" />
             </div>
-            <div>
-              <p className="text-white font-semibold">{t('settings.profile')}</p>
+            <div className="min-w-0">
+              <p className="text-white font-semibold truncate">
+                {userData.displayName || t('settings.profile')}
+              </p>
               <p className="text-gray-400 text-sm">
                 {userData.birthDate
                   ? (() => {
@@ -95,11 +100,34 @@ export function Settings({
                             currentLang === 'ru' ? 'ru-RU' : 'en-US'
                           )
                         : userData.birthDate;
-                    })() 
+                    })()
                   : t('errors.invalidDate')}
               </p>
             </div>
           </div>
+          {onDisplayNameChange && (
+            <div>
+              <label className="block text-gray-500 text-xs uppercase tracking-wider mb-1.5">
+                {t('settings.displayName')}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value.slice(0, 40))}
+                  placeholder={t('onboarding.namePlaceholder')}
+                  className="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-600 focus:border-amber-400/50 outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => onDisplayNameChange(nameDraft)}
+                  className="px-3.5 py-2.5 rounded-xl bg-amber-400/20 text-amber-100 text-sm font-medium border border-amber-400/30 shrink-0"
+                >
+                  {t('actions.save')}
+                </button>
+              </div>
+            </div>
+          )}
         </motion.section>
 
         {/* Language Section */}

@@ -2,27 +2,30 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { ArrowLeft, Send, Phone, Mail, BookOpen, Share2 } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Mail, BookOpen, Share2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { DayInfo } from '@/types';
 import { getEnergyInfo, formatDate, getDayOfWeekName, isZeroDay } from '@/utils/numerology';
 import { getAstroRecommendations } from '@/data/astroRecommendations';
 import { getDayActionLine, getPersonalDayStory } from '@/utils/actionableDay';
 import { buildDayShareText, shareText } from '@/utils/shareDay';
+import { renderDayShareCard, shareDayCardImage } from '@/utils/shareCardImage';
 import { GlossaryTooltip } from './GlossaryTooltip';
 import { UseCaseExamples } from './UseCaseExamples';
 
 interface DayDetailProps {
   day: DayInfo;
+  displayName?: string;
   onBack: () => void;
 }
 
 type TabType = 'personal' | 'universal' | 'examples';
 
-export function DayDetail({ day, onBack }: DayDetailProps) {
+export function DayDetail({ day, displayName, onBack }: DayDetailProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('personal');
   const [sharing, setSharing] = useState(false);
+  const [sharingCard, setSharingCard] = useState(false);
   
   const generalInfo = getEnergyInfo(day.generalNumber, t);
   const personalInfo = getEnergyInfo(day.personalNumber, t);
@@ -76,6 +79,36 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
     setSharing(false);
   };
 
+  const handleShareCard = async () => {
+    if (sharingCard) return;
+    setSharingCard(true);
+    try {
+      const canvas = renderDayShareCard({
+        day,
+        name: displayName,
+        storyTitle: story.storyTitle,
+        action: actionLine.action,
+        doList: story.doList,
+        tone: story.tone,
+        toneLabel: story.toneLabel,
+        planet: personalInfo.planet,
+        icon: personalInfo.icon,
+        brand: t('landing.footer.title', { defaultValue: 'AstroNavigator' }),
+        footer: t('share.cardFooter', {
+          defaultValue: 'Calculate your day by birth date →',
+        }),
+        locale,
+      });
+      const result = await shareDayCardImage(canvas, 'astronavigator-day.png');
+      if (result === 'shared') toast.success(t('share.sharedCard'));
+      else if (result === 'downloaded') toast.success(t('share.downloadedCard'));
+      else toast.error(t('share.shareFailed'));
+    } catch {
+      toast.error(t('share.shareFailed'));
+    }
+    setSharingCard(false);
+  };
+
   return (
     <div className="app-shell min-h-screen pb-10">
       <header className="app-header justify-between">
@@ -90,16 +123,28 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
             <p className="text-[var(--text-muted)] text-xs">{getDayOfWeekName(day.date, t)}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => void handleShareDay()}
-          className="icon-btn"
-          disabled={sharing}
-          title={t('share.shareDay')}
-          aria-label={t('share.shareDay')}
-        >
-          <Share2 size={17} />
-        </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => void handleShareCard()}
+            className="icon-btn"
+            disabled={sharingCard}
+            title={t('share.shareCard')}
+            aria-label={t('share.shareCard')}
+          >
+            <ImageIcon size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleShareDay()}
+            className="icon-btn"
+            disabled={sharing}
+            title={t('share.shareDay')}
+            aria-label={t('share.shareDay')}
+          >
+            <Share2 size={17} />
+          </button>
+        </div>
       </header>
 
       <div className="px-4 py-4 space-y-4">
@@ -130,6 +175,14 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
                   {day.personalNumber} · {personalInfo.planet}
                 </span>
               </div>
+              {displayName && (
+                <p className="text-[11px] text-amber-200/85 font-medium mb-1">
+                  {t('calendar.forYou', {
+                    name: displayName,
+                    defaultValue: `For you, ${displayName}`,
+                  })}
+                </p>
+              )}
               <h2 className="font-display text-[1.55rem] leading-tight text-white">
                 {story.storyTitle}
               </h2>
@@ -140,7 +193,7 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
           </div>
           <p className="text-sm font-semibold text-amber-100/95 mb-2.5">{actionLine.action}</p>
           {story.doList.length > 0 && (
-            <ul className="space-y-1.5">
+            <ul className="space-y-1.5 mb-3">
               {story.doList.map((item) => (
                 <li
                   key={item}
@@ -152,6 +205,15 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
               ))}
             </ul>
           )}
+          <button
+            type="button"
+            onClick={() => void handleShareCard()}
+            disabled={sharingCard}
+            className="w-full py-2.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/12 text-sm text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          >
+            <ImageIcon size={16} className="text-amber-200" />
+            {sharingCard ? t('share.sharingCard') : t('share.shareCard')}
+          </button>
         </motion.div>
 
         {/* Zero Day Warning */}

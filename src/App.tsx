@@ -62,6 +62,7 @@ function AppShell() {
     userData,
     isLoaded,
     setBirthDate,
+    setDisplayName,
     startTrial,
     activateWithCode,
     checkSubscription,
@@ -113,14 +114,21 @@ function AppShell() {
     [setLanguage]
   );
 
-  const handleOnboardingComplete = (date: string) => {
+  const handleOnboardingComplete = (date: string, name?: string) => {
     setBirthDate(date);
+    if (name) setDisplayName(name);
     startTrial();
     trackEvent('trial_started');
     navigate('/calendar', { replace: true });
-    toast.success(t('onboarding.startTrial'), {
+    const greet = name
+      ? t('calendar.welcomeNamed', {
+          name,
+          defaultValue: `Welcome, ${name}`,
+        })
+      : t('onboarding.startTrial');
+    toast.success(greet, {
       description: t('subscription.plans.trial.description', {
-        defaultValue: '3 дня полного доступа',
+        defaultValue: '3 days full access',
       }),
     });
   };
@@ -344,8 +352,8 @@ function AppShell() {
       <BirthDateModal
         isOpen={showBirthModal}
         onClose={() => setShowBirthModal(false)}
-        onSubmit={(date) => {
-          handleOnboardingComplete(date);
+        onSubmit={({ date, name }) => {
+          handleOnboardingComplete(date, name);
           setShowBirthModal(false);
         }}
       />
@@ -397,6 +405,7 @@ function AppShell() {
               <PageTransition key="calendar" direction="none">
                 <Calendar
                   birthDate={userData.birthDate}
+                  displayName={userData.displayName}
                   onDaySelect={handleDaySelect}
                   onSettings={() => navigate('/settings')}
                   onSubscription={() => navigate('/subscription')}
@@ -409,6 +418,8 @@ function AppShell() {
                   daysLeft={daysLeft}
                   isTrialActive={userData.isTrialActive}
                   accessTier={accessTier}
+                  notificationsEnabled={userData.notificationsEnabled}
+                  onEnableNotifications={() => void handleToggleNotifications()}
                 />
               </PageTransition>
             )}
@@ -417,7 +428,11 @@ function AppShell() {
           <Route
             path="/day/:date"
             element={requireBirth(
-              <DayRoute birthDate={userData.birthDate} onBack={goCalendar} />
+              <DayRoute
+                birthDate={userData.birthDate}
+                displayName={userData.displayName}
+                onBack={goCalendar}
+              />
             )}
           />
 
@@ -485,7 +500,11 @@ function AppShell() {
             path="/share"
             element={requireBirth(
               <PageTransition key="share" direction="left">
-                <ShareCalendar onBack={goCalendar} birthDate={userData.birthDate} />
+                <ShareCalendar
+                  onBack={goCalendar}
+                  birthDate={userData.birthDate}
+                  displayName={userData.displayName}
+                />
               </PageTransition>
             )}
           />
@@ -505,6 +524,7 @@ function AppShell() {
                   onClearData={handleClearData}
                   onLogout={handleLogout}
                   onLanguageChange={handleLanguageChange}
+                  onDisplayNameChange={setDisplayName}
                   exportUnlocked={canUseFeature('export', accessTier)}
                   onUpgrade={() => navigate('/subscription')}
                 />
@@ -539,9 +559,11 @@ function AppShell() {
 
 function DayRoute({
   birthDate,
+  displayName,
   onBack,
 }: {
   birthDate: string;
+  displayName?: string;
   onBack: () => void;
 }) {
   const { date } = useParams();
@@ -553,7 +575,7 @@ function DayRoute({
 
   return (
     <PageTransition key={`day-${date}`} direction="left">
-      <DayDetail day={day} onBack={onBack} />
+      <DayDetail day={day} displayName={displayName} onBack={onBack} />
     </PageTransition>
   );
 }

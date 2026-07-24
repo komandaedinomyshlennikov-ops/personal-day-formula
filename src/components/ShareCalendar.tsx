@@ -7,6 +7,8 @@ import { SITE_URL } from '@/config/site';
 import { calculatePersonalDay, getEnergyInfo } from '@/utils/numerology';
 import { getDayActionLine } from '@/utils/actionableDay';
 import { buildDayShareText, shareText } from '@/utils/shareDay';
+import { getPersonalDayStory } from '@/utils/actionableDay';
+import { renderDayShareCard, shareDayCardImage } from '@/utils/shareCardImage';
 import { fromLocalDate, toLocalDate } from '@/utils/date';
 import {
   calculateUniversalDayFromParts,
@@ -18,6 +20,7 @@ import type { DayInfo } from '@/types';
 interface ShareCalendarProps {
   onBack: () => void;
   birthDate?: string;
+  displayName?: string;
 }
 
 function buildTodayDayInfo(birthDate: string): DayInfo {
@@ -41,9 +44,10 @@ function buildTodayDayInfo(birthDate: string): DayInfo {
   };
 }
 
-export function ShareCalendar({ onBack, birthDate }: ShareCalendarProps) {
+export function ShareCalendar({ onBack, birthDate, displayName }: ShareCalendarProps) {
   const [copied, setCopied] = useState(false);
   const [copiedDay, setCopiedDay] = useState(false);
+  const [sharingCard, setSharingCard] = useState(false);
   const { t, i18n } = useTranslation();
 
   const shareUrl = SITE_URL;
@@ -86,6 +90,37 @@ export function ShareCalendar({ onBack, birthDate }: ShareCalendarProps) {
       toast.success(t('share.copiedDay'));
       setTimeout(() => setCopiedDay(false), 2000);
     } else toast.error(t('share.shareFailed'));
+  };
+
+  const handleShareCardImage = async () => {
+    if (!todayDay || sharingCard) return;
+    setSharingCard(true);
+    try {
+      const story = getPersonalDayStory(todayDay.personalNumber, t);
+      const energy = getEnergyInfo(todayDay.personalNumber, t);
+      const { action } = getDayActionLine(todayDay.personalNumber, t);
+      const canvas = renderDayShareCard({
+        day: todayDay,
+        name: displayName,
+        storyTitle: story.storyTitle,
+        action,
+        doList: story.doList,
+        tone: story.tone,
+        toneLabel: story.toneLabel,
+        planet: energy.planet,
+        icon: energy.icon,
+        brand: t('landing.footer.title', { defaultValue: 'AstroNavigator' }),
+        footer: t('share.cardFooter'),
+        locale,
+      });
+      const result = await shareDayCardImage(canvas);
+      if (result === 'shared') toast.success(t('share.sharedCard'));
+      else if (result === 'downloaded') toast.success(t('share.downloadedCard'));
+      else toast.error(t('share.shareFailed'));
+    } catch {
+      toast.error(t('share.shareFailed'));
+    }
+    setSharingCard(false);
   };
 
   const shareLinks = {
@@ -139,14 +174,25 @@ export function ShareCalendar({ onBack, birthDate }: ShareCalendarProps) {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => void handleShareToday()}
-                className="gradient-button w-full !min-h-[48px] !text-sm"
-              >
-                {copiedDay ? <Check size={16} /> : <Share2 size={16} />}
-                {t('share.shareDay')}
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => void handleShareCardImage()}
+                  disabled={sharingCard}
+                  className="gradient-button w-full !min-h-[48px] !text-sm"
+                >
+                  <Sparkles size={16} />
+                  {sharingCard ? t('share.sharingCard') : t('share.shareCard')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleShareToday()}
+                  className="w-full py-3 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  {copiedDay ? <Check size={16} /> : <Share2 size={16} />}
+                  {t('share.shareDay')}
+                </button>
+              </div>
             </motion.div>
           )}
 

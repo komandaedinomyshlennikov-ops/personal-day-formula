@@ -26,6 +26,7 @@ interface LandingPageProps {
 export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
   const [energiesOpen, setEnergiesOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState<number | null>(0);
 
   const demo = useMemo(() => {
     const num = calculateUniversalDay(new Date());
@@ -90,6 +91,25 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
       { num: '02', title: t('landing.step2'), desc: t('landing.step2Desc') },
       { num: '03', title: t('landing.step3'), desc: t('landing.step3Desc') },
       { num: '04', title: t('landing.step4'), desc: t('landing.step4Desc') },
+    ],
+    [t, i18n.language]
+  );
+
+  const socialProof = useMemo(
+    () => [
+      { quote: t('landing.proof1'), author: t('landing.proof1Author') },
+      { quote: t('landing.proof2'), author: t('landing.proof2Author') },
+      { quote: t('landing.proof3'), author: t('landing.proof3Author') },
+    ],
+    [t, i18n.language]
+  );
+
+  const faq = useMemo(
+    () => [
+      { q: t('landing.faq1q'), a: t('landing.faq1a') },
+      { q: t('landing.faq2q'), a: t('landing.faq2a') },
+      { q: t('landing.faq3q'), a: t('landing.faq3a') },
+      { q: t('landing.faq4q'), a: t('landing.faq4a') },
     ],
     [t, i18n.language]
   );
@@ -314,6 +334,85 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social proof */}
+      <section className="px-5 py-8">
+        <div className="max-w-sm mx-auto">
+          <h2 className="section-title text-center mb-2 text-[1.55rem]">
+            {t('landing.proofTitle')}
+          </h2>
+          <p className="text-center text-[var(--text-muted)] text-sm mb-5">
+            {t('landing.proofLead')}
+          </p>
+          <div className="space-y-3">
+            {socialProof.map((item, i) => (
+              <motion.blockquote
+                key={item.author}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="glass-card p-4 rounded-2xl text-left"
+              >
+                <p className="text-[var(--text-secondary)] text-sm leading-relaxed italic">
+                  “{item.quote}”
+                </p>
+                <p className="text-[11px] text-amber-200/85 font-medium mt-2.5">
+                  — {item.author}
+                </p>
+              </motion.blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-5 py-6">
+        <div className="max-w-sm mx-auto">
+          <h2 className="section-title text-center mb-6 text-[1.55rem]">
+            {t('landing.faqTitle')}
+          </h2>
+          <div className="space-y-2">
+            {faq.map((item, i) => {
+              const open = faqOpen === i;
+              return (
+                <div key={item.q} className="glass-card rounded-2xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setFaqOpen(open ? null : i)}
+                    className="w-full flex items-center justify-between gap-3 p-4 text-left"
+                    aria-expanded={open}
+                  >
+                    <span className="text-white text-sm font-semibold leading-snug">
+                      {item.q}
+                    </span>
+                    <ChevronDown
+                      size={18}
+                      className={`text-amber-200/80 shrink-0 transition-transform ${
+                        open ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {open && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-4 pb-4 text-[var(--text-secondary)] text-xs leading-relaxed">
+                          {item.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

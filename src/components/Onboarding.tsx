@@ -4,13 +4,14 @@ import { ChevronRight, Sparkles, Calendar, Star, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface OnboardingProps {
-  onComplete: (birthDate: string) => void;
+  onComplete: (birthDate: string, name?: string) => void;
 }
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [birthDate, setBirthDate] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [showDateInput, setShowDateInput] = useState(false);
   const [error, setError] = useState('');
 
@@ -66,7 +67,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       return;
     }
 
-    onComplete(birthDate);
+    onComplete(birthDate, displayName.trim() || undefined);
   };
 
   const CurrentIcon = slides[currentSlide].icon;
@@ -199,8 +200,36 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
+              className="w-full mb-3"
+            >
+              <label className="block text-gray-500 text-xs uppercase tracking-wider mb-2 text-left">
+                {t('onboarding.nameLabel')}
+              </label>
+              <div className="relative">
+                <User
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
+                />
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value.slice(0, 40))}
+                  placeholder={t('onboarding.namePlaceholder')}
+                  autoComplete="given-name"
+                  className="w-full pl-10 pr-4 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-gray-600"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.32 }}
               className="w-full mb-4"
             >
+              <label className="block text-gray-500 text-xs uppercase tracking-wider mb-2 text-left">
+                {t('onboarding.birthDateTitle')}
+              </label>
               <input
                 type="date"
                 value={birthDate}

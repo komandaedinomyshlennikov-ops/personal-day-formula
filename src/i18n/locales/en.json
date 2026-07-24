@@ -15,7 +15,12 @@
     "dailyReminderBody": "Check today's recommendations",
     "languageChanged": "Language changed to {{language}}",
     "dailyTitle": "Today {{number}} · {{planet}}",
-    "enableHint": "Morning reminder with today's tip"
+    "dailyTitleNamed": "{{name}}, today {{number}} · {{planet}}",
+    "enableHint": "Morning reminder with today's tip",
+    "bannerTitle": "10-second morning ritual",
+    "bannerBody": "Every day at 8:00 — your energy and one clear tip. Works in PWA / open app session.",
+    "bannerCta": "Enable reminders",
+    "bannerEnabling": "Enabling…"
   },
   "pwa": {
     "installTitle": "Install AstroNavigator",
@@ -200,6 +205,9 @@
     "slide3Description": "The calendar will guide you on when to start projects, sign deals, or make purchases. Move through life with greater confidence!",
     "birthDateTitle": "Enter your birth date",
     "birthDateDescription": "We'll calculate your personal energy",
+    "nameLabel": "What should we call you",
+    "namePlaceholder": "Name (optional)",
+    "nameHint": "So the day feels personal: “For you, Anna”",
     "day": "Day",
     "month": "Month",
     "year": "Year",
@@ -248,6 +256,9 @@
     "storyBodyHard": "Today favors finish-lines and rest, not new starts. A calmer pace brings better results.",
     "storyBodyNeutral": "A calm personal rhythm — ideal for routine, focus work, and small progress without pressure.",
     "habitNudge": "Day {{count}} in a row · come back tomorrow for a new energy",
+    "helloName": "Hello, {{name}}",
+    "welcomeNamed": "Welcome, {{name}}",
+    "forYou": "For you, {{name}}",
     "legendTitle": "How to read colors",
     "legendMore": "Details",
     "legendLess": "Hide",
@@ -652,6 +663,7 @@
   "settings": {
     "title": "Settings",
     "profile": "Your Profile",
+    "displayName": "Name",
     "theme": "Theme",
     "lightTheme": "Light",
     "darkTheme": "Dark",
@@ -1522,7 +1534,12 @@
     "sharedDay": "Shared",
     "shareFailed": "Could not share",
     "todayCard": "My day today",
-    "appLink": "App link"
+    "appLink": "App link",
+    "shareCard": "Day card (image)",
+    "sharingCard": "Preparing card…",
+    "sharedCard": "Card shared",
+    "downloadedCard": "Card saved",
+    "cardFooter": "Calculate your day by birth date →"
   },
   "meta": {
     "title": "AstroNavigator - Personal Success Calendar",
@@ -1610,7 +1627,24 @@
     "trust2": "No card",
     "trust3": "3 days free",
     "energiesToggle": "Show 9 energies",
-    "energiesHide": "Hide 9 energies"
+    "energiesHide": "Hide 9 energies",
+    "proofTitle": "What people say",
+    "proofLead": "Not “predictions” — a calm plan for the day",
+    "proof1": "I finally know when to take meetings and when to hold back. I open it every morning like a calendar.",
+    "proof1Author": "Maria, 34 · marketing",
+    "proof2": "I stopped launching projects on “red” days — less burnout, more things finished.",
+    "proof2Author": "Andrey, 41 · founder",
+    "proof3": "Simple habit: open → see green/yellow/red → already know how to shape the day.",
+    "proof3Author": "Elena, 29 · product",
+    "faqTitle": "FAQ",
+    "faq1q": "Is this a horoscope?",
+    "faq1a": "No. It’s a timing calendar from your birth date (personal-day cycle 1–9). A planning and reflection tool — not fortune-telling.",
+    "faq2q": "Why come back every day?",
+    "faq2a": "Your personal day changes daily. Today is one number, tomorrow another. One morning tip = fewer impulses, calmer decisions.",
+    "faq3q": "Do I need a card?",
+    "faq3a": "No. 3-day trial without a card. Birth date data stays only in your browser.",
+    "faq4q": "Is it scientifically proven?",
+    "faq4a": "No — and we say so clearly. The method helps structure the day and self-reflection. Not medical, financial, or legal advice."
   },
   "legal": {
     "section": "Legal",

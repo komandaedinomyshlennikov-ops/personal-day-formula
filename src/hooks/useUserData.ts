@@ -5,6 +5,7 @@ import { normalizeBirthDateString } from '@/utils/date';
 
 const defaultUserData: UserData = {
   birthDate: '',
+  displayName: '',
   subscriptionEndDate: null,
   isTrialActive: false,
   theme: 'dark',
@@ -72,6 +73,11 @@ export function useUserData() {
     const normalized = normalizeBirthDateString(date);
     if (!normalized) return;
     setUserData((prev) => ({ ...prev, birthDate: normalized }));
+  }, []);
+
+  const setDisplayName = useCallback((name: string) => {
+    const trimmed = name.trim().slice(0, 40);
+    setUserData((prev) => ({ ...prev, displayName: trimmed }));
   }, []);
 
   const startTrial = useCallback(() => {
@@ -184,6 +190,7 @@ export function useUserData() {
     userData,
     isLoaded,
     setBirthDate,
+    setDisplayName,
     startTrial,
     activateSubscription,
     activateWithCode,

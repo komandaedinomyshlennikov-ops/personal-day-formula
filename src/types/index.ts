@@ -2,6 +2,8 @@
 
 export interface UserData {
   birthDate: string; // YYYY-MM-DD
+  /** Optional first name for personal greetings */
+  displayName?: string;
   subscriptionEndDate: string | null;
   isTrialActive: boolean;
   theme: 'light' | 'dark' | 'auto';

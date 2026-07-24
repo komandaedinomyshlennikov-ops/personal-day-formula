@@ -32,12 +32,14 @@ import { UpcomingDays } from '@/components/UpcomingDays';
 import { StreakChip } from '@/components/StreakChip';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
 import { YearPerksPanel } from '@/components/YearPerksPanel';
+import { MorningNotifyBanner } from '@/components/MorningNotifyBanner';
 import type { AccessTier } from '@/utils/access';
 import { canUseFeature, hasYearPerks, isPaidTier, isTrialTier } from '@/utils/access';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
   birthDate: string;
+  displayName?: string;
   onDaySelect: (day: DayInfo) => void;
   onSettings: () => void;
   onSubscription: () => void;
@@ -50,6 +52,8 @@ interface CalendarProps {
   daysLeft?: number;
   isTrialActive?: boolean;
   accessTier?: AccessTier;
+  notificationsEnabled?: boolean;
+  onEnableNotifications?: () => void;
 }
 
 const DayCell = ({
@@ -98,6 +102,7 @@ const DayCell = ({
 
 export function Calendar({
   birthDate,
+  displayName,
   onDaySelect,
   onSettings,
   onSubscription,
@@ -109,6 +114,8 @@ export function Calendar({
   daysLeft = 0,
   isTrialActive = false,
   accessTier = 'none',
+  notificationsEnabled = false,
+  onEnableNotifications,
 }: CalendarProps) {
   const paid = isPaidTier(accessTier);
   const yearPerks = hasYearPerks(accessTier);
@@ -251,7 +258,12 @@ export function Calendar({
           </div>
           <div className="min-w-0">
             <p className="font-display text-[1.05rem] leading-none text-white truncate">
-              {t('landing.footer.title', { defaultValue: 'Астронавигатор' })}
+              {displayName
+                ? t('calendar.helloName', {
+                    name: displayName,
+                    defaultValue: `Hello, ${displayName}`,
+                  })
+                : t('landing.footer.title', { defaultValue: 'AstroNavigator' })}
             </p>
             <div className="flex items-center gap-1.5 mt-1">
               <StreakChip streak={streak.streak} totalDays={streak.totalDays} />
@@ -317,6 +329,14 @@ export function Calendar({
                     {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
                   </span>
                 </div>
+                {displayName && (
+                  <p className="today-hero__for-you">
+                    {t('calendar.forYou', {
+                      name: displayName,
+                      defaultValue: `For you, ${displayName}`,
+                    })}
+                  </p>
+                )}
                 <p className="today-hero__story-title">{todayStory.storyTitle}</p>
                 <p className="today-hero__action">{todayAction.action}</p>
               </div>
@@ -334,6 +354,13 @@ export function Calendar({
             )}
             <p className="today-hero__hint">{t('calendar.tapForDetails')}</p>
           </button>
+        )}
+
+        {onEnableNotifications && (
+          <MorningNotifyBanner
+            enabled={notificationsEnabled}
+            onEnable={onEnableNotifications}
+          />
         )}
 
         {/* Next 3 days — habit loop */}
