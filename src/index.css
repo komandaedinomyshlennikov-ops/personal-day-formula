@@ -413,8 +413,35 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0.45rem 0.5rem;
+    padding: 0.4rem 0.45rem;
     border-bottom: 1px solid var(--bg-border);
+  }
+
+  /* Ensure day cells stay tappable on narrow phones */
+  .cal-grid .day-cell {
+    min-height: 40px;
+  }
+
+  @media (min-width: 360px) {
+    .cal-grid .day-cell {
+      min-height: 44px;
+    }
+  }
+
+  .stat-mini {
+    min-height: 56px;
+  }
+
+  .today-hero {
+    min-height: 76px;
+  }
+
+  .upcoming-card {
+    min-height: 96px;
+  }
+
+  .nav-item {
+    min-height: 48px;
   }
 
   .cal-panel__title {
@@ -624,11 +651,23 @@
   }
 
   .page-pad {
-    padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.35rem);
+    /* Room for fixed bottom nav so last buttons (legend) stay above it */
+    padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.75rem);
   }
 
   .icon-btn {
     position: relative;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .bottom-nav {
+    /* keep taps above home indicators */
+    pointer-events: none;
+  }
+
+  .bottom-nav-inner {
+    pointer-events: auto;
   }
 
   .section-title {

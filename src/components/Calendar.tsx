@@ -244,29 +244,21 @@ export function Calendar({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={onSubscription}
-            className={`icon-btn !w-10 !h-10 ${
-              isSubscribed ? '!border-amber-400/40 !text-amber-200' : ''
-            }`}
-            title={t('nav.subscription')}
-          >
-            <Crown size={16} />
-            {!isSubscribed && (
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={onSettings}
-            className="icon-btn !w-10 !h-10"
-            title={t('nav.settings')}
-          >
-            <Settings size={16} />
-          </button>
-        </div>
+        {/* Only Pro in header — Settings lives in bottom nav (avoid duplicate targets) */}
+        <button
+          type="button"
+          onClick={onSubscription}
+          className={`icon-btn !w-11 !h-11 shrink-0 ${
+            isSubscribed ? '!border-amber-400/40 !text-amber-200' : ''
+          }`}
+          title={t('nav.subscription')}
+          aria-label={t('nav.subscription')}
+        >
+          <Crown size={17} />
+          {!isSubscribed && (
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+          )}
+        </button>
       </header>
 
       {/* Scrollable main stack */}
@@ -361,10 +353,10 @@ export function Calendar({
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="icon-btn !w-9 !h-9"
-              aria-label="Previous month"
+              className="icon-btn !w-11 !h-11"
+              aria-label={t('calendar.prevMonth', { defaultValue: 'Previous month' })}
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={20} />
             </button>
             <motion.div
               key={`${year}-${month}`}
@@ -378,10 +370,10 @@ export function Calendar({
             <button
               type="button"
               onClick={handleNextMonth}
-              className="icon-btn !w-9 !h-9"
-              aria-label="Next month"
+              className="icon-btn !w-11 !h-11"
+              aria-label={t('calendar.nextMonth', { defaultValue: 'Next month' })}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={20} />
             </button>
           </div>
 
@@ -430,13 +422,13 @@ export function Calendar({
           <button
             type="button"
             onClick={() => setLegendOpen((v) => !v)}
-            className="w-full flex items-center justify-center gap-1 text-[10px] text-[var(--text-muted)] mb-1.5 hover:text-[var(--text-secondary)] transition-colors py-0.5"
+            className="w-full min-h-11 flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)] mb-1 hover:text-[var(--text-secondary)] transition-colors rounded-xl"
             aria-expanded={legendOpen}
           >
-            <Info size={11} />
+            <Info size={13} />
             <span>{t('calendar.legendTitle')}</span>
             <ChevronDown
-              size={12}
+              size={14}
               className={`transition-transform ${legendOpen ? 'rotate-180' : ''}`}
             />
           </button>
