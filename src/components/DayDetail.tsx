@@ -214,6 +214,9 @@ export function DayDetail({ day, displayName, onBack }: DayDetailProps) {
             <ImageIcon size={16} className="text-amber-200" />
             {sharingCard ? t('share.sharingCard') : t('share.shareCard')}
           </button>
+          <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
+            {t('dayDetail.disclaimer')}
+          </p>
         </motion.div>
 
         {/* Zero Day Warning */}

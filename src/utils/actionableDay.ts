@@ -52,44 +52,35 @@ export function getPersonalDayStory(
   const tone = getDayTone(personalNumber);
   const { action } = getDayActionLine(personalNumber, t);
 
-  const storyTitle =
-    tone === 'favorable'
-      ? t('calendar.storyTitleFavorable', {
-          defaultValue: 'A day of opportunity',
-          planet: energy.planet,
-          number: personalNumber,
-        })
-      : tone === 'challenging'
-        ? t('calendar.storyTitleHard', {
-            defaultValue: 'A day to protect your energy',
-            planet: energy.planet,
-            number: personalNumber,
-          })
-        : t('calendar.storyTitleNeutral', {
-            defaultValue: 'A steady, balanced day',
-            planet: energy.planet,
-            number: personalNumber,
-          });
+  // First line = clear verdict for the user; then soft explanation
+  const storyTitle = t('calendar.storyTitleDay', {
+    defaultValue: 'Today is your day №{{number}}',
+    number: personalNumber,
+    planet: energy.planet,
+  });
 
   const storyBody =
     tone === 'favorable'
       ? t('calendar.storyBodyFavorable', {
           defaultValue:
-            'Your personal energy today is stronger than average — good for starts, talks, and bold moves.',
+            'A good moment for starts, talks, and moves you have been postponing — if you feel ready.',
           action,
+          number: personalNumber,
           planet: energy.planet,
         })
       : tone === 'challenging'
         ? t('calendar.storyBodyHard', {
             defaultValue:
-              'Today asks for finish-lines and rest, not new starts. Pace yourself and close open loops.',
+              'Worth slowing down a little: finish what you started and leave big new launches for another day if you can.',
             action,
+            number: personalNumber,
             planet: energy.planet,
           })
         : t('calendar.storyBodyNeutral', {
             defaultValue:
-              'A calm personal rhythm — ideal for routine, focus work, and small progress without pressure.',
+              'A calm day without extremes — good for routine, focused work, and small steps without pressure.',
             action,
+            number: personalNumber,
             planet: energy.planet,
           });
 
