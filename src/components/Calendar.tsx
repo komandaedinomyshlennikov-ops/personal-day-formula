@@ -30,6 +30,10 @@ import { CoachMarks } from '@/components/CoachMarks';
 import { TrialBanner } from '@/components/TrialBanner';
 import { UpcomingDays } from '@/components/UpcomingDays';
 import { StreakChip } from '@/components/StreakChip';
+import { PremiumTeaser } from '@/components/PremiumTeaser';
+import { YearPerksPanel } from '@/components/YearPerksPanel';
+import type { AccessTier } from '@/utils/access';
+import { canUseFeature, hasYearPerks, isPaidTier, isTrialTier } from '@/utils/access';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
@@ -45,6 +49,7 @@ interface CalendarProps {
   isSubscribed: boolean;
   daysLeft?: number;
   isTrialActive?: boolean;
+  accessTier?: AccessTier;
 }
 
 const DayCell = ({
@@ -103,7 +108,11 @@ export function Calendar({
   isSubscribed,
   daysLeft = 0,
   isTrialActive = false,
+  accessTier = 'none',
 }: CalendarProps) {
+  const paid = isPaidTier(accessTier);
+  const yearPerks = hasYearPerks(accessTier);
+  const trial = isTrialTier(accessTier);
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
@@ -303,17 +312,46 @@ export function Calendar({
         {/* Next 3 days — equal columns */}
         <UpcomingDays days={upcoming} onSelect={onDaySelect} />
 
+        {/* Year tools for annual plan OR teaser for others */}
+        {yearPerks ? (
+          <YearPerksPanel
+            birthDate={birthDateString}
+            onSelectDay={onDaySelect}
+            onOpenYear={onYearClick}
+          />
+        ) : trial ? (
+          <PremiumTeaser
+            variant="banner"
+            yearOnly
+            title={t('premium.yearTitle')}
+            body={t('premium.lockedYear')}
+            onUpgrade={onSubscription}
+          />
+        ) : paid ? (
+          <PremiumTeaser
+            variant="inline"
+            yearOnly
+            title={t('premium.lockedYear')}
+            onUpgrade={onSubscription}
+          />
+        ) : null}
+
         {/* Year / Month — compact dual stats */}
         <div className="stats-row">
           <button
             type="button"
             onClick={() => onYearClick(personalYear)}
-            className="stat-mini"
+            className="stat-mini relative"
             style={{
               background:
                 'linear-gradient(145deg, rgba(245,215,142,0.12), rgba(245,158,11,0.04))',
             }}
           >
+            {!canUseFeature('monthYearDeep', accessTier) && (
+              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30">
+                Pro
+              </span>
+            )}
             <span className="stat-mini__label">
               <Sparkles size={10} className="text-amber-300" />
               {t('calendar.personalYear')}
@@ -328,12 +366,17 @@ export function Calendar({
           <button
             type="button"
             onClick={() => onMonthClick(personalMonth)}
-            className="stat-mini"
+            className="stat-mini relative"
             style={{
               background:
                 'linear-gradient(145deg, rgba(167,139,250,0.14), rgba(244,114,182,0.05))',
             }}
           >
+            {!canUseFeature('monthYearDeep', accessTier) && (
+              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30">
+                Pro
+              </span>
+            )}
             <span className="stat-mini__label">
               <Sparkles size={10} className="text-violet-300" />
               {t('calendar.personalMonth')}
@@ -346,6 +389,11 @@ export function Calendar({
             </span>
           </button>
         </div>
+
+        {/* Soft upgrade nudge during trial after core value */}
+        {trial && (
+          <PremiumTeaser variant="card" onUpgrade={onSubscription} />
+        )}
 
         {/* Calendar panel — month nav + grid as one unit */}
         <div ref={containerRef} className="cal-panel" data-coach="grid">

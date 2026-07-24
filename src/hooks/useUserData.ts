@@ -80,6 +80,7 @@ export function useUserData() {
     setUserData((prev) => ({
       ...prev,
       isTrialActive: true,
+      activatedPlan: 'trial',
       subscriptionEndDate: trialEndDate.toISOString(),
     }));
   }, []);

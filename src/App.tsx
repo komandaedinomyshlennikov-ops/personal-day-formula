@@ -34,6 +34,11 @@ import { getDaysLeft } from '@/utils/upcomingDays';
 import { SUPPORT_TELEGRAM } from '@/config/site';
 import { trackEvent, trackPageView, initAnalytics, getConsent } from '@/lib/analytics';
 import { normalizeLanguage, setAppLanguage, type LanguageCode } from '@/i18n';
+import {
+  canUseFeature,
+  getAccessTier,
+  isPaidTier,
+} from '@/utils/access';
 import type { DayInfo, Language } from '@/types';
 import { Toaster, toast } from 'sonner';
 
@@ -295,6 +300,8 @@ function AppShell() {
   }
 
   const isSubscribed = checkSubscription();
+  const accessTier = getAccessTier(userData);
+  const isPaid = isPaidTier(accessTier);
   const daysLeft = isSubscribed
     ? getDaysLeft(userData.subscriptionEndDate)
     : 0;
@@ -401,6 +408,7 @@ function AppShell() {
                   isSubscribed={isSubscribed}
                   daysLeft={daysLeft}
                   isTrialActive={userData.isTrialActive}
+                  accessTier={accessTier}
                 />
               </PageTransition>
             )}
@@ -417,7 +425,7 @@ function AppShell() {
             path="/energy/:type/:number"
             element={requireBirth(
               <EnergyRoute
-                isSubscribed={isSubscribed}
+                isSubscribed={isPaid}
                 onBack={goCalendar}
                 onSubscribe={() => navigate('/subscription')}
               />
@@ -437,6 +445,7 @@ function AppShell() {
                         ? 'active'
                         : null
                   }
+                  accessTier={accessTier}
                   onSelect={handleSubscriptionSelect}
                   onBack={() =>
                     navigate(userData.birthDate ? '/calendar' : '/')
@@ -463,7 +472,11 @@ function AppShell() {
             path="/notes"
             element={requireBirth(
               <PageTransition key="notes" direction="left">
-                <Notes onBack={goCalendar} />
+                <Notes
+                  onBack={goCalendar}
+                  tipsUnlocked={canUseFeature('notesTips', accessTier)}
+                  onUpgrade={() => navigate('/subscription')}
+                />
               </PageTransition>
             )}
           />
@@ -492,6 +505,8 @@ function AppShell() {
                   onClearData={handleClearData}
                   onLogout={handleLogout}
                   onLanguageChange={handleLanguageChange}
+                  exportUnlocked={canUseFeature('export', accessTier)}
+                  onUpgrade={() => navigate('/subscription')}
                 />
               </PageTransition>
             )}

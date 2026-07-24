@@ -14,7 +14,8 @@ import {
   Mail,
   LogOut,
   User,
-  Globe
+  Globe,
+  Crown,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,8 @@ interface SettingsProps {
   onClearData: () => void;
   onLogout: () => void;
   onLanguageChange?: (lang: string) => void;
+  exportUnlocked?: boolean;
+  onUpgrade?: () => void;
 }
 
 export function Settings({
@@ -50,6 +53,8 @@ export function Settings({
   onClearData,
   onLogout,
   onLanguageChange,
+  exportUnlocked = true,
+  onUpgrade,
 }: SettingsProps) {
   const { t, i18n } = useTranslation();
   const [consent, setConsentState] = useState(getConsent);
@@ -261,8 +266,30 @@ export function Settings({
           </div>
 
           <div className="p-4 space-y-3">
+            {!exportUnlocked && onUpgrade && (
+              <button
+                type="button"
+                onClick={onUpgrade}
+                className="w-full flex items-center gap-3 p-3 rounded-xl border border-amber-400/30 bg-amber-400/10 text-left"
+              >
+                <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <Crown size={18} className="text-amber-300" />
+                </div>
+                <div className="text-left min-w-0">
+                  <p className="text-amber-100 font-medium text-sm">{t('premium.lockedExport')}</p>
+                  <p className="text-[var(--text-muted)] text-xs">{t('premium.cta')}</p>
+                </div>
+              </button>
+            )}
             <button
-              onClick={onExportPDF}
+              type="button"
+              onClick={() => {
+                if (!exportUnlocked) {
+                  onUpgrade?.();
+                  return;
+                }
+                onExportPDF();
+              }}
               className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
@@ -275,7 +302,14 @@ export function Settings({
             </button>
 
             <button
-              onClick={onExportCSV}
+              type="button"
+              onClick={() => {
+                if (!exportUnlocked) {
+                  onUpgrade?.();
+                  return;
+                }
+                onExportCSV();
+              }}
               className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">

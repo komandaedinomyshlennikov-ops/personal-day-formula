@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Lightbulb, Plus, Trash2, MessageSquare, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { PremiumTeaser } from '@/components/PremiumTeaser';
 
 interface Note {
   id: string;
@@ -12,6 +13,9 @@ interface Note {
 
 interface NotesProps {
   onBack: () => void;
+  /** Paid Pro unlocks keyword tips */
+  tipsUnlocked?: boolean;
+  onUpgrade?: () => void;
 }
 
 /** Rule-based tips (not an LLM). Honest labeling for users. */
@@ -63,7 +67,7 @@ function generateTip(noteText: string, lang: string): string {
     : 'Thanks for the note. Tips: 1) stay mindful, 2) align plans with the day energy in the calendar, 3) capture outcomes in the evening.';
 }
 
-export function Notes({ onBack }: NotesProps) {
+export function Notes({ onBack, tipsUnlocked = false, onUpgrade }: NotesProps) {
   const { t, i18n } = useTranslation();
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState('');
@@ -96,10 +100,12 @@ export function Notes({ onBack }: NotesProps) {
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
     setIsGenerating(true);
-    // Small delay so UI feedback feels intentional (not "fake AI thinking")
     await new Promise((r) => setTimeout(r, 350));
 
-    const tip = generateTip(newNote, i18n.language || 'en');
+    // Tips are a Pro value layer; trial keeps free journaling
+    const tip = tipsUnlocked
+      ? generateTip(newNote, i18n.language || 'en')
+      : undefined;
     const note: Note = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
@@ -146,12 +152,23 @@ export function Notes({ onBack }: NotesProps) {
       </header>
 
       <div className="px-4 py-4">
-        <div className="mb-4 rounded-xl border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs text-amber-100/90">
+        <div className="mb-3 rounded-xl border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs text-amber-100/90">
           {t('notes.disclaimer', {
             defaultValue:
               'Tips are rule-based keyword suggestions stored only on this device — not a neural network.',
           })}
         </div>
+
+        {!tipsUnlocked && onUpgrade && (
+          <div className="mb-4">
+            <PremiumTeaser
+              variant="banner"
+              title={t('premium.lockedNotes')}
+              body={t('premium.perk3')}
+              onUpgrade={onUpgrade}
+            />
+          </div>
+        )}
 
         {!isAdding ? (
           <motion.button
@@ -234,7 +251,7 @@ export function Notes({ onBack }: NotesProps) {
                     </button>
                   </div>
                   <p className="text-white text-sm whitespace-pre-wrap mb-3">{note.text}</p>
-                  {note.tip && (
+                  {note.tip ? (
                     <div className="rounded-xl bg-violet-500/10 border border-violet-400/20 p-3">
                       <div className="flex items-center gap-2 text-violet-300 text-xs font-medium mb-1">
                         <Lightbulb size={14} />
@@ -242,6 +259,23 @@ export function Notes({ onBack }: NotesProps) {
                       </div>
                       <p className="text-gray-300 text-xs leading-relaxed">{note.tip}</p>
                     </div>
+                  ) : (
+                    !tipsUnlocked &&
+                    onUpgrade && (
+                      <button
+                        type="button"
+                        onClick={onUpgrade}
+                        className="w-full rounded-xl border border-amber-400/25 bg-amber-400/10 p-3 text-left"
+                      >
+                        <div className="flex items-center gap-2 text-amber-200 text-xs font-medium mb-1">
+                          <Lightbulb size={14} />
+                          {t('premium.lockedNotes')}
+                        </div>
+                        <p className="text-[var(--text-muted)] text-[11px] leading-relaxed">
+                          {t('premium.perk3')} · {t('premium.cta')}
+                        </p>
+                      </button>
+                    )
                   )}
                 </motion.div>
               ))}

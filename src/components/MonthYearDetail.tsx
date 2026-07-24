@@ -9,13 +9,14 @@ interface MonthYearDetailProps {
   type: 'month' | 'year';
   number: number;
   onBack: () => void;
+  /** Paid Pro (not trial) — unlocks full depth */
   isSubscribed?: boolean;
   onSubscribe?: () => void;
 }
 
 type TabType = 'overview' | 'astro';
 
-export function MonthYearDetail({ type, number, onBack, isSubscribed = true, onSubscribe }: MonthYearDetailProps) {
+export function MonthYearDetail({ type, number, onBack, isSubscribed = false, onSubscribe }: MonthYearDetailProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   
@@ -25,14 +26,16 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = true, onS
   
   const energyInfo = getEnergyInfo(number, t);
   const isMonth = type === 'month';
+  // isSubscribed here means PAID Pro (App passes isPaid)
+  const isPro = isSubscribed;
   
-  // Limit visible astro events for non-subscribers
-  const visibleAstroEvents = isSubscribed 
+  // Limit visible astro events for trial/free
+  const visibleAstroEvents = isPro 
     ? recommendation.astroEvents 
     : recommendation.astroEvents.slice(0, 2);
   
-  // Significant dates only for subscribers
-  const visibleSignificantDates = isSubscribed 
+  // Significant dates only for Pro
+  const visibleSignificantDates = isPro 
     ? recommendation.significantDates 
     : [];
 
@@ -230,7 +233,7 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = true, onS
               ))}
               
               {/* Premium Lock for more astro events */}
-              {!isSubscribed && recommendation.astroEvents.length > 2 && (
+              {!isPro && recommendation.astroEvents.length > 2 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -256,7 +259,7 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = true, onS
               )}
 
               {/* Significant Dates Section - Premium Only */}
-              {isSubscribed && visibleSignificantDates && visibleSignificantDates.length > 0 && (
+              {isPro && visibleSignificantDates && visibleSignificantDates.length > 0 && (
                 <>
                   <div className="glass-card p-4 border-indigo-400/30 mt-4 rounded-2xl"
                     style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05))' }}
@@ -323,7 +326,7 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = true, onS
               )}
               
               {/* Premium Lock for Significant Dates */}
-              {!isSubscribed && (
+              {!isPro && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}

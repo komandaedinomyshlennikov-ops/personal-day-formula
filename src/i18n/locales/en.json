@@ -554,7 +554,7 @@
     "trialDaysLeft": "{{days}} days left",
     "subscriptionExpired": "Subscription ended",
     "subscriptionExpiredMessage": "Renew access to keep using the calendar and recommendations.",
-    "choosePlan": "Choose Your Plan",
+    "choosePlan": "Invest in clearer decisions",
     "activate": "Activate",
     "activateWithCode": "Activate with Code",
     "enterCode": "Enter Activation Code",
@@ -567,16 +567,16 @@
         "description": "Try all features for free"
       },
       "month": {
-        "name": "Monthly",
-        "description": "Basic access"
+        "name": "Month",
+        "description": "Full Pro: depth + export"
       },
       "year": {
-        "name": "Yearly",
-        "description": "Save 58%"
+        "name": "Year",
+        "description": "Pro + Year tools 2026 · save 58%"
       },
       "lifetime": {
         "name": "Lifetime",
-        "description": "Permanent access forever"
+        "description": "All Year tools, no renewals"
       }
     },
     "paymentInfo": "After payment in Telegram you will receive a code to activate your subscription",
@@ -584,7 +584,7 @@
     "telegramButton": "Message on Telegram",
     "premiumFeature": "Premium Feature",
     "unlockWithSubscription": "Subscribe to unlock",
-    "fullAccess": "Full Access",
+    "fullAccess": "Choose your access level",
     "activeTitle": "Subscription Active",
     "activeDesc": "You have an active paid subscription",
     "trialActiveTitle": "Trial Period Active",
@@ -598,11 +598,12 @@
     "payInTelegram": "Pay in Telegram",
     "haveCode": "I already have an activation code",
     "features": {
-      "personalCalendar": "Personal calendar",
-      "dailyRecommendations": "Daily recommendations",
-      "personalDayMonthYear": "Personal day/month/year",
-      "dataExport": "Data export",
-      "personalConsultation": "Personal consultation"
+      "personalCalendar": "Personal calendar & day energy",
+      "dailyRecommendations": "Action tips for today",
+      "personalDayMonthYear": "Deep month & year",
+      "dataExport": "PDF & CSV export",
+      "personalConsultation": "Priority contact with the author",
+      "yearTools": "Year Compass · windows · digest"
     },
     "howToPay": "How to get access",
     "step1": "Choose a plan and pay via Telegram",
@@ -1632,5 +1633,52 @@
     "hint": "You're opening the calendar on consecutive days — a gentle habit",
     "totalHint": "Active days total: {{count}}",
     "welcomeBack": "Welcome back"
+  },
+  "premium": {
+    "badge": "Pro",
+    "yearBadge": "Year · 2026",
+    "title": "More clarity with a subscription",
+    "body": "Trial gives daily tips. Pro unlocks depth — so you win the week and month, not only “today”.",
+    "yearTitle": "Year: your personal compass",
+    "yearBody": "Annual access isn’t just a discount. It’s 2026 tooling: luck windows, weekly digest, and year compass.",
+    "cta": "See plans",
+    "perk1": "Full personal month & year breakdown",
+    "perk2": "PDF/CSV export for planning",
+    "perk3": "Smart tips in your journal",
+    "yearPerk1": "Personal year compass — 12‑month focus",
+    "yearPerk2": "Best windows this month (top action days)",
+    "yearPerk3": "Weekly energy digest",
+    "yearPanelTitle": "Your Year tools",
+    "compassTitle": "Year compass",
+    "windowsTitle": "Best windows (30 days)",
+    "windowsEmpty": "No strong favorable windows right now — check nearby neutral days on the calendar",
+    "digestTitle": "Week ahead",
+    "digestHint": "7‑day balance: when to push, when to protect energy",
+    "trialValueTitle": "What you already get in trial",
+    "trialValue1": "Today’s energy + what to do",
+    "trialValue2": "Calendar and any day breakdown",
+    "trialValue3": "Next 3 days",
+    "lockedMonthYear": "Deep month/year insights — in Pro",
+    "lockedExport": "Report export — in Pro",
+    "lockedNotes": "Personal journal tips — in Pro",
+    "lockedYear": "Year Compass, luck windows & digest — on annual plan",
+    "whyTitle": "Why Pro if trial already helps?",
+    "whyBody": "Trial answers “what about today?”. Pro helps you decide for the month and year — fewer impulses, calmer strategy.",
+    "compareFree": "3‑day trial",
+    "comparePro": "Pro",
+    "compareYear": "Year",
+    "featToday": "Today + action",
+    "featCalendar": "Day calendar",
+    "featDeep": "Month / year depth",
+    "featExport": "PDF / CSV",
+    "featNotes": "Journal tips",
+    "featWindows": "Luck windows",
+    "featDigest": "Weekly digest",
+    "featCompass": "Year compass",
+    "yearExtraTitle": "Annual perks 2026",
+    "yearExtra1": "Map of best days for 30 days — plan launches and deals",
+    "yearExtra2": "Weekly balance: how many green vs hard days ahead",
+    "yearExtra3": "Personal year compass (career, love, resource focus)",
+    "yearExtra4": "Priority chat with the author after yearly payment"
   }
 }
