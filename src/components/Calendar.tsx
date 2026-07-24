@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +25,11 @@ import {
 import { normalizeBirthDateString } from '@/utils/date';
 import { getDayActionLine } from '@/utils/actionableDay';
 import { getUpcomingDays } from '@/utils/upcomingDays';
+import { recordAppOpen, type StreakState } from '@/utils/streak';
 import { CoachMarks } from '@/components/CoachMarks';
 import { TrialBanner } from '@/components/TrialBanner';
 import { UpcomingDays } from '@/components/UpcomingDays';
+import { StreakChip } from '@/components/StreakChip';
 import type { DayInfo } from '@/types';
 
 interface CalendarProps {
@@ -108,7 +110,13 @@ export function Calendar({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
   const [legendOpen, setLegendOpen] = useState(false);
+  const [streak, setStreak] = useState<StreakState>({ streak: 0, lastDate: '', totalDays: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Soft habit tracking — once per calendar mount / day
+  useEffect(() => {
+    setStreak(recordAppOpen());
+  }, []);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
@@ -208,9 +216,12 @@ export function Calendar({
             <p className="font-display text-lg leading-none text-white truncate">
               {t('landing.footer.title', { defaultValue: 'Астронавигатор' })}
             </p>
-            <p className="text-[10px] text-[var(--text-muted)] tracking-wide uppercase">
-              {getTranslatedMonthName(month)} {year}
-            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-[10px] text-[var(--text-muted)] tracking-wide uppercase">
+                {getTranslatedMonthName(month)} {year}
+              </p>
+              <StreakChip streak={streak.streak} totalDays={streak.totalDays} />
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-1.5">

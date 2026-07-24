@@ -2,6 +2,9 @@ import { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { showSwNotification } from '@/pwa';
+import { calculatePersonalDay, getEnergyInfo } from '@/utils/numerology';
+import { getDayActionLine } from '@/utils/actionableDay';
+import { normalizeBirthDateString } from '@/utils/date';
 
 interface NotificationData {
   title: string;
@@ -33,6 +36,17 @@ function writePrefs(prefs: NotificationPrefs): void {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
 }
 
+function readBirthDate(): string | null {
+  try {
+    const raw = localStorage.getItem('astronavigator_user');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { birthDate?: string };
+    return parsed.birthDate ? normalizeBirthDateString(parsed.birthDate) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function useNotifications() {
   const permissionRef = useRef<NotificationPermission>('default');
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -56,7 +70,6 @@ export function useNotifications() {
     async (data: NotificationData): Promise<boolean> => {
       if (!checkPermission()) return false;
 
-      // Prefer Service Worker notification (better on mobile / PWA)
       const viaSw = await showSwNotification({
         title: data.title,
         body: data.body,
@@ -87,6 +100,34 @@ export function useNotifications() {
     [checkPermission]
   );
 
+  /** Build morning payload: same actionable line as home "Today" strip */
+  const buildMorningPayload = useCallback((): NotificationData => {
+    const birth = readBirthDate();
+    if (birth) {
+      try {
+        const now = new Date();
+        const personal = calculatePersonalDay(birth, now);
+        const energy = getEnergyInfo(personal, t);
+        const { action } = getDayActionLine(personal, t);
+        return {
+          title: t('notifications.dailyTitle', {
+            number: personal,
+            planet: energy.planet,
+          }),
+          body: action,
+          tag: 'daily-reminder',
+        };
+      } catch {
+        /* fall through */
+      }
+    }
+    return {
+      title: t('notifications.dailyReminder'),
+      body: t('notifications.dailyReminderBody'),
+      tag: 'daily-reminder',
+    };
+  }, [t]);
+
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!('Notification' in window)) {
       toast.error(t('notifications.notSupported'));
@@ -98,7 +139,9 @@ export function useNotifications() {
       permissionRef.current = permission;
 
       if (permission === 'granted') {
-        toast.success(t('notifications.permissionGranted'));
+        toast.success(t('notifications.permissionGranted'), {
+          description: t('notifications.enableHint'),
+        });
         return true;
       }
       if (permission === 'denied') {
@@ -113,32 +156,28 @@ export function useNotifications() {
   }, [t]);
 
   const sendDayNotification = useCallback(
-    async (dayNumber: number, _isFavorable?: boolean) => {
-      const titles: Record<number, string> = {
-        1: t('energies.1.name', { defaultValue: '1' }),
-        2: t('energies.2.name', { defaultValue: '2' }),
-        3: t('energies.3.name', { defaultValue: '3' }),
-        4: t('energies.4.name', { defaultValue: '4' }),
-        5: t('energies.5.name', { defaultValue: '5' }),
-        6: t('energies.6.name', { defaultValue: '6' }),
-        7: t('energies.7.name', { defaultValue: '7' }),
-        8: t('energies.8.name', { defaultValue: '8' }),
-        9: t('energies.9.name', { defaultValue: '9' }),
-      };
-
+    async (dayNumber: number) => {
+      const energy = getEnergyInfo(dayNumber, t);
+      const { action } = getDayActionLine(dayNumber, t);
       return sendNotification({
-        title: titles[dayNumber] || t('notifications.dailyReminder', { defaultValue: 'Your personal day' }),
-        body:
-          t(`energies.${dayNumber}.description`, {
-            defaultValue: t('notifications.dailyReminderBody', {
-              defaultValue: 'Check today recommendations in AstroNavigator',
-            }),
-          }) || '',
+        title: t('notifications.dailyTitle', {
+          number: dayNumber,
+          planet: energy.planet,
+        }),
+        body: action,
         tag: `day-${dayNumber}`,
       });
     },
     [sendNotification, t]
   );
+
+  const markDailySent = () => {
+    const now = new Date();
+    localStorage.setItem(
+      LAST_DAILY_KEY,
+      `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+    );
+  };
 
   /** Fire once per calendar day when app is opened after preferred time. */
   const maybeSendDailyOnOpen = useCallback(async () => {
@@ -155,19 +194,13 @@ export function useNotifications() {
     const target = prefs.hour * 60 + prefs.minute;
     if (minutesNow < target) return;
 
-    const ok = await sendNotification({
-      title: t('notifications.dailyReminder', { defaultValue: 'Good morning!' }),
-      body: t('notifications.dailyReminderBody', {
-        defaultValue: 'Check today recommendations in AstroNavigator',
-      }),
-      tag: 'daily-reminder',
-    });
-    if (ok) localStorage.setItem(LAST_DAILY_KEY, todayKey);
-  }, [checkPermission, sendNotification, t]);
+    const ok = await sendNotification(buildMorningPayload());
+    if (ok) markDailySent();
+  }, [checkPermission, sendNotification, buildMorningPayload]);
 
   /**
    * Schedule next local reminder while this tab/PWA session is alive.
-   * Honest model: no server push — documented in Settings disclaimer.
+   * Body = same actionable tip as home.
    */
   const scheduleDailyNotification = useCallback(
     (hour: number = 8, minute: number = 0) => {
@@ -196,26 +229,13 @@ export function useNotifications() {
 
       const delay = scheduled.getTime() - now.getTime();
       timerRef.current = setTimeout(() => {
-        void sendNotification({
-          title: t('notifications.dailyReminder', { defaultValue: 'Good morning!' }),
-          body: t('notifications.dailyReminderBody', {
-            defaultValue: 'Check today recommendations in AstroNavigator',
-          }),
-          tag: 'daily-reminder',
-        }).then((ok) => {
-          if (ok) {
-            const d = new Date();
-            localStorage.setItem(
-              LAST_DAILY_KEY,
-              `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
-            );
-          }
-          // Reschedule for next day while session lives
+        void sendNotification(buildMorningPayload()).then((ok) => {
+          if (ok) markDailySent();
           scheduleDailyNotification(hour, minute);
         });
       }, delay);
     },
-    [checkPermission, sendNotification, t]
+    [checkPermission, sendNotification, buildMorningPayload]
   );
 
   const disableDailyNotifications = useCallback(() => {
@@ -231,31 +251,25 @@ export function useNotifications() {
     async (daysLeft: number) => {
       if (daysLeft <= 0) {
         return sendNotification({
-          title: t('notifications.trialEnded', { defaultValue: 'Trial ended' }),
-          body: t('notifications.subscriptionEnded', {
-            defaultValue: 'Subscribe to keep full access',
-          }),
+          title: t('notifications.trialEnded'),
+          body: t('notifications.subscriptionEnded'),
           tag: 'trial-ended',
         });
       }
 
       return sendNotification({
-        title: `${t('subscription.plans.trial.name', { defaultValue: 'Trial' })}: ${daysLeft}`,
-        body: t('notifications.subscriptionEnded', {
-          defaultValue: 'Subscribe to continue',
-        }),
+        title: `${t('subscription.plans.trial.name')}: ${daysLeft}`,
+        body: t('notifications.subscriptionEnded'),
         tag: 'trial-reminder',
       });
     },
     [sendNotification, t]
   );
 
-  // On language change, keep using translated strings next send
   useEffect(() => {
     void i18n.language;
   }, [i18n.language]);
 
-  // When app becomes visible, try once-per-day reminder
   useEffect(() => {
     const onVis = () => {
       if (document.visibilityState === 'visible') {

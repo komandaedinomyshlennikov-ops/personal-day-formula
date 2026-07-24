@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { ArrowLeft, Send, Phone, Mail, BookOpen } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Mail, BookOpen, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { DayInfo } from '@/types';
 import { getEnergyInfo, formatDate, getDayOfWeekName, isZeroDay } from '@/utils/numerology';
 import { getAstroRecommendations } from '@/data/astroRecommendations';
+import { buildDayShareText, shareText } from '@/utils/shareDay';
 import { GlossaryTooltip } from './GlossaryTooltip';
 import { UseCaseExamples } from './UseCaseExamples';
 
@@ -19,11 +21,13 @@ type TabType = 'personal' | 'universal' | 'examples';
 export function DayDetail({ day, onBack }: DayDetailProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('personal');
+  const [sharing, setSharing] = useState(false);
   
   const generalInfo = getEnergyInfo(day.generalNumber, t);
   const personalInfo = getEnergyInfo(day.personalNumber, t);
   const astroRecs = getAstroRecommendations(day.generalNumber, t);
   const isZero = isZeroDay(day.date);
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
   
   // Get translated day favorability text
   const getFavorableText = () => {
@@ -38,18 +42,41 @@ export function DayDetail({ day, onBack }: DayDetailProps) {
     return t('dayDetail.neutralDesc');
   };
 
+  const handleShareDay = async () => {
+    if (sharing) return;
+    setSharing(true);
+    const text = buildDayShareText(day, t, locale);
+    const result = await shareText(text);
+    if (result === 'shared') toast.success(t('share.sharedDay'));
+    else if (result === 'copied') toast.success(t('share.copiedDay'));
+    else toast.error(t('share.shareFailed'));
+    setSharing(false);
+  };
+
   return (
     <div className="app-shell min-h-screen pb-10">
-      <header className="app-header">
-        <button type="button" onClick={onBack} className="icon-btn" aria-label="Back">
-          <ArrowLeft size={20} />
-        </button>
-        <div className="min-w-0">
-          <h1 className="font-display text-xl text-white leading-tight truncate">
-            {formatDate(day.date, i18n.language === 'ru' ? 'ru-RU' : 'en-US')}
-          </h1>
-          <p className="text-[var(--text-muted)] text-xs">{getDayOfWeekName(day.date, t)}</p>
+      <header className="app-header justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <button type="button" onClick={onBack} className="icon-btn" aria-label="Back">
+            <ArrowLeft size={20} />
+          </button>
+          <div className="min-w-0">
+            <h1 className="font-display text-xl text-white leading-tight truncate">
+              {formatDate(day.date, locale)}
+            </h1>
+            <p className="text-[var(--text-muted)] text-xs">{getDayOfWeekName(day.date, t)}</p>
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={() => void handleShareDay()}
+          className="icon-btn"
+          disabled={sharing}
+          title={t('share.shareDay')}
+          aria-label={t('share.shareDay')}
+        >
+          <Share2 size={17} />
+        </button>
       </header>
 
       <div className="px-4 py-4 space-y-4">

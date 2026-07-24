@@ -1,192 +1,236 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Copy, Check, Send, MessageCircle, Facebook, Twitter } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Share2, Copy, Check, Send, MessageCircle, Facebook, Twitter, Sparkles } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { SITE_URL } from '@/config/site';
+import { calculatePersonalDay, getEnergyInfo } from '@/utils/numerology';
+import { getDayActionLine } from '@/utils/actionableDay';
+import { buildDayShareText, shareText } from '@/utils/shareDay';
+import { fromLocalDate, toLocalDate } from '@/utils/date';
+import {
+  calculateUniversalDayFromParts,
+  isChallengingDay,
+  isFavorableDay,
+} from '@/utils/numerology';
+import type { DayInfo } from '@/types';
 
 interface ShareCalendarProps {
   onBack: () => void;
+  birthDate?: string;
 }
 
-export function ShareCalendar({ onBack }: ShareCalendarProps) {
+function buildTodayDayInfo(birthDate: string): DayInfo {
+  const now = new Date();
+  const parts = fromLocalDate(now);
+  const personalNumber = calculatePersonalDay(birthDate, now);
+  const generalNumber = calculateUniversalDayFromParts(
+    parts.year,
+    parts.month,
+    parts.day
+  );
+  return {
+    date: toLocalDate(parts),
+    personalNumber,
+    generalNumber,
+    isFavorable: isFavorableDay(personalNumber),
+    isUnfavorable: isChallengingDay(personalNumber),
+    isNeutral: !isFavorableDay(personalNumber) && !isChallengingDay(personalNumber),
+    generalPlanet: '',
+    personalPlanet: '',
+  };
+}
+
+export function ShareCalendar({ onBack, birthDate }: ShareCalendarProps) {
   const [copied, setCopied] = useState(false);
+  const [copiedDay, setCopiedDay] = useState(false);
   const { t, i18n } = useTranslation();
-  
-  const shareUrl = 'https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/';
-  const shareText = t('share.message', {
-    defaultValue: i18n.language.startsWith('ru')
-      ? 'Открой свою персональную энергетику с Астронавигатором! 🌟 Мой личный календарь по дате рождения.'
-      : 'Check your daily energy with AstroNavigator! 🌟 My personal calendar based on birth date.',
-  });
-  
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+
+  const shareUrl = SITE_URL;
+  const shareTextApp = t('share.message');
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+
+  const todayDay = useMemo(
+    () => (birthDate ? buildTodayDayInfo(birthDate) : null),
+    [birthDate]
+  );
+
+  const todayPreview = useMemo(() => {
+    if (!todayDay) return null;
+    const energy = getEnergyInfo(todayDay.personalNumber, t);
+    const { action } = getDayActionLine(todayDay.personalNumber, t);
+    return { energy, action, number: todayDay.personalNumber };
+  }, [todayDay, t, i18n.language]);
+
+  const dayShareText = useMemo(
+    () => (todayDay ? buildDayShareText(todayDay, t, locale) : ''),
+    [todayDay, t, locale]
+  );
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error(t('share.shareFailed'));
+    }
+  };
+
+  const handleShareToday = async () => {
+    if (!dayShareText) return;
+    const result = await shareText(dayShareText);
+    if (result === 'shared') toast.success(t('share.sharedDay'));
+    else if (result === 'copied') {
+      setCopiedDay(true);
+      toast.success(t('share.copiedDay'));
+      setTimeout(() => setCopiedDay(false), 2000);
+    } else toast.error(t('share.shareFailed'));
   };
 
   const shareLinks = {
-    telegram: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
-    whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTextApp)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(shareTextApp + ' ' + shareUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTextApp)}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
   };
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
-        <button
-          onClick={onBack}
-          className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={24} />
+    <div className="app-shell min-h-screen pb-10">
+      <header className="app-header">
+        <button type="button" onClick={onBack} className="icon-btn" aria-label={t('nav.back')}>
+          <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-lg font-bold text-white">{t('share.title')}</h1>
-          <p className="text-gray-400 text-sm">{t('share.subtitle')}</p>
+          <h1 className="font-display text-xl text-white">{t('share.title')}</h1>
+          <p className="text-[var(--text-muted)] text-xs">{t('share.subtitle')}</p>
         </div>
       </header>
 
-      <div className="px-6 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md mx-auto"
-        >
-          {/* Icon */}
-          <div className="text-center mb-8">
+      <div className="px-5 py-6">
+        <div className="max-w-md mx-auto space-y-4">
+          {/* Share TODAY energy — primary viral loop */}
+          {todayPreview && todayDay && (
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', delay: 0.1 }}
-              className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.2))',
-                boxShadow: '0 0 40px rgba(139, 92, 246, 0.3)'
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card p-5 rounded-3xl border-amber-400/25"
+              style={{
+                background:
+                  'linear-gradient(145deg, rgba(245,215,142,0.12), rgba(167,139,250,0.08))',
               }}
             >
-              <Share2 size={40} className="text-amber-400" />
-            </motion.div>
-            
-            <h2 className="text-2xl font-bold text-white mb-2">
-              {t('share.title')}
-            </h2>
-            <p className="text-gray-400 text-sm">
-              {t('share.subtitle')}
-            </p>
-          </div>
-
-          {/* Share Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="glass-card p-6 mb-6"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div 
-                className="w-14 h-14 rounded-xl flex items-center justify-center"
-                style={{ 
-                  background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-                }}
+              <p className="text-[10px] uppercase tracking-[0.14em] text-amber-200/85 mb-3">
+                {t('share.todayCard')}
+              </p>
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl"
+                  style={{ background: `${todayPreview.energy.color}28` }}
+                >
+                  {todayPreview.energy.icon}
+                </div>
+                <div>
+                  <p className="text-white font-semibold">
+                    {todayPreview.number} · {todayPreview.energy.planet}
+                  </p>
+                  <p className="text-[var(--text-secondary)] text-xs leading-snug line-clamp-2">
+                    {todayPreview.action}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => void handleShareToday()}
+                className="gradient-button w-full !min-h-[48px] !text-sm"
               >
-                <span className="text-2xl">✨</span>
+                {copiedDay ? <Check size={16} /> : <Share2 size={16} />}
+                {t('share.shareDay')}
+              </button>
+            </motion.div>
+          )}
+
+          {/* App link card */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="glass-card p-5 rounded-3xl"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+              >
+                <Sparkles size={20} className="text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold">{t('app.name')}</h3>
-                <p className="text-gray-400 text-sm">{t('app.tagline')}</p>
+                <h3 className="text-white font-semibold text-sm">{t('share.appLink')}</h3>
+                <p className="text-[var(--text-muted)] text-xs">{t('app.tagline')}</p>
               </div>
             </div>
-            
-            <p className="text-gray-300 text-sm leading-relaxed mb-4">
-              {shareText}
+
+            <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-3">
+              {shareTextApp}
             </p>
-            
-            {/* Copy Link */}
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-white/5">
+
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
               <input
                 type="text"
                 value={shareUrl}
                 readOnly
-                className="flex-1 bg-transparent text-gray-400 text-sm outline-none"
+                className="flex-1 bg-transparent text-[var(--text-muted)] text-xs outline-none min-w-0"
               />
               <button
-                onClick={handleCopyLink}
-                className="p-2 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-400 transition-colors"
+                type="button"
+                onClick={() => void handleCopyLink()}
+                className="p-2 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 transition-colors"
+                aria-label="Copy"
               >
                 {copied ? <Check size={18} /> : <Copy size={18} />}
               </button>
             </div>
           </motion.div>
 
-          {/* Social Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-2 gap-3"
-          >
+          <div className="grid grid-cols-2 gap-2.5">
             <a
               href={shareLinks.telegram}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl bg-[#0088cc]/20 hover:bg-[#0088cc]/30 border border-[#0088cc]/30 transition-colors"
+              className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/25 transition-colors"
             >
-              <Send size={20} className="text-[#0088cc]" />
-              <span className="text-white font-medium">Telegram</span>
+              <Send size={18} className="text-[#0088cc]" />
+              <span className="text-white text-sm font-medium">Telegram</span>
             </a>
-            
             <a
               href={shareLinks.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl bg-[#25d366]/20 hover:bg-[#25d366]/30 border border-[#25d366]/30 transition-colors"
+              className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#25d366]/15 hover:bg-[#25d366]/25 border border-[#25d366]/25 transition-colors"
             >
-              <MessageCircle size={20} className="text-[#25d366]" />
-              <span className="text-white font-medium">WhatsApp</span>
+              <MessageCircle size={18} className="text-[#25d366]" />
+              <span className="text-white text-sm font-medium">WhatsApp</span>
             </a>
-            
             <a
               href={shareLinks.twitter}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl bg-[#1da1f2]/20 hover:bg-[#1da1f2]/30 border border-[#1da1f2]/30 transition-colors"
+              className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#1da1f2]/15 hover:bg-[#1da1f2]/25 border border-[#1da1f2]/25 transition-colors"
             >
-              <Twitter size={20} className="text-[#1da1f2]" />
-              <span className="text-white font-medium">Twitter</span>
+              <Twitter size={18} className="text-[#1da1f2]" />
+              <span className="text-white text-sm font-medium">X</span>
             </a>
-            
             <a
               href={shareLinks.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 rounded-xl bg-[#1877f2]/20 hover:bg-[#1877f2]/30 border border-[#1877f2]/30 transition-colors"
+              className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-[#1877f2]/15 hover:bg-[#1877f2]/25 border border-[#1877f2]/25 transition-colors"
             >
-              <Facebook size={20} className="text-[#1877f2]" />
-              <span className="text-white font-medium">Facebook</span>
+              <Facebook size={18} className="text-[#1877f2]" />
+              <span className="text-white text-sm font-medium">Facebook</span>
             </a>
-          </motion.div>
-
-          {/* Native Share */}
-          {typeof navigator !== 'undefined' && 'share' in navigator && (
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              onClick={() => {
-                navigator.share({
-                  title: t('app.name'),
-                  text: shareText,
-                  url: shareUrl,
-                });
-              }}
-              className="w-full mt-4 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              <Share2 size={18} />
-              {t('share.shareVia')}
-            </motion.button>
-          )}
-        </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

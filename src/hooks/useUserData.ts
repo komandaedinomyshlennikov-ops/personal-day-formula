@@ -166,12 +166,16 @@ export function useUserData() {
     setUserData(defaultUserData);
     localStorage.removeItem('astronavigator_user');
     localStorage.removeItem('astronavigator_notes');
+    localStorage.removeItem('astronavigator_streak_v1');
+    localStorage.removeItem('astronavigator_coach_v1');
   }, []);
 
   const logout = useCallback(() => {
     setUserData(defaultUserData);
     localStorage.removeItem('astronavigator_user');
     localStorage.removeItem('astronavigator_notes');
+    localStorage.removeItem('astronavigator_streak_v1');
+    localStorage.removeItem('astronavigator_coach_v1');
     window.location.reload();
   }, []);
 

@@ -472,7 +472,7 @@ function AppShell() {
             path="/share"
             element={requireBirth(
               <PageTransition key="share" direction="left">
-                <ShareCalendar onBack={goCalendar} />
+                <ShareCalendar onBack={goCalendar} birthDate={userData.birthDate} />
               </PageTransition>
             )}
           />

@@ -12,8 +12,10 @@
     "subscriptionEnding": "Subscription Ending Soon",
     "subscriptionEnded": "Subscribe to keep full access",
     "dailyReminder": "Good morning!",
-    "dailyReminderBody": "Check today's recommendations in AstroNavigator",
-    "languageChanged": "Language changed to {{language}}"
+    "dailyReminderBody": "Check today's recommendations",
+    "languageChanged": "Language changed to {{language}}",
+    "dailyTitle": "Today {{number}} · {{planet}}",
+    "enableHint": "Morning reminder with today's tip"
   },
   "pwa": {
     "installTitle": "Install AstroNavigator",
@@ -1475,7 +1477,18 @@
     "shareText": "Discover your personal energy with AstroNavigator! My personal calendar based on birth date.",
     "copyLink": "Copy Link",
     "shareVia": "Share via...",
-    "message": "Check your daily energy with AstroNavigator! 🌟 My personal calendar based on birth date."
+    "message": "Check your daily energy with AstroNavigator! 🌟 My personal calendar based on birth date.",
+    "dayTitle": "My personal day in AstroNavigator",
+    "dayFavorable": "favorable day",
+    "dayChallenging": "completion day",
+    "dayNeutral": "steady day",
+    "dayFooter": "Calculate yours by birth date:",
+    "shareDay": "Share this day",
+    "copiedDay": "Day text copied",
+    "sharedDay": "Shared",
+    "shareFailed": "Could not share",
+    "todayCard": "My day today",
+    "appLink": "App link"
   },
   "meta": {
     "title": "AstroNavigator - Personal Success Calendar",
@@ -1612,5 +1625,12 @@
     "subDaysLeft": "Subscription: {{count}} days left",
     "subOneDayLeft": "Subscription: 1 day left",
     "bannerHint": "Tap to renew access"
+  },
+  "streak": {
+    "oneDay": "1 day",
+    "days": "{{count}}-day streak",
+    "hint": "You're opening the calendar on consecutive days — a gentle habit",
+    "totalHint": "Active days total: {{count}}",
+    "welcomeBack": "Welcome back"
   }
 }
