@@ -12,20 +12,33 @@ Server-side proxy so the browser never sees the API key.
 2. **Interpretation** — day story in the app  
 3. **Coach** — Llama explains / asks questions (does **not** claim destiny)
 
-## Setup
+## Setup (macOS — copy step by step)
 
-1. Free key: https://console.groq.com → API Keys  
-2. Deploy worker:
+> Важно: запускайте из папки проекта, **не** из `~` (домашней).
 
 ```bash
-cd coach-api
-npm install
+# 0) перейти в API
+cd ~/personal-day-formula/coach-api
+
+# 1) зависимости (уже можно после git pull)
+npm install --legacy-peer-deps
+
+# 2) бесплатный ключ: https://console.groq.com → API Keys → Create API Key
+#    скопируйте ключ (gsk_...)
+
+# 3) вход в Cloudflare (откроется браузер — один раз)
 npx wrangler login
+# когда спросит Ok to proceed? → введите y и Enter
+
+# 4) сохранить ключ на Worker (вставьте gsk_... и Enter, символы не видны — так и надо)
 npx wrangler secret put GROQ_API_KEY
+
+# 5) деплой
 npx wrangler deploy
 ```
 
-Copy URL, e.g. `https://astronavigator-coach.<you>.workers.dev`
+В конце `deploy` будет URL, например  
+`https://astronavigator-coach.XXXX.workers.dev` — **скопируйте его целиком**.
 
 ## Connect the app
 
