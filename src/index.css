@@ -310,6 +310,60 @@
     padding-top: 0.75rem;
   }
 
+  /* Room for fixed sticky CTA so final button never sits under it */
+  .landing-shell {
+    padding-bottom: calc(5.75rem + var(--safe-bottom));
+  }
+
+  .landing-final-cta {
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-sticky-cta {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 100%;
+    max-width: var(--app-max);
+    z-index: 50;
+    padding: 0.65rem 1rem calc(0.75rem + var(--safe-bottom));
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(7, 6, 13, 0.55) 28%,
+      rgba(7, 6, 13, 0.94) 100%
+    );
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+  }
+
+  .landing-sticky-cta--on {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .landing-sticky-cta--off {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(12px);
+  }
+
+  .landing-sticky-cta__inner {
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  .landing-sticky-cta__inner .gradient-button {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+
   /* —— Home (calendar) layout —— */
   .home-body {
     flex: 1;
@@ -897,7 +951,7 @@
 
   .page-pad {
     /* Room for fixed bottom nav so last buttons (legend) stay above it */
-    padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 0.75rem);
+    padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 1.25rem);
   }
 
   .icon-btn {
@@ -907,12 +961,21 @@
   }
 
   .bottom-nav {
-    /* keep taps above home indicators */
-    pointer-events: none;
+    /* Entire dock receives taps (items + padding) */
+    pointer-events: auto;
+    z-index: 50;
   }
 
   .bottom-nav-inner {
     pointer-events: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-item {
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .section-title {

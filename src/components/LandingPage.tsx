@@ -12,7 +12,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { LanguageToggle } from './LanguageToggle';
 import type { LanguageCode } from '@/i18n';
 import { calculateUniversalDay, getEnergyInfo } from '@/utils/numerology';
@@ -27,6 +27,9 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
   const { t, i18n } = useTranslation();
   const [energiesOpen, setEnergiesOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState<number | null>(0);
+  /** Hide sticky CTA when the final in-page button is on screen (avoids double overlap) */
+  const [stickyVisible, setStickyVisible] = useState(true);
+  const finalCtaRef = useRef<HTMLDivElement>(null);
 
   const demo = useMemo(() => {
     const num = calculateUniversalDay(new Date());
@@ -121,8 +124,22 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         ? 'border-rose-400/40'
         : 'border-amber-400/35';
 
+  useEffect(() => {
+    const el = finalCtaRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        // When final CTA is mostly visible, drop sticky so it stays clickable
+        setStickyVisible(!entry.isIntersecting);
+      },
+      { root: null, threshold: 0.45, rootMargin: '0px 0px -12% 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className="app-shell pb-28 overflow-x-hidden">
+    <div className="app-shell landing-shell overflow-x-hidden">
       <header className="landing-topbar">
         <div className="landing-topbar__inner">
           <div className="landing-topbar__badge" title={t('landing.badge')}>
@@ -492,22 +509,24 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="px-5 py-12 text-center">
+      {/* Final CTA — in-page button must stay above sticky dock padding */}
+      <section className="px-5 py-12 text-center landing-final-cta">
         <div className="max-w-sm mx-auto glass-card p-7 rounded-3xl">
           <h2 className="section-title mb-2 text-[1.65rem]">{t('landing.ready')}</h2>
           <p className="text-[var(--text-secondary)] text-sm mb-5">{t('landing.readyDesc')}</p>
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.015, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={onStart}
-            className="gradient-button gradient-button--hero w-full"
-          >
-            <Sparkles size={18} />
-            {t('landing.freeButton')}
-            <ChevronRight size={18} />
-          </motion.button>
+          <div ref={finalCtaRef} className="relative z-[1]">
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.015, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onStart}
+              className="gradient-button gradient-button--hero w-full"
+            >
+              <Sparkles size={18} />
+              {t('landing.freeButton')}
+              <ChevronRight size={18} />
+            </motion.button>
+          </div>
           <p className="mt-2.5 text-[11px] text-[var(--text-muted)]">{t('landing.ctaHint')}</p>
         </div>
       </section>
@@ -541,12 +560,16 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
         </div>
       </footer>
 
-      {/* Sticky CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 pointer-events-none">
-        <div className="app-shell pointer-events-auto">
+      {/* Sticky CTA — hides when final CTA is on screen so bottom button is tappable */}
+      <div
+        className={`landing-sticky-cta ${stickyVisible ? 'landing-sticky-cta--on' : 'landing-sticky-cta--off'}`}
+        aria-hidden={!stickyVisible}
+      >
+        <div className="landing-sticky-cta__inner">
           <button
             type="button"
             onClick={onStart}
+            tabIndex={stickyVisible ? 0 : -1}
             className="gradient-button gradient-button--hero w-full shadow-2xl"
           >
             <Sparkles size={16} />
