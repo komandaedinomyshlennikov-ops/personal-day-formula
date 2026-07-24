@@ -49,13 +49,28 @@ npm run build
 
 Подробно: [coach-api/README.md](coach-api/README.md)
 
-## Деплой
+## Деплой (через GitHub)
 
-Приложение (SPA) → **GitHub Pages** (`.github/workflows/deploy.yml` на `main`).  
-Coach API → Cloudflare Workers (`npm run coach:deploy`).
+Автоматически на `push` в `main`:
+
+| Workflow | Что делает |
+|----------|------------|
+| `deploy-coach.yml` | Cloudflare Worker + secret `GROQ_API_KEY` |
+| `deploy-pages.yml` | `npm run build` → ветка `gh-pages` |
+
+**Пошагово:** [docs/GITHUB_COACH_SETUP.md](docs/GITHUB_COACH_SETUP.md)
+
+Secrets (репозиторий → Settings → Secrets → Actions):
+
+- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- `GROQ_API_KEY` (бесплатно: console.groq.com)
+- `VITE_COACH_API_URL` (URL Worker после деплоя)
+
+Локально: `npm run coach:deploy` (нужен `wrangler login`).
 
 ## Документация
 
+- [Вшить coach через GitHub](docs/GITHUB_COACH_SETUP.md)
 - [Coach API](coach-api/README.md)
 - [Анализ AstroNavigator](docs/AstroNavigator_Analysis_and_Recommendations.md)
 - [Анализ календаря](docs/Calendar_Analysis_and_Recommendations.md)
