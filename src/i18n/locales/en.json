@@ -218,7 +218,7 @@
     "fillAllFields": "Fill in all fields",
     "enterValidDate": "Enter a valid date",
     "startTrial": "See my day",
-    "trialNote": "3 days free · no card"
+    "trialNote": "3 days free · 💳 no bank card"
   },
   "calendar": {
     "personalYear": "Personal Year",
@@ -588,7 +588,7 @@
     "plans": {
       "trial": {
         "name": "3 Days Free",
-        "description": "Today, calendar & next days — no card needed"
+        "description": "Today, calendar & next days — no bank card needed"
       },
       "month": {
         "name": "Month",
@@ -1526,7 +1526,7 @@
   "share": {
     "title": "Share with Friends",
     "subtitle": "Let friends see their day too",
-    "shareText": "See what kind of day it is for you — from your birth date. No card, 15 seconds.",
+    "shareText": "See what kind of day it is for you — from your birth date. No bank card, 15 seconds.",
     "copyLink": "Copy Link",
     "shareVia": "Share via...",
     "message": "Check what kind of day it is for you 🌟 AstroNavigator — a personal tip from birth date.",
@@ -1549,10 +1549,10 @@
   },
   "meta": {
     "title": "AstroNavigator — what kind of day is it for you",
-    "description": "A personal tip for today from your birth date: when to start, when to ease off. Free, no card."
+    "description": "A personal tip for today from your birth date: when to start, when to ease off. free, no bank card."
   },
   "landing": {
-    "badge": "3 days free · no card",
+    "badge": "3 days free · 💳 no bank card",
     "kicker": "Day rhythm · personal helper",
     "heroTitle": "See what kind of day it is",
     "heroTitleAccent": "for you",
@@ -1624,13 +1624,13 @@
       "consultation": "Consultation",
       "copyright": "© 2026 AstroNavigator. All rights reserved."
     },
-    "ctaHint": "No card · 3 days free",
+    "ctaHint": "💳 No bank card · 3 days free",
     "previewLabel": "Sample tip",
     "previewToday": "Today (shared tone)",
     "previewPersonalHint": "Your personal day unlocks after birth date",
     "previewCta": "See my day",
     "trust1": "15 seconds",
-    "trust2": "No card",
+    "trust2": "💳 No bank card",
     "trust3": "3 days free",
     "energiesToggle": "Show 9 day types",
     "energiesHide": "Hide",

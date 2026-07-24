@@ -240,7 +240,7 @@ export function BirthDateModal({ isOpen, onClose, onSubmit }: BirthDateModalProp
             </button>
             <p className="text-center text-[11px] text-gray-500 mt-3">
               {t('onboarding.trialNote', {
-                defaultValue: '3 days free · no card required',
+                defaultValue: '3 days free · 💳 no bank card',
               })}
             </p>
           </motion.div>
