@@ -11,6 +11,8 @@ export type PremiumFeature =
   | 'monthYearDeep'
   | 'export'
   | 'notesTips'
+  | 'coach'
+  | 'coachUnlimited'
   | 'yearCompass'
   | 'bestWindows'
   | 'weeklyDigest'
@@ -22,10 +24,13 @@ const FEATURE_MATRIX: Record<PremiumFeature, AccessTier[]> = {
   today: ['trial', 'month', 'year', 'lifetime'],
   dayDetail: ['trial', 'month', 'year', 'lifetime'],
   upcoming: ['trial', 'month', 'year', 'lifetime'],
+  // Coach: free tier of interpretive helper (quota enforced separately)
+  coach: ['trial', 'month', 'year', 'lifetime'],
   // Paid — deeper monetization layers
   monthYearDeep: ['month', 'year', 'lifetime'],
   export: ['month', 'year', 'lifetime'],
   notesTips: ['month', 'year', 'lifetime'],
+  coachUnlimited: ['month', 'year', 'lifetime'],
   // Year+ exclusives (2026-style real utility)
   yearCompass: ['year', 'lifetime'],
   bestWindows: ['year', 'lifetime'],

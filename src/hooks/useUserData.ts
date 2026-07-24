@@ -175,6 +175,7 @@ export function useUserData() {
     localStorage.removeItem('astronavigator_notes');
     localStorage.removeItem('astronavigator_streak_v1');
     localStorage.removeItem('astronavigator_coach_v1');
+    localStorage.removeItem('astronavigator_notify_banner_dismissed');
   }, []);
 
   const logout = useCallback(() => {
@@ -183,6 +184,7 @@ export function useUserData() {
     localStorage.removeItem('astronavigator_notes');
     localStorage.removeItem('astronavigator_streak_v1');
     localStorage.removeItem('astronavigator_coach_v1');
+    localStorage.removeItem('astronavigator_notify_banner_dismissed');
     window.location.reload();
   }, []);
 

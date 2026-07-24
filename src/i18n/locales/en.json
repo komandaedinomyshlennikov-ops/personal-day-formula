@@ -163,7 +163,8 @@
     "subscription": "Subscription",
     "share": "Share",
     "notes": "Notes",
-    "back": "Back"
+    "back": "Back",
+    "coach": "Coach"
   },
   "actions": {
     "calculate": "Calculate",
@@ -651,7 +652,8 @@
       "personalDayMonthYear": "Deep month & year",
       "dataExport": "PDF & CSV export",
       "personalConsultation": "Priority contact with the author",
-      "yearTools": "Year Compass · windows · digest"
+      "yearTools": "Year Compass · windows · digest",
+      "coach": "Day interpretation helper"
     },
     "howToPay": "How to get access",
     "step1": "Choose a plan and pay via Telegram",
@@ -1551,10 +1553,10 @@
   },
   "landing": {
     "badge": "3 days free · no card",
-    "kicker": "Personal day · 15 seconds",
+    "kicker": "Day rhythm · personal helper",
     "heroTitle": "See what kind of day it is",
     "heroTitleAccent": "for you",
-    "heroLead": "Get a short recommendation: when it’s easier to start, when to lower the load, and whether today’s tone is calm or active.",
+    "heroLead": "First — a clear day read from your birth date. Then — a calm helper that links it to your plans. No mysticism, no “AI knows you better than you”.",
     "title1": "ASTRO",
     "title2": "NAVIGATOR",
     "subtitle": "Your personal day today — check free",
@@ -1564,8 +1566,8 @@
     "legendRed": "Red — softer with big decisions if you can choose",
     "startButton": "See my day",
     "freeButton": "Show today’s day",
-    "whatIs": "Why this exists",
-    "whatIsDesc": "We don’t promise to change your fate. We offer one more way to look at today — so you act less blind.",
+    "whatIs": "Not a calculator. A cue + a conversation",
+    "whatIsDesc": "The calendar answers “what kind of day is it?”. The helper helps you think “so what do I do with that?” We don’t promise to change your fate.",
     "habitLabel": "A 10-second habit",
     "habitTitle": "Why come back tomorrow",
     "habitBody": "Today is day 7. Tomorrow is day 8. The tip changes. One open in the morning — and the day is clearer.",
@@ -1575,7 +1577,7 @@
       "personalMonth": "Personal month",
       "personalMonthDesc": "When to speed up — and when not",
       "personalDay": "Today",
-      "personalDayDesc": "Short takeaway + 3 clear actions",
+      "personalDayDesc": "Short takeaway + “discuss” button",
       "planetaryYear": "Shared tone",
       "planetaryYearDesc": "The day’s mood around you — no mysticism"
     },
@@ -1693,17 +1695,24 @@
     "how3": "Receive the code and enter it here"
   },
   "coach": {
-    "title": "Quick tour",
-    "step": "{{current}} of {{total}}",
-    "skip": "Skip",
-    "next": "Next",
-    "done": "Got it",
-    "todayTitle": "Your day is here",
-    "todayBody": "The top card shows today's energy and what to do. Tap it for the full breakdown.",
-    "colorsTitle": "Colors = day type",
-    "colorsBody": "Green — favorable, yellow — neutral, red — completion day, purple — pause days (10, 20, 30).",
-    "tapTitle": "Tap any day",
-    "tapBody": "You'll see personal and universal numbers, do/avoid tips, and examples."
+    "title": "Day helper",
+    "subtitle": "Interpretation, not prediction",
+    "trustLine": "The formula calculates the day. The helper explains it in plain language and asks questions — it doesn’t “know your fate” and doesn’t replace your decisions.",
+    "placeholder": "What matters today? Or ask about the day…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "discussCta": "Discuss this day",
+    "ctaHome": "Discuss today’s day",
+    "ctaHomeHint": "Connect the calculation to your plans — with short questions",
+    "quotaLeft": "Messages left today: {{count}} (free)",
+    "limitTitle": "Free message limit reached",
+    "limitBody": "Pro unlocks unlimited helper and deeper use of your check-in history.",
+    "checkInTitle": "Evening check-in",
+    "checkInHint": "How well did the day match reality? This is your memory, not a grade for the formula.",
+    "checkInQuestion": "How well did today’s take match how the day went? (1 — barely, 5 — a lot)",
+    "checkInNote": "What happened? (optional)",
+    "checkInSaved": "Check-in saved",
+    "checkInEdit": "edit"
   },
   "trial": {
     "daysLeft": "Trial: {{count}} days left",
@@ -1729,7 +1738,7 @@
     "cta": "See plans",
     "perk1": "Full personal month & year breakdown",
     "perk2": "PDF/CSV export for planning",
-    "perk3": "Smart tips in your journal",
+    "perk3": "Helper: discuss the day and your plans",
     "yearPerk1": "Personal year compass — 12‑month focus",
     "yearPerk2": "Best windows this month (top action days)",
     "yearPerk3": "Weekly energy digest",
@@ -1764,6 +1773,7 @@
     "yearExtra1": "Map of best days for 30 days — plan launches and deals",
     "yearExtra2": "Weekly balance: how many green vs hard days ahead",
     "yearExtra3": "Personal year compass (career, love, resource focus)",
-    "yearExtra4": "Priority chat with the author after yearly payment"
+    "yearExtra4": "Priority chat with the author after yearly payment",
+    "featCoach": "Helper (free limit / unlimited Pro)"
   }
 }

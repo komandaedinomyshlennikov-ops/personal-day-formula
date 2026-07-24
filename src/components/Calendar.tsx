@@ -8,11 +8,11 @@ import {
   Settings,
   Crown,
   Sparkles,
-  Share2,
   BookOpen,
   CalendarDays,
   ChevronDown,
   Info,
+  MessageCircle,
 } from 'lucide-react';
 import {
   generateMonthData,
@@ -33,6 +33,7 @@ import { StreakChip } from '@/components/StreakChip';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
 import { YearPerksPanel } from '@/components/YearPerksPanel';
 import { MorningNotifyBanner } from '@/components/MorningNotifyBanner';
+import { EveningCheckIn } from '@/components/EveningCheckIn';
 import type { AccessTier } from '@/utils/access';
 import { canUseFeature, hasYearPerks, isPaidTier, isTrialTier } from '@/utils/access';
 import type { DayInfo } from '@/types';
@@ -44,8 +45,9 @@ interface CalendarProps {
   onSettings: () => void;
   onSubscription: () => void;
   onHome: () => void;
-  onShare: () => void;
+  onShare?: () => void;
   onNotes: () => void;
+  onCoach?: () => void;
   onMonthClick: (monthNumber: number) => void;
   onYearClick: (yearNumber: number) => void;
   isSubscribed: boolean;
@@ -106,8 +108,9 @@ export function Calendar({
   onDaySelect,
   onSettings,
   onSubscription,
-  onShare,
+  onShare: _onShare,
   onNotes,
+  onCoach,
   onMonthClick,
   onYearClick,
   isSubscribed,
@@ -117,6 +120,7 @@ export function Calendar({
   notificationsEnabled = false,
   onEnableNotifications,
 }: CalendarProps) {
+  void _onShare;
   const paid = isPaidTier(accessTier);
   const yearPerks = hasYearPerks(accessTier);
   const trial = isTrialTier(accessTier);
@@ -363,6 +367,29 @@ export function Calendar({
           />
         )}
 
+        {onCoach && (
+          <button
+            type="button"
+            onClick={onCoach}
+            className="w-full flex items-center gap-3 glass-card p-3.5 rounded-2xl border border-violet-400/30 text-left"
+            style={{
+              background:
+                'linear-gradient(120deg, rgba(167,139,250,0.14), rgba(245,215,142,0.08))',
+            }}
+          >
+            <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
+              <MessageCircle size={18} className="text-violet-200" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-white text-sm font-semibold">{t('coach.ctaHome')}</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5 line-clamp-2">
+                {t('coach.ctaHomeHint')}
+              </p>
+            </div>
+            <ChevronRight size={16} className="text-[var(--text-muted)] shrink-0" />
+          </button>
+        )}
+
         {/* Next 3 days — habit loop */}
         <UpcomingDays days={upcoming} onSelect={onDaySelect} />
 
@@ -374,6 +401,8 @@ export function Calendar({
             })}
           </p>
         )}
+
+        <EveningCheckIn birthDate={birthDateString} />
 
         {/* Year tools for annual plan OR teaser for others */}
         {yearPerks ? (
@@ -611,13 +640,15 @@ export function Calendar({
             <CalendarDays size={19} />
             <span>{t('nav.calendar', { defaultValue: 'Календарь' })}</span>
           </button>
+          {onCoach && (
+            <button type="button" className="nav-item" onClick={onCoach}>
+              <MessageCircle size={19} />
+              <span>{t('nav.coach', { defaultValue: 'Помощник' })}</span>
+            </button>
+          )}
           <button type="button" className="nav-item" onClick={onNotes}>
             <BookOpen size={19} />
             <span>{t('nav.notes', { defaultValue: 'Дневник' })}</span>
-          </button>
-          <button type="button" className="nav-item" onClick={onShare}>
-            <Share2 size={19} />
-            <span>{t('calendar.share', { defaultValue: 'Share' })}</span>
           </button>
           <button type="button" className="nav-item" onClick={onSubscription}>
             <Crown size={19} />

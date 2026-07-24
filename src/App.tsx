@@ -23,6 +23,7 @@ import { BirthDateModal } from '@/components/BirthDateModal';
 import { MonthYearDetail } from '@/components/MonthYearDetail';
 import { Notes } from '@/components/Notes';
 import { ShareCalendar } from '@/components/ShareCalendar';
+import { DayCoach } from '@/components/DayCoach';
 import { SubscriptionExpired } from '@/components/SubscriptionExpired';
 import { LegalDocument } from '@/components/LegalDocument';
 import { CookieBanner } from '@/components/CookieBanner';
@@ -412,6 +413,7 @@ function AppShell() {
                   onHome={() => navigate('/')}
                   onShare={() => navigate('/share')}
                   onNotes={() => navigate('/notes')}
+                  onCoach={() => navigate('/coach')}
                   onMonthClick={(n) => navigate(`/energy/month/${n}`)}
                   onYearClick={(n) => navigate(`/energy/year/${n}`)}
                   isSubscribed={isSubscribed}
@@ -432,7 +434,25 @@ function AppShell() {
                 birthDate={userData.birthDate}
                 displayName={userData.displayName}
                 onBack={goCalendar}
+                onDiscuss={(personalNumber, dateKey) =>
+                  navigate(`/coach?n=${personalNumber}&d=${dateKey}`)
+                }
               />
+            )}
+          />
+
+          <Route
+            path="/coach"
+            element={requireBirth(
+              <PageTransition key="coach" direction="left">
+                <CoachRoute
+                  birthDate={userData.birthDate}
+                  displayName={userData.displayName}
+                  unlimited={canUseFeature('coachUnlimited', accessTier)}
+                  onBack={goCalendar}
+                  onUpgrade={() => navigate('/subscription')}
+                />
+              </PageTransition>
             )}
           />
 
@@ -561,10 +581,12 @@ function DayRoute({
   birthDate,
   displayName,
   onBack,
+  onDiscuss,
 }: {
   birthDate: string;
   displayName?: string;
   onBack: () => void;
+  onDiscuss?: (personalNumber: number, dateKey: string) => void;
 }) {
   const { date } = useParams();
   const day = date ? buildDayInfo(birthDate, date) : null;
@@ -573,10 +595,53 @@ function DayRoute({
     return <Navigate to="/calendar" replace />;
   }
 
+  const dateKey = date || '';
+
   return (
     <PageTransition key={`day-${date}`} direction="left">
-      <DayDetail day={day} displayName={displayName} onBack={onBack} />
+      <DayDetail
+        day={day}
+        displayName={displayName}
+        onBack={onBack}
+        onDiscuss={
+          onDiscuss
+            ? () => onDiscuss(day.personalNumber, dateKey)
+            : undefined
+        }
+      />
     </PageTransition>
+  );
+}
+
+function CoachRoute({
+  birthDate,
+  displayName,
+  unlimited,
+  onBack,
+  onUpgrade,
+}: {
+  birthDate: string;
+  displayName?: string;
+  unlimited: boolean;
+  onBack: () => void;
+  onUpgrade: () => void;
+}) {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const n = Number(params.get('n'));
+  const d = params.get('d') || undefined;
+
+  return (
+    <DayCoach
+      birthDate={birthDate}
+      displayName={displayName}
+      personalNumber={Number.isFinite(n) && n > 0 ? n : undefined}
+      dateKey={d || undefined}
+      unlimited={unlimited}
+      freeLimit={5}
+      onBack={onBack}
+      onUpgrade={onUpgrade}
+    />
   );
 }
 

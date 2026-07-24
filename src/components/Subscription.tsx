@@ -40,6 +40,7 @@ export function Subscription({
   const rows: { key: string; trial: boolean; pro: boolean; year: boolean }[] = [
     { key: 'featToday', trial: true, pro: true, year: true },
     { key: 'featCalendar', trial: true, pro: true, year: true },
+    { key: 'featCoach', trial: true, pro: true, year: true },
     { key: 'featDeep', trial: false, pro: true, year: true },
     { key: 'featExport', trial: false, pro: true, year: true },
     { key: 'featNotes', trial: false, pro: true, year: true },

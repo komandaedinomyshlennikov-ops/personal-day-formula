@@ -84,6 +84,8 @@ describe('feature matrix freemium', () => {
     expect(canUseFeature('monthYearDeep', 'trial')).toBe(false);
     expect(canUseFeature('export', 'trial')).toBe(false);
     expect(canUseFeature('notesTips', 'trial')).toBe(false);
+    expect(canUseFeature('coach', 'trial')).toBe(true);
+    expect(canUseFeature('coachUnlimited', 'trial')).toBe(false);
     expect(canUseFeature('yearCompass', 'trial')).toBe(false);
   });
 
@@ -91,6 +93,7 @@ describe('feature matrix freemium', () => {
     expect(canUseFeature('monthYearDeep', 'month')).toBe(true);
     expect(canUseFeature('export', 'month')).toBe(true);
     expect(canUseFeature('notesTips', 'month')).toBe(true);
+    expect(canUseFeature('coachUnlimited', 'month')).toBe(true);
     expect(canUseFeature('bestWindows', 'month')).toBe(false);
     expect(canUseFeature('weeklyDigest', 'month')).toBe(false);
     expect(canUseFeature('yearCompass', 'month')).toBe(false);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { ArrowLeft, Send, Phone, Mail, BookOpen, Share2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Mail, BookOpen, Share2, Image as ImageIcon, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import type { DayInfo } from '@/types';
 import { getEnergyInfo, formatDate, getDayOfWeekName, isZeroDay } from '@/utils/numerology';
@@ -17,11 +17,12 @@ interface DayDetailProps {
   day: DayInfo;
   displayName?: string;
   onBack: () => void;
+  onDiscuss?: () => void;
 }
 
 type TabType = 'personal' | 'universal' | 'examples';
 
-export function DayDetail({ day, displayName, onBack }: DayDetailProps) {
+export function DayDetail({ day, displayName, onBack, onDiscuss }: DayDetailProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('personal');
   const [sharing, setSharing] = useState(false);
@@ -205,15 +206,27 @@ export function DayDetail({ day, displayName, onBack }: DayDetailProps) {
               ))}
             </ul>
           )}
-          <button
-            type="button"
-            onClick={() => void handleShareCard()}
-            disabled={sharingCard}
-            className="w-full py-2.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/12 text-sm text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-          >
-            <ImageIcon size={16} className="text-amber-200" />
-            {sharingCard ? t('share.sharingCard') : t('share.shareCard')}
-          </button>
+          <div className="space-y-2">
+            {onDiscuss && (
+              <button
+                type="button"
+                onClick={onDiscuss}
+                className="gradient-button w-full !min-h-[48px] !text-sm"
+              >
+                <MessageCircle size={16} />
+                {t('coach.discussCta')}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => void handleShareCard()}
+              disabled={sharingCard}
+              className="w-full py-2.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/12 text-sm text-white font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            >
+              <ImageIcon size={16} className="text-amber-200" />
+              {sharingCard ? t('share.sharingCard') : t('share.shareCard')}
+            </button>
+          </div>
           <p className="mt-3 text-[10px] leading-relaxed text-[var(--text-muted)]">
             {t('dayDetail.disclaimer')}
           </p>
