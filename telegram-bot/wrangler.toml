@@ -17,6 +17,10 @@ BOT_USERNAME = "Sacrum_lab_bot"
 STARS_MONTH = "500"
 STARS_YEAR = "2000"
 STARS_LIFETIME = "4000"
+# USD reference for users (shown next to Stars; payment is still in Stars).
+USD_MONTH = "10"
+USD_YEAR = "50"
+USD_LIFETIME = "100"
 ALLOWED_ORIGINS = "https://komandaedinomyshlennikov-ops.github.io,http://localhost:5173,http://127.0.0.1:5173"
 
 # Optional KV for one-time tokens (create with: wrangler kv namespace create UNLOCK_TOKENS)

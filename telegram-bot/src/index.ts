@@ -20,6 +20,10 @@ export interface Env {
   STARS_MONTH?: string;
   STARS_YEAR?: string;
   STARS_LIFETIME?: string;
+  /** USD reference prices (display only; charge is in Stars) */
+  USD_MONTH?: string;
+  USD_YEAR?: string;
+  USD_LIFETIME?: string;
   ALLOWED_ORIGINS?: string;
   /** Optional fiat payment provider token from BotFather */
   PAYMENT_PROVIDER_TOKEN?: string;
@@ -28,25 +32,38 @@ export interface Env {
 
 const PLANS: Record<
   UnlockPlan,
-  { title: string; desc: string; label: string; starsKey: keyof Env }
+  {
+    title: string;
+    desc: string;
+    label: string;
+    starsKey: keyof Env;
+    usdKey: keyof Env;
+    defaultUsd: number;
+  }
 > = {
   month: {
     title: 'Астронавигатор — 1 месяц',
     desc: 'Полный Pro: календарь, помощник, экспорт, месяц/год.',
     label: '1 месяц',
     starsKey: 'STARS_MONTH',
+    usdKey: 'USD_MONTH',
+    defaultUsd: 10,
   },
   year: {
     title: 'Астронавигатор — 1 год',
     desc: 'Pro + Year-инструменты (компас, окна, дайджест).',
     label: '1 год',
     starsKey: 'STARS_YEAR',
+    usdKey: 'USD_YEAR',
+    defaultUsd: 50,
   },
   lifetime: {
     title: 'Астронавигатор — навсегда',
     desc: 'Пожизненный доступ ко всем Year-инструментам.',
     label: 'Навсегда',
     starsKey: 'STARS_LIFETIME',
+    usdKey: 'USD_LIFETIME',
+    defaultUsd: 100,
   },
 };
 
@@ -54,6 +71,21 @@ function starsFor(env: Env, plan: UnlockPlan): number {
   const raw = env[PLANS[plan].starsKey] as string | undefined;
   const n = Number(raw || '0');
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 500;
+}
+
+/** Display-only USD amount for user orientation (not charged as fiat). */
+function usdFor(env: Env, plan: UnlockPlan): number {
+  const raw = env[PLANS[plan].usdKey] as string | undefined;
+  const n = Number(raw || '0');
+  return Number.isFinite(n) && n > 0 ? n : PLANS[plan].defaultUsd;
+}
+
+function priceLine(env: Env, plan: UnlockPlan): string {
+  return `≈ $${usdFor(env, plan)} · ${starsFor(env, plan)} ⭐`;
+}
+
+function formatPlanPrice(env: Env, plan: UnlockPlan): string {
+  return `${PLANS[plan].label}: ${priceLine(env, plan)}`;
 }
 
 function appBase(env: Env): string {
@@ -95,12 +127,27 @@ function parsePlan(s: string | undefined): UnlockPlan | null {
   return null;
 }
 
-function plansKeyboard() {
+function plansKeyboard(env: Env) {
   return {
     inline_keyboard: [
-      [{ text: '📅 1 месяц', callback_data: 'buy:month' }],
-      [{ text: '✨ 1 год (выгоднее)', callback_data: 'buy:year' }],
-      [{ text: '♾️ Навсегда', callback_data: 'buy:lifetime' }],
+      [
+        {
+          text: `📅 1 месяц · ~$${usdFor(env, 'month')}`,
+          callback_data: 'buy:month',
+        },
+      ],
+      [
+        {
+          text: `✨ 1 год · ~$${usdFor(env, 'year')} (выгоднее)`,
+          callback_data: 'buy:year',
+        },
+      ],
+      [
+        {
+          text: `♾️ Навсегда · ~$${usdFor(env, 'lifetime')}`,
+          callback_data: 'buy:lifetime',
+        },
+      ],
       [{ text: 'ℹ️ Как это работает', callback_data: 'help' }],
     ],
   };
@@ -118,17 +165,23 @@ async function handleStart(env: Env, chatId: number, startArg?: string) {
     [
       '<b>Астронавигатор</b> — оплата подписки',
       '',
-      'Выберите план. Оплата <b>Telegram Stars</b> (⭐) — доступ откроется сразу по ссылке.',
+      'Оплата через <b>Telegram Stars</b> (⭐). В долларах — ориентир для сравнения:',
       '',
-      'Карточные данные в приложение не вводятся.',
+      `• ${formatPlanPrice(env, 'month')}`,
+      `• ${formatPlanPrice(env, 'year')}`,
+      `• ${formatPlanPrice(env, 'lifetime')}`,
+      '',
+      'Списание — в Stars; $ указаны для удобства. Карту в приложение вводить не нужно.',
+      'После оплаты доступ откроется по ссылке.',
     ].join('\n'),
-    { reply_markup: plansKeyboard() }
+    { reply_markup: plansKeyboard(env) }
   );
 }
 
 async function sendInvoiceForPlan(env: Env, chatId: number, plan: UnlockPlan) {
   const meta = PLANS[plan];
   const stars = starsFor(env, plan);
+  const usd = usdFor(env, plan);
   const payload = JSON.stringify({
     plan,
     v: 1,
@@ -138,11 +191,23 @@ async function sendInvoiceForPlan(env: Env, chatId: number, plan: UnlockPlan) {
   try {
     await sendStarsInvoice(env.BOT_TOKEN, chatId, {
       title: meta.title,
-      description: meta.desc,
+      description: `${meta.desc} Ориентир: ≈ $${usd} (оплата ${stars} ⭐).`,
       payload,
       stars,
-      label: `${meta.label} · ${stars} ⭐`,
+      label: `${meta.label} · ≈ $${usd}`,
     });
+    // Extra context under invoice (Telegram invoice itself only shows Stars amount)
+    await sendMessage(
+      env.BOT_TOKEN,
+      chatId,
+      [
+        `💳 <b>${meta.label}</b>`,
+        `Ориентир: <b>≈ $${usd}</b>`,
+        `К оплате: <b>${stars} ⭐</b> (Telegram Stars)`,
+        '',
+        'Оплатите счёт выше — доступ откроется сразу.',
+      ].join('\n')
+    );
   } catch (e) {
     console.error('sendInvoice failed', e);
     await sendMessage(
@@ -185,7 +250,7 @@ async function onSuccessfulPayment(
     [
       '✅ <b>Оплата прошла</b>',
       '',
-      `План: <b>${PLANS[plan].label}</b>`,
+      `План: <b>${PLANS[plan].label}</b> (${priceLine(env, plan)})`,
       '',
       'Нажмите кнопку ниже — доступ откроется в приложении автоматически.',
       '',
@@ -219,9 +284,16 @@ async function handleUpdate(env: Env, update: TgUpdate) {
         chatId,
         [
           '<b>Как купить</b>',
-          '1. Выберите план',
-          '2. Оплатите Stars в Telegram',
-          '3. Нажмите «Открыть доступ» — подписка активируется в приложении',
+          '1. Выберите план (цены ≈ в $ и в ⭐)',
+          '2. Оплатите счёт <b>Telegram Stars</b> (не картой в приложении)',
+          '3. Нажмите «Открыть доступ» — подписка активируется сама',
+          '',
+          '<b>Ориентир цен</b>',
+          `• ${formatPlanPrice(env, 'month')}`,
+          `• ${formatPlanPrice(env, 'year')}`,
+          `• ${formatPlanPrice(env, 'lifetime')}`,
+          '',
+          'Доллары — для ориентира; списание идёт в Stars по курсу Telegram.',
           '',
           'Вопросы: @tatianageniush',
         ].join('\n')
@@ -265,14 +337,21 @@ async function handleUpdate(env: Env, update: TgUpdate) {
     await sendMessage(
       env.BOT_TOKEN,
       chatId,
-      'Команды: /start — меню, /buy — тарифы. Оплата Stars → ссылка на доступ.'
+      [
+        'Команды: /start — меню, /buy — тарифы.',
+        'Оплата: Telegram Stars ⭐. $ в сообщениях — ориентир.',
+        '',
+        `• ${formatPlanPrice(env, 'month')}`,
+        `• ${formatPlanPrice(env, 'year')}`,
+        `• ${formatPlanPrice(env, 'lifetime')}`,
+      ].join('\n')
     );
     return;
   }
 
   // fallback
   await sendMessage(env.BOT_TOKEN, chatId, 'Выберите план:', {
-    reply_markup: plansKeyboard(),
+    reply_markup: plansKeyboard(env),
   });
 }
 
@@ -292,10 +371,13 @@ export default {
           ok: true,
           service: 'astronavigator-pay-bot',
           hasBot: Boolean(env.BOT_TOKEN),
-          stars: {
-            month: starsFor(env, 'month'),
-            year: starsFor(env, 'year'),
-            lifetime: starsFor(env, 'lifetime'),
+          prices: {
+            month: { usd: usdFor(env, 'month'), stars: starsFor(env, 'month') },
+            year: { usd: usdFor(env, 'year'), stars: starsFor(env, 'year') },
+            lifetime: {
+              usd: usdFor(env, 'lifetime'),
+              stars: starsFor(env, 'lifetime'),
+            },
           },
         },
         200,
