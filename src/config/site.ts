@@ -17,8 +17,19 @@ export const PLAN_PRICES: Record<PayPlanId, { usd: number; labelRu: string; labe
   lifetime: { usd: 100, labelRu: 'навсегда', labelEn: 'lifetime' },
 };
 
+/** Bot username without @ (from VITE_TELEGRAM_BOT_USERNAME). Empty = manual support chat. */
+export function getPayBotUsername(): string {
+  return (import.meta.env.VITE_TELEGRAM_BOT_USERNAME || '').replace(/^@/, '').trim();
+}
+
+export function isAutoPayBotConfigured(): boolean {
+  return Boolean(getPayBotUsername());
+}
+
 /**
- * Prefill Telegram chat for payment (no codes — access opens via unlock link after pay).
+ * Pay link for a plan.
+ * Prefer auto bot deep-link: t.me/Bot?start=buy_month|buy_year|buy_lifetime
+ * Fallback: prefilled chat with support (manual unlock link after pay).
  */
 export function buildTelegramPaymentUrl(
   planId: string,
@@ -26,6 +37,11 @@ export function buildTelegramPaymentUrl(
 ): string {
   const plan = PLAN_PRICES[planId as PayPlanId];
   if (!plan) return SUPPORT_TELEGRAM;
+
+  const bot = getPayBotUsername();
+  if (bot && (planId === 'month' || planId === 'year' || planId === 'lifetime')) {
+    return `https://t.me/${bot}?start=buy_${planId}`;
+  }
 
   const text =
     lang === 'ru'

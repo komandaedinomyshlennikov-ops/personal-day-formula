@@ -11,7 +11,7 @@ interface UnlockAccessProps {
 
 /**
  * One-tap activation after Telegram payment.
- * Opened via link: #/unlock?token=MONTH-4915 (sent by admin in chat).
+ * Opened via: #/unlock?token=… (signed v1.* from pay bot, or legacy admin token).
  * No manual code typing.
  */
 export function UnlockAccess({ onUnlock }: UnlockAccessProps) {

@@ -1,0 +1,25 @@
+name = "astronavigator-pay-bot"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Secrets (wrangler secret put …):
+#   BOT_TOKEN          — from @BotFather
+#   UNLOCK_SECRET      — long random string for signed unlock links
+#   WEBHOOK_SECRET     — path secret, e.g. /webhook/<WEBHOOK_SECRET>
+#
+# Optional:
+#   PAYMENT_PROVIDER_TOKEN — for fiat invoices (empty = Telegram Stars only)
+
+[vars]
+APP_URL = "https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/"
+BOT_USERNAME = "Sacrum_lab_bot"
+# Stars prices (XTR). Adjust after checking BotFather / market.
+STARS_MONTH = "500"
+STARS_YEAR = "2000"
+STARS_LIFETIME = "4000"
+ALLOWED_ORIGINS = "https://komandaedinomyshlennikov-ops.github.io,http://localhost:5173,http://127.0.0.1:5173"
+
+# Optional KV for one-time tokens (create with: wrangler kv namespace create UNLOCK_TOKENS)
+# [[kv_namespaces]]
+# binding = "UNLOCK_KV"
+# id = "REPLACE_AFTER_CREATE"

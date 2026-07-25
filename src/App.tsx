@@ -66,6 +66,7 @@ function AppShell() {
     setDisplayName,
     startTrial,
     activateWithCode,
+    activateWithPlan,
     checkSubscription,
     setTheme,
     toggleHighContrast,
@@ -141,9 +142,25 @@ function AppShell() {
   /** One-tap unlock from Telegram link: #/unlock?token=… */
   const handleUnlockToken = useCallback(
     async (token: string): Promise<boolean> => {
-      const success = await activateWithCode(token);
+      const { claimUnlockToken, isSignedUnlockToken } = await import('@/utils/payClaim');
+
+      let success = false;
+      let method: 'telegram_auto_pay' | 'telegram_unlock_link' = 'telegram_unlock_link';
+
+      if (isSignedUnlockToken(token)) {
+        // Auto-pay bot: HMAC token verified on Worker via POST /claim
+        const claimed = await claimUnlockToken(token);
+        if (claimed) {
+          success = activateWithPlan(claimed.plan, claimed.days);
+          method = 'telegram_auto_pay';
+        }
+      } else {
+        // Legacy static tokens (admin-sent links)
+        success = await activateWithCode(token);
+      }
+
       if (success) {
-        trackEvent('subscription_activated', { method: 'telegram_unlock_link' });
+        trackEvent('subscription_activated', { method });
         toast.success(t('subscription.activationSuccess'), {
           description: t('subscription.activeDesc'),
         });
@@ -153,7 +170,7 @@ function AppShell() {
       trackEvent('subscription_unlock_failed');
       return false;
     },
-    [activateWithCode, t]
+    [activateWithCode, activateWithPlan, t]
   );
 
   const getExportPeriod = () => {

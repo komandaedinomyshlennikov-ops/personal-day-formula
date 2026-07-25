@@ -1,7 +1,10 @@
 # Build SPA and publish to GitHub Pages (branch gh-pages)
-# Secrets (optional but recommended for live LLM coach):
-#   VITE_COACH_API_URL — e.g. https://astronavigator-coach.<subdomain>.workers.dev
-# Without it the app still works with the local rule-based helper.
+# Secrets (optional but recommended):
+#   VITE_COACH_API_URL          — e.g. https://astronavigator-coach.<subdomain>.workers.dev
+#   VITE_TELEGRAM_BOT_USERNAME  — pay bot username without @ (enables auto Stars checkout)
+#   VITE_PAY_API_URL            — pay bot Worker URL for signed unlock claim
+# Without coach URL the app still works with the local rule-based helper.
+# Without bot username pay buttons fall back to manual support chat.
 
 name: Deploy GitHub Pages
 
@@ -10,6 +13,7 @@ on:
     branches: [main]
     paths-ignore:
       - 'coach-api/**'
+      - 'telegram-bot/**'
       - 'docs/**'
       - '**.md'
   workflow_dispatch:
@@ -43,6 +47,8 @@ jobs:
       - name: Build
         env:
           VITE_COACH_API_URL: ${{ secrets.VITE_COACH_API_URL }}
+          VITE_TELEGRAM_BOT_USERNAME: ${{ secrets.VITE_TELEGRAM_BOT_USERNAME }}
+          VITE_PAY_API_URL: ${{ secrets.VITE_PAY_API_URL }}
         run: npm run build
 
       - name: Deploy to gh-pages

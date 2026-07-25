@@ -120,29 +120,40 @@ export function useUserData() {
     }));
   }, []);
 
-  /** Async: codes are matched via SHA-256 hashes (no plaintext in bundle). */
-  const activateWithCode = useCallback(async (code: string): Promise<boolean> => {
-    const activationData = await resolveActivationCode(code);
-    if (!activationData) return false;
+  /**
+   * Activate after server-verified pay claim (or known plan + days).
+   * Used by signed Telegram unlock tokens via POST /claim.
+   */
+  const activateWithPlan = useCallback((planId: string, days: number): boolean => {
+    if (planId !== 'month' && planId !== 'year' && planId !== 'lifetime' && planId !== 'test') {
+      return false;
+    }
+    if (!Number.isFinite(days) || days <= 0) return false;
 
     const endDate = new Date();
-    if (activationData.plan === 'lifetime') {
+    if (planId === 'lifetime') {
       endDate.setFullYear(2099);
     } else {
-      endDate.setDate(endDate.getDate() + activationData.days);
+      endDate.setDate(endDate.getDate() + days);
     }
 
     setUserData((prev) => ({
       ...prev,
       isTrialActive: false,
       subscriptionEndDate: endDate.toISOString(),
-      activatedPlan: activationData.plan,
-      // Store only a non-reversible marker, not the raw code
-      activationCode: `***-${activationData.plan}`,
+      activatedPlan: planId,
+      activationCode: `***-${planId}`,
     }));
 
     return true;
   }, []);
+
+  /** Async: legacy tokens matched via SHA-256 hashes (no plaintext in bundle). */
+  const activateWithCode = useCallback(async (code: string): Promise<boolean> => {
+    const activationData = await resolveActivationCode(code);
+    if (!activationData) return false;
+    return activateWithPlan(activationData.plan, activationData.days);
+  }, [activateWithPlan]);
 
   const checkSubscription = useCallback((): boolean => {
     if (!userData.subscriptionEndDate) return false;
@@ -197,6 +208,7 @@ export function useUserData() {
     setDisplayName,
     startTrial,
     activateSubscription,
+    activateWithPlan,
     activateWithCode,
     checkSubscription,
     setTheme,

@@ -1,0 +1,45 @@
+# Deploy Telegram Stars pay bot (Cloudflare Worker)
+# Secrets (repo Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN   — Workers Edit + Account Read
+#   CLOUDFLARE_ACCOUNT_ID  — Cloudflare account id
+# Bot secrets (BOT_TOKEN, UNLOCK_SECRET, WEBHOOK_SECRET) are set once via wrangler CLI,
+# not from GitHub, so they are not rewritten on every deploy.
+
+name: Deploy Pay Bot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'telegram-bot/**'
+      - '.github/workflows/deploy-pay-bot.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: telegram-bot
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: telegram-bot/package-lock.json
+
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy

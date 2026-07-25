@@ -36,3 +36,6 @@ stats.html
 
 # TypeScript
 *.tsbuildinfo
+
+# local pay-bot secrets (never commit)
+telegram-bot/.dev-secrets.env

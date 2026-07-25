@@ -1,0 +1,111 @@
+/** Minimal Telegram Bot API client */
+
+export interface TgUser {
+  id: number;
+  first_name?: string;
+  username?: string;
+  language_code?: string;
+}
+
+export interface TgMessage {
+  message_id: number;
+  chat: { id: number; type: string };
+  from?: TgUser;
+  text?: string;
+  successful_payment?: {
+    currency: string;
+    total_amount: number;
+    invoice_payload: string;
+    telegram_payment_charge_id: string;
+    provider_payment_charge_id: string;
+  };
+}
+
+export interface TgUpdate {
+  update_id: number;
+  message?: TgMessage;
+  pre_checkout_query?: {
+    id: string;
+    from: TgUser;
+    currency: string;
+    total_amount: number;
+    invoice_payload: string;
+  };
+  callback_query?: {
+    id: string;
+    from: TgUser;
+    data?: string;
+    message?: TgMessage;
+  };
+}
+
+export async function tgApi(
+  token: string,
+  method: string,
+  body: Record<string, unknown>
+): Promise<unknown> {
+  const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = (await res.json()) as { ok: boolean; description?: string; result?: unknown };
+  if (!data.ok) {
+    console.error('Telegram API error', method, data.description);
+    throw new Error(data.description || method);
+  }
+  return data.result;
+}
+
+export async function sendMessage(
+  token: string,
+  chatId: number,
+  text: string,
+  extra: Record<string, unknown> = {}
+) {
+  return tgApi(token, 'sendMessage', {
+    chat_id: chatId,
+    text,
+    parse_mode: 'HTML',
+    disable_web_page_preview: true,
+    ...extra,
+  });
+}
+
+export async function answerCallback(token: string, id: string, text?: string) {
+  return tgApi(token, 'answerCallbackQuery', {
+    callback_query_id: id,
+    text,
+  });
+}
+
+export async function answerPreCheckout(token: string, id: string, ok = true, error?: string) {
+  return tgApi(token, 'answerPreCheckoutQuery', {
+    pre_checkout_query_id: id,
+    ok,
+    error_message: error,
+  });
+}
+
+/** Telegram Stars invoice (currency XTR). provider_token must be empty string. */
+export async function sendStarsInvoice(
+  token: string,
+  chatId: number,
+  opts: {
+    title: string;
+    description: string;
+    payload: string;
+    stars: number;
+    label: string;
+  }
+) {
+  return tgApi(token, 'sendInvoice', {
+    chat_id: chatId,
+    title: opts.title,
+    description: opts.description,
+    payload: opts.payload,
+    currency: 'XTR',
+    provider_token: '',
+    prices: [{ label: opts.label, amount: opts.stars }],
+  });
+}

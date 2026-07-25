@@ -1,52 +1,56 @@
-# Оплата через Telegram (без ввода кодов)
+# Оплата через Telegram (авто + fallback)
 
-## Поток для пользователя
+## Автопоток (бот + Stars)
 
-1. Выбирает план (месяц / год / навсегда).
-2. Жмёт **«Оплатить в Telegram»** → открывается чат с Татьяной, текст уже заполнен.
-3. Оплачивает в Telegram (как договоритесь: перевод, Stars и т.д.).
-4. Вы присылаете **одну ссылку** — пользователь нажимает, доступ открывается.
-5. **Код вводить не нужно.**
+1. Пользователь выбирает план → **«Оплатить в Telegram»**.
+2. Открывается бот: `t.me/<Bot>?start=buy_year` (или month / lifetime).
+3. Бот шлёт **invoice в Telegram Stars (⭐)**.
+4. После оплаты бот присылает кнопку **«Открыть доступ»** →  
+   `#/unlock?token=v1.…`
+5. Приложение вызывает `POST /claim` на Worker, активирует план.  
+   **Код вводить не нужно.**
 
-## Ссылка для открытия доступа
+### Что нужно для авто
 
-После подтверждения оплаты отправьте пользователю:
+| Где | Переменная / секрет |
+|-----|---------------------|
+| BotFather | `BOT_TOKEN` |
+| Worker secrets | `BOT_TOKEN`, `UNLOCK_SECRET`, `WEBHOOK_SECRET` |
+| GitHub Pages build | `VITE_TELEGRAM_BOT_USERNAME`, `VITE_PAY_API_URL` |
 
-```
-https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=XXXX
-```
-
-Где `XXXX` — внутренний токен плана (те же, что раньше были «кодами»):
-
-| План     | token (пример) |
-|----------|----------------|
-| Месяц    | `MONTH-4915`   |
-| Год      | `YEAR-4915`    |
-| Навсегда | `LIFE-4915`    |
-
-Приложение по ссылке само активирует подписку и откроет календарь.
-
-### Готовые ссылки (копировать в чат)
+Инструкция: [`telegram-bot/README.md`](../telegram-bot/README.md).
 
 ```
-Месяц:
+Приложение                    Telegram                 Worker
+   │ «Оплатить» ──► t.me/Bot?start=buy_year              │
+   │                      │  invoice Stars               │
+   │                      │  successful_payment ────────►│ mint token
+   │                      │◄── ссылка unlock?token=v1…   │
+   │ ◄── open unlock ─────┘                              │
+   │ POST /claim ───────────────────────────────────────►│ verify HMAC
+   │ ◄── { plan, days } ─────────────────────────────────│
+   │ activate local Pro                                  │
+```
+
+## Fallback (без бота)
+
+Если `VITE_TELEGRAM_BOT_USERNAME` не задан:
+
+1. Кнопка открывает чат с поддержкой (`@tatianageniush`) с готовым текстом.
+2. После оплаты вы вручную шлёте unlock-ссылку (legacy-токен).
+
+### Legacy-ссылки (только личка плательщику)
+
+```
 https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=MONTH-4915
-
-Год:
 https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=YEAR-4915
-
-Навсегда:
 https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=LIFE-4915
 ```
 
-> Токены в клиенте хранятся только как SHA-256 хэши (как раньше). Не публикуйте таблицу токенов в открытых постах — только в личку плательщику.
+Токены в клиенте — только SHA-256. Не публикуйте таблицу в открытых постах.
 
-## Дальше (автоматика)
+## Безопасность
 
-Когда появится Telegram-бот:
-
-1. Приём оплаты (Stars / invoice).
-2. Бот сам шлёт `unlock?token=…` или одноразовый signed JWT с Worker.
-3. Без ручной пересылки ссылки.
-
-Пока: **оплата в TG + ссылка из чата** = полный UX без экрана «введите код».
+- `UNLOCK_SECRET` только на Worker — клиент не умеет подделывать `v1.*`
+- С KV (`UNLOCK_KV`) claim одноразовый (`used:<jti>`)
+- Webhook path: `/webhook/<WEBHOOK_SECRET>`
