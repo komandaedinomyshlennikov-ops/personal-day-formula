@@ -70,6 +70,58 @@ export function MonthYearDetail({
     return getBestWindows(birthDate, 45, 6, t);
   }, [isPro, birthDate, type, t]);
 
+  // Trial / free: no month/year deep content — only paywall
+  if (!isPro) {
+    return (
+      <div className="min-h-screen pb-20">
+        <header className="px-4 py-4 flex items-center gap-4 bg-black/20 backdrop-blur-md sticky top-0 z-20">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onBack}
+            className="p-3 rounded-2xl hover:bg-white/10 text-gray-400 hover:text-white transition-colors bg-white/5 border border-white/10"
+            type="button"
+          >
+            <ArrowLeft size={22} />
+          </motion.button>
+          <div>
+            <h1 className="text-lg font-bold text-white">
+              {isMonth ? t('calendar.personalMonth') : t('calendar.personalYear')}
+            </h1>
+            <p className="text-gray-400 text-sm flex items-center gap-1">
+              <Lock size={12} className="text-amber-300" />
+              Pro
+            </p>
+          </div>
+        </header>
+        <div className="px-4 py-8 flex flex-col items-center text-center max-w-sm mx-auto">
+          <div className="w-16 h-16 rounded-3xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center mb-4">
+            <Lock size={28} className="text-amber-300" />
+          </div>
+          <h2 className="text-xl font-semibold text-white mb-2">
+            {isMonth ? t('premium.lockMonthTitle') : t('premium.lockYearTitle')}
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+            {isMonth ? t('premium.lockMonthBody') : t('premium.lockYearBody')}
+          </p>
+          <button
+            type="button"
+            onClick={onSubscribe}
+            className="w-full py-3.5 rounded-2xl font-semibold text-sm text-black bg-gradient-to-r from-amber-300 to-amber-400"
+          >
+            {t('premium.subscribeCta')}
+          </button>
+          <button
+            type="button"
+            onClick={onBack}
+            className="mt-3 w-full py-2.5 text-sm text-[var(--text-muted)]"
+          >
+            {t('actions.cancel', { defaultValue: 'Назад' })}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}

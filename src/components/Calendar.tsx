@@ -13,7 +13,16 @@ import {
   ChevronDown,
   Info,
   MessageCircle,
+  Lock,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   generateMonthData,
   getEnergyInfo,
@@ -125,10 +134,13 @@ export function Calendar({
   const paid = isPaidTier(accessTier);
   const yearPerks = hasYearPerks(accessTier);
   const trial = isTrialTier(accessTier);
+  const monthYearUnlocked = canUseFeature('monthYearDeep', accessTier);
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
   const [legendOpen, setLegendOpen] = useState(false);
+  /** Trial / free: block month & year deep dive with subscribe modal */
+  const [proLock, setProLock] = useState<'month' | 'year' | null>(null);
   const [streak, setStreak] = useState<StreakState>({
     streak: 0,
     lastDate: '',
@@ -147,6 +159,22 @@ export function Calendar({
   const monthData = generateMonthData(birthDateString, year, month);
   const personalYear = calculatePersonalYear(birthDateString, year);
   const personalMonth = calculatePersonalMonth(birthDateString, year, month);
+
+  const handleMonthTap = () => {
+    if (!monthYearUnlocked) {
+      setProLock('month');
+      return;
+    }
+    onMonthClick(personalMonth);
+  };
+
+  const handleYearTap = () => {
+    if (!monthYearUnlocked) {
+      setProLock('year');
+      return;
+    }
+    onYearClick(personalYear);
+  };
 
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
   const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
@@ -441,19 +469,20 @@ export function Calendar({
           />
         ) : null}
 
-        {/* Year / Month — compact dual stats */}
+        {/* Year / Month — compact dual stats (Pro deep dive; trial opens subscribe modal) */}
         <div className="stats-row">
           <button
             type="button"
-            onClick={() => onYearClick(personalYear)}
+            onClick={handleYearTap}
             className="stat-mini relative"
             style={{
               background:
                 'linear-gradient(145deg, rgba(245,215,142,0.12), rgba(245,158,11,0.04))',
             }}
           >
-            {!canUseFeature('monthYearDeep', accessTier) && (
-              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30">
+            {!monthYearUnlocked && (
+              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30 inline-flex items-center gap-0.5">
+                <Lock size={8} />
                 Pro
               </span>
             )}
@@ -470,15 +499,16 @@ export function Calendar({
           </button>
           <button
             type="button"
-            onClick={() => onMonthClick(personalMonth)}
+            onClick={handleMonthTap}
             className="stat-mini relative"
             style={{
               background:
                 'linear-gradient(145deg, rgba(167,139,250,0.14), rgba(244,114,182,0.05))',
             }}
           >
-            {!canUseFeature('monthYearDeep', accessTier) && (
-              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30">
+            {!monthYearUnlocked && (
+              <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30 inline-flex items-center gap-0.5">
+                <Lock size={8} />
                 Pro
               </span>
             )}
@@ -673,6 +703,49 @@ export function Calendar({
           </button>
         </div>
       </nav>
+
+      {/* Trial / free: month & year locked → subscribe modal */}
+      <Dialog open={proLock !== null} onOpenChange={(open) => !open && setProLock(null)}>
+        <DialogContent
+          className="bg-[#12101c] border-amber-400/25 text-white sm:max-w-sm rounded-3xl"
+          showCloseButton
+        >
+          <DialogHeader className="text-left space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center mb-1">
+              <Lock size={22} className="text-amber-300" />
+            </div>
+            <DialogTitle className="text-white text-lg font-semibold">
+              {proLock === 'year'
+                ? t('premium.lockYearTitle')
+                : t('premium.lockMonthTitle')}
+            </DialogTitle>
+            <DialogDescription className="text-[var(--text-secondary)] text-sm leading-relaxed">
+              {proLock === 'year'
+                ? t('premium.lockYearBody')
+                : t('premium.lockMonthBody')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setProLock(null);
+                onSubscription();
+              }}
+              className="w-full py-3 rounded-2xl font-semibold text-sm text-black bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 transition-colors"
+            >
+              {t('premium.subscribeCta')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setProLock(null)}
+              className="w-full py-2.5 rounded-2xl text-sm text-[var(--text-muted)] hover:text-white"
+            >
+              {t('actions.cancel', { defaultValue: 'Отмена' })}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -88,12 +88,12 @@ export async function answerPreCheckout(token: string, id: string, ok = true, er
 }
 
 /**
- * Fiat invoice via Telegram Bot Payments API.
+ * Invoice via Telegram Bot Payments + Ammer Pay (provider_token).
  * https://core.telegram.org/bots/payments
+ * https://ammer-tech.github.io/AmmerPayBotDocumentation/
  *
- * - provider_token: from BotFather → Bot Settings → Payments
- * - amount: integer in the smallest currency unit (e.g. cents for USD)
- * - For digital goods on iOS Apple may restrict card checkout; prefer LIVE token after test.
+ * - provider_token: Ammer "Gateway Secret" from BotFather → Payments → Ammer Pay
+ * - amount: integer in minor currency units (cents for USD)
  */
 export async function sendPaymentInvoice(
   token: string,
