@@ -3,21 +3,18 @@ main = "src/index.ts"
 compatibility_date = "2026-01-01"
 
 # Secrets (wrangler secret put …):
-#   BOT_TOKEN          — from @BotFather
-#   UNLOCK_SECRET      — long random string for signed unlock links
-#   WEBHOOK_SECRET     — path secret, e.g. /webhook/<WEBHOOK_SECRET>
-#
-# Optional:
-#   PAYMENT_PROVIDER_TOKEN — for fiat invoices (empty = Telegram Stars only)
+#   BOT_TOKEN               — from @BotFather
+#   UNLOCK_SECRET           — long random string for signed unlock links
+#   WEBHOOK_SECRET          — path secret, e.g. /webhook/<WEBHOOK_SECRET>
+#   PAYMENT_PROVIDER_TOKEN  — BotFather → Payments (Stripe TEST / LIVE)
+#                             https://core.telegram.org/bots/payments
 
 [vars]
 APP_URL = "https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/"
 BOT_USERNAME = "Sacrum_lab_bot"
-# Stars prices (XTR). Adjust after checking BotFather / market.
-STARS_MONTH = "500"
-STARS_YEAR = "2000"
-STARS_LIFETIME = "4000"
-# USD reference for users (shown next to Stars; payment is still in Stars).
+# Fiat currency for Bot Payments invoices (ISO 4217)
+PAY_CURRENCY = "USD"
+# Prices in major units (USD dollars). Invoice amount = value * 100 (cents).
 USD_MONTH = "10"
 USD_YEAR = "50"
 USD_LIFETIME = "100"

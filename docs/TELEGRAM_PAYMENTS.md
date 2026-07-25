@@ -1,56 +1,47 @@
-# Оплата через Telegram (авто + fallback)
+# Оплата через Telegram Bot Payments
 
-## Автопоток (бот + Stars)
+Документация: [core.telegram.org/bots/payments](https://core.telegram.org/bots/payments)
+
+## Автопоток
 
 1. Пользователь выбирает план → **«Оплатить в Telegram»**.
-2. Открывается бот: `t.me/<Bot>?start=buy_year` (или month / lifetime).
-3. Бот шлёт **invoice в Telegram Stars (⭐)**.
-4. После оплаты бот присылает кнопку **«Открыть доступ»** →  
-   `#/unlock?token=v1.…`
-5. Приложение вызывает `POST /claim` на Worker, активирует план.  
-   **Код вводить не нужно.**
-
-### Что нужно для авто
-
-| Где | Переменная / секрет |
-|-----|---------------------|
-| BotFather | `BOT_TOKEN` |
-| Worker secrets | `BOT_TOKEN`, `UNLOCK_SECRET`, `WEBHOOK_SECRET` |
-| GitHub Pages build | `VITE_TELEGRAM_BOT_USERNAME`, `VITE_PAY_API_URL` |
-
-Инструкция: [`telegram-bot/README.md`](../telegram-bot/README.md).
+2. Открывается бот: `t.me/<Bot>?start=buy_year`.
+3. Бот шлёт **invoice** (карта / Apple Pay / Google Pay через провайдера).
+4. После оплаты — кнопка **«Открыть доступ»** → `#/unlock?token=v1.…`
+5. Приложение: `POST /claim` → Pro. **Код не нужен.**
 
 ```
 Приложение                    Telegram                 Worker
    │ «Оплатить» ──► t.me/Bot?start=buy_year              │
-   │                      │  invoice Stars               │
+   │                      │  sendInvoice (provider)      │
+   │                      │  pre_checkout → ok           │
    │                      │  successful_payment ────────►│ mint token
-   │                      │◄── ссылка unlock?token=v1…   │
-   │ ◄── open unlock ─────┘                              │
-   │ POST /claim ───────────────────────────────────────►│ verify HMAC
-   │ ◄── { plan, days } ─────────────────────────────────│
-   │ activate local Pro                                  │
+   │                      │◄── unlock link               │
+   │ POST /claim ───────────────────────────────────────►│ verify
 ```
 
-## Fallback (без бота)
+## Подключение провайдера
 
-Если `VITE_TELEGRAM_BOT_USERNAME` не задан:
+1. BotFather → `/mybots` → bot → **Payments**
+2. Stripe TEST MODE (разработка) или LIVE (бой)
+3. `wrangler secret put PAYMENT_PROVIDER_TOKEN`
 
-1. Кнопка открывает чат с поддержкой (`@tatianageniush`) с готовым текстом.
-2. После оплаты вы вручную шлёте unlock-ссылку (legacy-токен).
+Инструкция: [`telegram-bot/README.md`](../telegram-bot/README.md)
 
-### Legacy-ссылки (только личка плательщику)
+## Цены (USD)
 
-```
-https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=MONTH-4915
-https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=YEAR-4915
-https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/#/unlock?token=LIFE-4915
-```
+| План | Сумма |
+|------|-------|
+| Месяц | $10 |
+| Год | $50 |
+| Навсегда | $100 |
 
-Токены в клиенте — только SHA-256. Не публикуйте таблицу в открытых постах.
+## Переменные
 
-## Безопасность
+| Где | Что |
+|-----|-----|
+| Worker secret | `PAYMENT_PROVIDER_TOKEN`, `BOT_TOKEN`, `UNLOCK_SECRET`, `WEBHOOK_SECRET` |
+| Pages build | `VITE_TELEGRAM_BOT_USERNAME`, `VITE_PAY_API_URL` |
 
-- `UNLOCK_SECRET` только на Worker — клиент не умеет подделывать `v1.*`
-- С KV (`UNLOCK_KV`) claim одноразовый (`used:<jti>`)
-- Webhook path: `/webhook/<WEBHOOK_SECRET>`
+> Telegram **не** берёт комиссию; комиссия — у Stripe/другого провайдера.  
+> iOS может ограничивать оплату цифровых товаров картой — см. docs Telegram / Apple.

@@ -87,15 +87,25 @@ export async function answerPreCheckout(token: string, id: string, ok = true, er
   });
 }
 
-/** Telegram Stars invoice (currency XTR). provider_token must be empty string. */
-export async function sendStarsInvoice(
+/**
+ * Fiat invoice via Telegram Bot Payments API.
+ * https://core.telegram.org/bots/payments
+ *
+ * - provider_token: from BotFather → Bot Settings → Payments
+ * - amount: integer in the smallest currency unit (e.g. cents for USD)
+ * - For digital goods on iOS Apple may restrict card checkout; prefer LIVE token after test.
+ */
+export async function sendPaymentInvoice(
   token: string,
   chatId: number,
   opts: {
     title: string;
     description: string;
     payload: string;
-    stars: number;
+    currency: string;
+    providerToken: string;
+    /** Amount in minor units (cents for USD/EUR). */
+    amount: number;
     label: string;
   }
 ) {
@@ -104,8 +114,14 @@ export async function sendStarsInvoice(
     title: opts.title,
     description: opts.description,
     payload: opts.payload,
-    currency: 'XTR',
-    provider_token: '',
-    prices: [{ label: opts.label, amount: opts.stars }],
+    currency: opts.currency,
+    provider_token: opts.providerToken,
+    prices: [{ label: opts.label, amount: opts.amount }],
+    // Digital access product — no shipping
+    need_name: false,
+    need_phone_number: false,
+    need_email: false,
+    need_shipping_address: false,
+    is_flexible: false,
   });
 }

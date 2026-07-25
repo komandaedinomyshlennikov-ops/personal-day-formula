@@ -7,7 +7,7 @@ import {
   answerCallback,
   answerPreCheckout,
   sendMessage,
-  sendStarsInvoice,
+  sendPaymentInvoice,
   type TgUpdate,
 } from './telegram';
 
@@ -17,16 +17,19 @@ export interface Env {
   WEBHOOK_SECRET: string;
   APP_URL: string;
   BOT_USERNAME?: string;
-  STARS_MONTH?: string;
-  STARS_YEAR?: string;
-  STARS_LIFETIME?: string;
-  /** USD reference prices (display only; charge is in Stars) */
+  /**
+   * Payment provider token from BotFather → Payments
+   * (Stripe TEST MODE while developing, LIVE for production).
+   * https://core.telegram.org/bots/payments
+   */
+  PAYMENT_PROVIDER_TOKEN?: string;
+  /** ISO 4217, default USD. Amounts are in minor units (cents). */
+  PAY_CURRENCY?: string;
+  /** Prices in major units as strings, e.g. "10" → $10.00 → 1000 cents */
   USD_MONTH?: string;
   USD_YEAR?: string;
   USD_LIFETIME?: string;
   ALLOWED_ORIGINS?: string;
-  /** Optional fiat payment provider token from BotFather */
-  PAYMENT_PROVIDER_TOKEN?: string;
   UNLOCK_KV?: KVNamespace;
 }
 
@@ -36,24 +39,21 @@ const PLANS: Record<
     title: string;
     desc: string;
     label: string;
-    starsKey: keyof Env;
     usdKey: keyof Env;
     defaultUsd: number;
   }
 > = {
   month: {
     title: 'Астронавигатор — 1 месяц',
-    desc: 'Полный Pro: календарь, помощник, экспорт, месяц/год.',
+    desc: 'Полный Pro: календарь, помощник без лимита, экспорт, месяц/год.',
     label: '1 месяц',
-    starsKey: 'STARS_MONTH',
     usdKey: 'USD_MONTH',
     defaultUsd: 10,
   },
   year: {
     title: 'Астронавигатор — 1 год',
-    desc: 'Pro + Year-инструменты (компас, окна, дайджест).',
+    desc: 'Pro + Year-инструменты (компас, окна, дайджест, умные напоминания).',
     label: '1 год',
-    starsKey: 'STARS_YEAR',
     usdKey: 'USD_YEAR',
     defaultUsd: 50,
   },
@@ -61,31 +61,44 @@ const PLANS: Record<
     title: 'Астронавигатор — навсегда',
     desc: 'Пожизненный доступ ко всем Year-инструментам.',
     label: 'Навсегда',
-    starsKey: 'STARS_LIFETIME',
     usdKey: 'USD_LIFETIME',
     defaultUsd: 100,
   },
 };
 
-function starsFor(env: Env, plan: UnlockPlan): number {
-  const raw = env[PLANS[plan].starsKey] as string | undefined;
-  const n = Number(raw || '0');
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 500;
+function currency(env: Env): string {
+  return (env.PAY_CURRENCY || 'USD').toUpperCase();
 }
 
-/** Display-only USD amount for user orientation (not charged as fiat). */
+/** Major-unit price (e.g. 10 for $10). */
 function usdFor(env: Env, plan: UnlockPlan): number {
   const raw = env[PLANS[plan].usdKey] as string | undefined;
   const n = Number(raw || '0');
   return Number.isFinite(n) && n > 0 ? n : PLANS[plan].defaultUsd;
 }
 
+/** Minor units for Telegram invoice (cents for USD/EUR). */
+function amountMinor(env: Env, plan: UnlockPlan): number {
+  const major = usdFor(env, plan);
+  // Most currencies use 2 decimal places; Telegram expects integer minor units.
+  return Math.round(major * 100);
+}
+
+function formatMoney(env: Env, plan: UnlockPlan): string {
+  const cur = currency(env);
+  const major = usdFor(env, plan);
+  if (cur === 'USD') return `$${major}`;
+  if (cur === 'EUR') return `€${major}`;
+  if (cur === 'RUB') return `${major} ₽`;
+  return `${major} ${cur}`;
+}
+
 function priceLine(env: Env, plan: UnlockPlan): string {
-  return `≈ $${usdFor(env, plan)} · ${starsFor(env, plan)} ⭐`;
+  return formatMoney(env, plan);
 }
 
 function formatPlanPrice(env: Env, plan: UnlockPlan): string {
-  return `${PLANS[plan].label}: ${priceLine(env, plan)}`;
+  return `${PLANS[plan].label}: <b>${priceLine(env, plan)}</b>`;
 }
 
 function appBase(env: Env): string {
@@ -132,19 +145,19 @@ function plansKeyboard(env: Env) {
     inline_keyboard: [
       [
         {
-          text: `📅 1 месяц · ~$${usdFor(env, 'month')}`,
+          text: `📅 1 месяц · ${priceLine(env, 'month')}`,
           callback_data: 'buy:month',
         },
       ],
       [
         {
-          text: `✨ 1 год · ~$${usdFor(env, 'year')} (выгоднее)`,
+          text: `✨ 1 год · ${priceLine(env, 'year')} (выгоднее)`,
           callback_data: 'buy:year',
         },
       ],
       [
         {
-          text: `♾️ Навсегда · ~$${usdFor(env, 'lifetime')}`,
+          text: `♾️ Навсегда · ${priceLine(env, 'lifetime')}`,
           callback_data: 'buy:lifetime',
         },
       ],
@@ -165,14 +178,14 @@ async function handleStart(env: Env, chatId: number, startArg?: string) {
     [
       '<b>Астронавигатор</b> — оплата подписки',
       '',
-      'Оплата через <b>Telegram Stars</b> (⭐). В долларах — ориентир для сравнения:',
+      'Оплата картой прямо в Telegram (Bot Payments).',
+      'Данные карты обрабатывает платёжный провайдер — не мы и не приложение.',
       '',
       `• ${formatPlanPrice(env, 'month')}`,
       `• ${formatPlanPrice(env, 'year')}`,
       `• ${formatPlanPrice(env, 'lifetime')}`,
       '',
-      'Списание — в Stars; $ указаны для удобства. Карту в приложение вводить не нужно.',
-      'После оплаты доступ откроется по ссылке.',
+      'После оплаты придёт кнопка «Открыть доступ» — код вводить не нужно.',
     ].join('\n'),
     { reply_markup: plansKeyboard(env) }
   );
@@ -180,40 +193,65 @@ async function handleStart(env: Env, chatId: number, startArg?: string) {
 
 async function sendInvoiceForPlan(env: Env, chatId: number, plan: UnlockPlan) {
   const meta = PLANS[plan];
-  const stars = starsFor(env, plan);
-  const usd = usdFor(env, plan);
-  const payload = JSON.stringify({
-    plan,
-    v: 1,
-    ts: Math.floor(Date.now() / 1000),
-  });
-
-  try {
-    await sendStarsInvoice(env.BOT_TOKEN, chatId, {
-      title: meta.title,
-      description: `${meta.desc} Ориентир: ≈ $${usd} (оплата ${stars} ⭐).`,
-      payload,
-      stars,
-      label: `${meta.label} · ≈ $${usd}`,
-    });
-    // Extra context under invoice (Telegram invoice itself only shows Stars amount)
+  const providerToken = (env.PAYMENT_PROVIDER_TOKEN || '').trim();
+  if (!providerToken) {
     await sendMessage(
       env.BOT_TOKEN,
       chatId,
       [
-        `💳 <b>${meta.label}</b>`,
-        `Ориентир: <b>≈ $${usd}</b>`,
-        `К оплате: <b>${stars} ⭐</b> (Telegram Stars)`,
+        '⚠️ Платёжный провайдер ещё не подключён.',
         '',
-        'Оплатите счёт выше — доступ откроется сразу.',
+        'Админу: BotFather → /mybots → Payments → выбрать Stripe (или другой провайдер)',
+        'и сохранить token: <code>wrangler secret put PAYMENT_PROVIDER_TOKEN</code>',
+        '',
+        'Документация: https://core.telegram.org/bots/payments',
+      ].join('\n')
+    );
+    return;
+  }
+
+  const money = formatMoney(env, plan);
+  const amount = amountMinor(env, plan);
+  const payload = JSON.stringify({
+    plan,
+    v: 2,
+    currency: currency(env),
+    amount,
+    ts: Math.floor(Date.now() / 1000),
+  });
+
+  try {
+    await sendPaymentInvoice(env.BOT_TOKEN, chatId, {
+      title: meta.title,
+      description: `${meta.desc} Цена: ${money}.`,
+      payload,
+      currency: currency(env),
+      providerToken,
+      amount,
+      label: `${meta.label} · ${money}`,
+    });
+    await sendMessage(
+      env.BOT_TOKEN,
+      chatId,
+      [
+        `💳 <b>${meta.label}</b> — <b>${money}</b>`,
+        '',
+        'Нажмите <b>Pay</b> на счёте выше.',
+        'После успешной оплаты откроется доступ по ссылке.',
       ].join('\n')
     );
   } catch (e) {
     console.error('sendInvoice failed', e);
+    const err = e instanceof Error ? e.message : String(e);
     await sendMessage(
       env.BOT_TOKEN,
       chatId,
-      'Не удалось создать счёт. Проверьте, что боту включены платежи (BotFather → Payments) и Stars.'
+      [
+        'Не удалось создать счёт.',
+        '',
+        'Проверьте: BotFather → Payments (provider token), валюту и суммы.',
+        `Детали: <code>${err.slice(0, 200)}</code>`,
+      ].join('\n')
     );
   }
 }
@@ -222,7 +260,9 @@ async function onSuccessfulPayment(
   env: Env,
   chatId: number,
   payloadRaw: string,
-  chargeId: string
+  chargeId: string,
+  totalAmount?: number,
+  payCurrency?: string
 ) {
   let plan: UnlockPlan = 'month';
   try {
@@ -233,24 +273,37 @@ async function onSuccessfulPayment(
   }
 
   const token = await mintUnlockToken(env.UNLOCK_SECRET, plan);
-  // Store charge id against jti for audit; claim uses used:<jti>
   if (env.UNLOCK_KV) {
     const payload = await verifyUnlockToken(env.UNLOCK_SECRET, token);
     if (payload?.jti) {
-      await env.UNLOCK_KV.put(`charge:${payload.jti}`, chargeId, {
-        expirationTtl: 60 * 60 * 24 * 14,
-      });
+      await env.UNLOCK_KV.put(
+        `charge:${payload.jti}`,
+        JSON.stringify({
+          chargeId,
+          totalAmount,
+          currency: payCurrency,
+          at: Date.now(),
+        }),
+        { expirationTtl: 60 * 60 * 24 * 14 }
+      );
     }
   }
 
   const link = unlockLink(env, token);
+  const paidLabel =
+    typeof totalAmount === 'number' && payCurrency
+      ? payCurrency === 'USD'
+        ? `$${(totalAmount / 100).toFixed(2)}`
+        : `${(totalAmount / 100).toFixed(2)} ${payCurrency}`
+      : priceLine(env, plan);
+
   await sendMessage(
     env.BOT_TOKEN,
     chatId,
     [
       '✅ <b>Оплата прошла</b>',
       '',
-      `План: <b>${PLANS[plan].label}</b> (${priceLine(env, plan)})`,
+      `План: <b>${PLANS[plan].label}</b> (${paidLabel})`,
       '',
       'Нажмите кнопку ниже — доступ откроется в приложении автоматически.',
       '',
@@ -268,6 +321,7 @@ async function onSuccessfulPayment(
 
 async function handleUpdate(env: Env, update: TgUpdate) {
   if (update.pre_checkout_query) {
+    // Must answer within 10s — confirm stock / accept payment
     await answerPreCheckout(env.BOT_TOKEN, update.pre_checkout_query.id, true);
     return;
   }
@@ -284,16 +338,17 @@ async function handleUpdate(env: Env, update: TgUpdate) {
         chatId,
         [
           '<b>Как купить</b>',
-          '1. Выберите план (цены ≈ в $ и в ⭐)',
-          '2. Оплатите счёт <b>Telegram Stars</b> (не картой в приложении)',
+          '1. Выберите план',
+          '2. Оплатите счёт картой в Telegram (Pay)',
           '3. Нажмите «Открыть доступ» — подписка активируется сама',
           '',
-          '<b>Ориентир цен</b>',
+          '<b>Цены</b>',
           `• ${formatPlanPrice(env, 'month')}`,
           `• ${formatPlanPrice(env, 'year')}`,
           `• ${formatPlanPrice(env, 'lifetime')}`,
           '',
-          'Доллары — для ориентира; списание идёт в Stars по курсу Telegram.',
+          'Карточные данные уходят только платёжному провайдеру.',
+          'Telegram не берёт комиссию; провайдер — по своему тарифу.',
           '',
           'Вопросы: @tatianageniush',
         ].join('\n')
@@ -317,7 +372,9 @@ async function handleUpdate(env: Env, update: TgUpdate) {
       env,
       chatId,
       msg.successful_payment.invoice_payload,
-      msg.successful_payment.telegram_payment_charge_id
+      msg.successful_payment.telegram_payment_charge_id,
+      msg.successful_payment.total_amount,
+      msg.successful_payment.currency
     );
     return;
   }
@@ -333,13 +390,38 @@ async function handleUpdate(env: Env, update: TgUpdate) {
     return;
   }
 
+  if (text === '/terms') {
+    await sendMessage(
+      env.BOT_TOKEN,
+      chatId,
+      [
+        '<b>Условия оплаты</b>',
+        'Покупка открывает цифровой доступ к приложению «Астронавигатор» на выбранный срок.',
+        'Оплата через Telegram Bot Payments; спорные случаи — через поддержку продавца.',
+        'Возвраты: напишите @tatianageniush в разумный срок, если доступ не открылся после оплаты.',
+        '',
+        'Приложение: ' + appBase(env),
+      ].join('\n')
+    );
+    return;
+  }
+
+  if (text === '/support') {
+    await sendMessage(
+      env.BOT_TOKEN,
+      chatId,
+      'Поддержка по оплате и доступу: @tatianageniush\nTelegram Support не помогает с покупками через сторонних ботов.'
+    );
+    return;
+  }
+
   if (text === '/help') {
     await sendMessage(
       env.BOT_TOKEN,
       chatId,
       [
-        'Команды: /start — меню, /buy — тарифы.',
-        'Оплата: Telegram Stars ⭐. $ в сообщениях — ориентир.',
+        'Команды: /start — меню, /buy — тарифы, /terms — условия, /support — поддержка.',
+        'Оплата: карта в Telegram (Bot Payments).',
         '',
         `• ${formatPlanPrice(env, 'month')}`,
         `• ${formatPlanPrice(env, 'year')}`,
@@ -349,7 +431,6 @@ async function handleUpdate(env: Env, update: TgUpdate) {
     return;
   }
 
-  // fallback
   await sendMessage(env.BOT_TOKEN, chatId, 'Выберите план:', {
     reply_markup: plansKeyboard(env),
   });
@@ -371,12 +452,17 @@ export default {
           ok: true,
           service: 'astronavigator-pay-bot',
           hasBot: Boolean(env.BOT_TOKEN),
+          payments: {
+            mode: 'bot_payments',
+            hasProviderToken: Boolean((env.PAYMENT_PROVIDER_TOKEN || '').trim()),
+            currency: currency(env),
+          },
           prices: {
-            month: { usd: usdFor(env, 'month'), stars: starsFor(env, 'month') },
-            year: { usd: usdFor(env, 'year'), stars: starsFor(env, 'year') },
+            month: { major: usdFor(env, 'month'), minor: amountMinor(env, 'month') },
+            year: { major: usdFor(env, 'year'), minor: amountMinor(env, 'year') },
             lifetime: {
-              usd: usdFor(env, 'lifetime'),
-              stars: starsFor(env, 'lifetime'),
+              major: usdFor(env, 'lifetime'),
+              minor: amountMinor(env, 'lifetime'),
             },
           },
         },
@@ -385,7 +471,6 @@ export default {
       );
     }
 
-    // Claim signed unlock token (called by web app)
     if (request.method === 'POST' && url.pathname === '/claim') {
       if (!env.UNLOCK_SECRET) {
         return json({ error: 'UNLOCK_SECRET missing' }, 503, c);
@@ -399,7 +484,6 @@ export default {
       const token = (body.token || '').trim();
       if (!token) return json({ error: 'token required' }, 400, c);
 
-      // Legacy static tokens still work via app client; signed v1.* go here
       if (!token.startsWith('v1.')) {
         return json({ error: 'not_signed', legacy: true }, 422, c);
       }
@@ -426,7 +510,6 @@ export default {
       );
     }
 
-    // Telegram webhook
     if (request.method === 'POST' && url.pathname.startsWith('/webhook/')) {
       const secret = url.pathname.replace('/webhook/', '');
       if (!env.WEBHOOK_SECRET || secret !== env.WEBHOOK_SECRET) {
