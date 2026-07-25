@@ -206,12 +206,27 @@ export function DayCoach({
         <p className="text-[10px] leading-relaxed text-[var(--text-muted)] glass-card p-2.5 rounded-xl border border-white/8">
           {t('coach.trustLine')}
         </p>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 px-1">
-          {remaining !== null && (
-            <p className="text-[10px] text-amber-200/80">
-              {t('coach.quotaLeft', { count: remaining })}
-            </p>
-          )}
+        <div className="mt-1.5 px-1 space-y-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {unlimited ? (
+              <p className="text-[10px] text-emerald-200/90 font-medium">
+                {t('coach.quotaUnlimited')}
+              </p>
+            ) : (
+              <>
+                <p className="text-[10px] text-amber-200/90">
+                  {t('coach.quotaLeft', { count: remaining ?? 0, limit: freeLimit })}
+                </p>
+                <button
+                  type="button"
+                  onClick={onUpgrade}
+                  className="text-[10px] text-violet-200/95 underline-offset-2 hover:underline"
+                >
+                  {t('coach.quotaUpgradeHint')}
+                </button>
+              </>
+            )}
+          </div>
           <p className="text-[10px] text-[var(--text-muted)]">
             {apiOn
               ? lastSource === 'llm'
@@ -220,6 +235,12 @@ export function DayCoach({
                   ? t('coach.sourceFallback')
                   : t('coach.sourceReady')
               : t('coach.sourceLocal')}
+            {!unlimited && (
+              <span className="text-[var(--text-muted)]">
+                {' · '}
+                {t('coach.quotaUpgradeInline')}
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -254,7 +275,7 @@ export function DayCoach({
           <PremiumTeaser
             variant="banner"
             title={t('coach.limitTitle')}
-            body={t('coach.limitBody')}
+            body={t('coach.limitBody', { limit: freeLimit })}
             onUpgrade={onUpgrade}
           />
         </div>
