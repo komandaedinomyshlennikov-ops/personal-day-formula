@@ -26,6 +26,10 @@ import { resetHomeTour } from '@/components/CoachMarks';
 import type { UserData } from '@/types';
 import { parseDateOnly, toLocalDate } from '@/utils/date';
 import { getConsent, setConsent } from '@/lib/analytics';
+import {
+  getNotificationPrefs,
+  setNotificationEnergyMode,
+} from '@/hooks/useNotifications';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -42,6 +46,8 @@ interface SettingsProps {
   onLanguageChange?: (lang: string) => void;
   onDisplayNameChange?: (name: string) => void;
   exportUnlocked?: boolean;
+  /** Year perk: energy-aware morning reminders */
+  energyRemindersUnlocked?: boolean;
   onUpgrade?: () => void;
 }
 
@@ -58,12 +64,16 @@ export function Settings({
   onLanguageChange,
   onDisplayNameChange,
   exportUnlocked = true,
+  energyRemindersUnlocked = false,
   onUpgrade,
 }: SettingsProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [consent, setConsentState] = useState(getConsent);
   const [nameDraft, setNameDraft] = useState(userData.displayName || '');
+  const [energyMode, setEnergyMode] = useState(() =>
+    Boolean(getNotificationPrefs().energyMode)
+  );
   const currentLang = i18n.language;
 
   const handleLanguageChange = (langCode: string) => {
@@ -296,6 +306,38 @@ export function Settings({
               <Switch
                 checked={userData.notificationsEnabled}
                 onCheckedChange={onToggleNotifications}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-white font-medium text-sm flex items-center gap-1.5">
+                  {t('settings.energyReminders')}
+                  {!energyRemindersUnlocked && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-400/20 text-violet-200 border border-violet-400/30">
+                      Year
+                    </span>
+                  )}
+                </p>
+                <p className="text-gray-400 text-xs">
+                  {t('settings.energyRemindersDesc')}
+                </p>
+              </div>
+              <Switch
+                checked={energyRemindersUnlocked && energyMode}
+                onCheckedChange={(v) => {
+                  if (!energyRemindersUnlocked) {
+                    onUpgrade?.();
+                    return;
+                  }
+                  setEnergyMode(v);
+                  setNotificationEnergyMode(v);
+                  toast.success(
+                    v
+                      ? t('settings.energyRemindersOn')
+                      : t('settings.energyRemindersOff')
+                  );
+                }}
               />
             </div>
 

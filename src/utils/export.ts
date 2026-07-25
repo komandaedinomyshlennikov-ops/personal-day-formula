@@ -24,6 +24,27 @@ export function buildMonthCsv(
   locale: string = 'ru-RU'
 ): string {
   const days = generateMonthData(birthDate, year, month);
+  const personalYear = calculatePersonalYear(birthDate, year);
+  const personalMonth = calculatePersonalMonth(birthDate, year, month);
+  const tipMap: Record<number, string> = {
+    1: locale.startsWith('ru') ? 'Старт, инициатива' : 'Start, initiative',
+    2: locale.startsWith('ru') ? 'Диалог, партнёрство' : 'Dialogue, partnership',
+    3: locale.startsWith('ru') ? 'Творчество, общение' : 'Create, communicate',
+    4: locale.startsWith('ru') ? 'Порядок, завершение' : 'Systems, finish work',
+    5: locale.startsWith('ru') ? 'Движение, эксперимент' : 'Move, experiment',
+    6: locale.startsWith('ru') ? 'Забота, дом' : 'Care, home',
+    7: locale.startsWith('ru') ? 'Анализ, пауза' : 'Study, pause',
+    8: locale.startsWith('ru') ? 'Деньги, осторожно' : 'Money, carefully',
+    9: locale.startsWith('ru') ? 'Закрытие циклов' : 'Close cycles',
+  };
+
+  const meta = [
+    `# ${SITE_NAME}`,
+    `# personal_year=${personalYear}`,
+    `# personal_month=${personalMonth}`,
+    `# period=${year}-${String(month).padStart(2, '0')}`,
+  ].join('\n');
+
   const header = [
     'date',
     'weekday',
@@ -31,6 +52,7 @@ export function buildMonthCsv(
     'universal_day',
     'favorability',
     'personal_planet',
+    'action_tip',
     'is_zero_day',
   ].join(',');
 
@@ -54,11 +76,12 @@ export function buildMonthCsv(
       day.generalNumber,
       favorability,
       escapeCsv(energy.planet),
+      escapeCsv(tipMap[day.personalNumber] || ''),
       isZero ? 'yes' : 'no',
     ].join(',');
   });
 
-  return '\uFEFF' + [header, ...rows].join('\n');
+  return '\uFEFF' + [meta, header, ...rows].join('\n');
 }
 
 export function downloadCsv(content: string, filename: string): void {

@@ -19,52 +19,77 @@ interface NotesProps {
 }
 
 /** Rule-based tips (not an LLM). Honest labeling for users. */
-function generateTip(noteText: string, lang: string): string {
+function generateTip(
+  noteText: string,
+  lang: string,
+  dayHint?: { number: number; tone: string; action: string }
+): string {
   const lower = noteText.toLowerCase();
   const isRu = lang.startsWith('ru');
 
   const rules: { keys: string[]; ru: string; en: string }[] = [
     {
-      keys: ['устал', 'устала', 'усталость', 'tired', 'fatigue', 'exhausted'],
-      ru: 'Вы упоминаете усталость. Подсказки: 1) запланируйте отдых, 2) снизьте нагрузку, 3) проверьте сон. Энергия дня может быть хороша для восстановления.',
-      en: 'You mention fatigue. Tips: 1) schedule rest, 2) reduce load, 3) check sleep quality. The day may suit recovery.',
+      keys: ['устал', 'устала', 'усталость', 'tired', 'fatigue', 'exhausted', 'выгор', 'burnout'],
+      ru: 'Усталость: 1) закройте 1–2 дела, а не весь список, 2) сон и вода важнее «ещё часа», 3) сложные переговоры — на более мягкий день.',
+      en: 'Fatigue: 1) finish 1–2 tasks, not the whole list, 2) sleep/water beat another hour of grind, 3) hard talks wait for a softer day.',
     },
     {
-      keys: ['встреч', 'переговор', 'знаком', 'meet', 'negotiat', 'network'],
-      ru: 'Вы упоминаете встречи. Подсказки: 1) будьте открыты к контактам, 2) дипломатия, 3) важные переговоры — в первой половине дня.',
-      en: 'You mention meetings. Tips: 1) stay open to contacts, 2) use diplomacy, 3) schedule key talks earlier in the day.',
+      keys: ['встреч', 'переговор', 'знаком', 'meet', 'negotiat', 'network', 'собесед', 'интервью'],
+      ru: 'Встречи: 1) одна ясная цель на разговор, 2) слушайте больше, чем продаёте, 3) важное — раньше, пока ресурс выше.',
+      en: 'Meetings: 1) one clear goal per talk, 2) listen more than pitch, 3) key talks earlier while energy is higher.',
     },
     {
-      keys: ['деньг', 'финанс', 'покупк', 'money', 'financ', 'buy', 'purchase'],
-      ru: 'Вы упоминаете финансы. Подсказки: 1) пересмотрите бюджет, 2) отложите импульсивные покупки, 3) планируйте крупные траты осознанно.',
-      en: 'You mention finances. Tips: 1) review the budget, 2) delay impulse buys, 3) plan larger expenses consciously.',
+      keys: ['деньг', 'финанс', 'покупк', 'money', 'financ', 'buy', 'purchase', 'бюджет', 'оплат'],
+      ru: 'Финансы: 1) крупные траты — после паузы 24ч, 2) сверьте цифры дважды, 3) не смешивайте эмоцию и перевод.',
+      en: 'Money: 1) big spends after a 24h pause, 2) double-check numbers, 3) don’t mix emotion with transfers.',
     },
     {
-      keys: ['работ', 'проект', 'дел', 'work', 'project', 'task'],
-      ru: 'Вы упоминаете работу. Подсказки: 1) фокус на приоритетах, 2) завершите начатое, 3) не берите лишнее.',
-      en: 'You mention work. Tips: 1) focus on priorities, 2) finish open loops, 3) avoid overcommitment.',
+      keys: ['работ', 'проект', 'дел', 'work', 'project', 'task', 'дедлайн', 'deadline'],
+      ru: 'Работа: 1) топ-3 на сегодня, 2) закрывайте начатое, 3) новое — только если день «зелёный» в календаре.',
+      en: 'Work: 1) top-3 for today, 2) close open loops, 3) start new only if the calendar day is green.',
     },
     {
-      keys: ['отношен', 'семь', 'любов', 'love', 'family', 'relation'],
-      ru: 'Вы упоминаете отношения. Подсказки: 1) время для близких, 2) забота и понимание, 3) важные разговоры — в спокойной обстановке.',
-      en: 'You mention relationships. Tips: 1) prioritize close ones, 2) show care, 3) hold important talks in a calm setting.',
+      keys: ['отношен', 'семь', 'любов', 'love', 'family', 'relation', 'ссор', 'конфликт'],
+      ru: 'Отношения: 1) тон важнее «правоты», 2) сложный разговор — после еды/прогулки, 3) фиксируйте договорённость одной фразой.',
+      en: 'Relations: 1) tone beats being right, 2) hard talks after food/walk, 3) end with one clear agreement.',
     },
     {
-      keys: ['здоров', 'спорт', 'трениров', 'health', 'sport', 'train', 'gym'],
-      ru: 'Вы упоминаете здоровье. Подсказки: 1) умеренная активность, 2) питание, 3) слушайте сигналы тела.',
-      en: 'You mention health. Tips: 1) moderate activity, 2) mindful nutrition, 3) listen to your body.',
+      keys: ['здоров', 'спорт', 'трениров', 'health', 'sport', 'train', 'gym', 'сон', 'sleep'],
+      ru: 'Здоровье: 1) движение без героизма, 2) сон как приоритет, 3) тело — главный KPI дня.',
+      en: 'Health: 1) gentle movement, 2) sleep first, 3) body is today’s main KPI.',
+    },
+    {
+      keys: ['страх', 'тревог', 'worry', 'anxious', 'panic', 'паник', 'стресс', 'stress'],
+      ru: 'Тревога: 1) запишите факт vs домысел, 2) один маленький шаг, 3) не принимайте крупных решений в пике.',
+      en: 'Anxiety: 1) fact vs story on paper, 2) one tiny next step, 3) no big decisions at the peak.',
+    },
+    {
+      keys: ['цель', 'goal', 'план', 'plan', 'хочу', 'решил', 'решила'],
+      ru: 'План: 1) сформулируйте критерий «готово», 2) привяжите к дате в календаре, 3) выберите «зелёный» день для старта.',
+      en: 'Plan: 1) define “done”, 2) put a date on it, 3) pick a green calendar day to start.',
     },
   ];
 
+  let base: string | null = null;
   for (const rule of rules) {
     if (rule.keys.some((k) => lower.includes(k))) {
-      return isRu ? rule.ru : rule.en;
+      base = isRu ? rule.ru : rule.en;
+      break;
     }
   }
+  if (!base) {
+    base = isRu
+      ? 'Заметка сохранена. 1) Сверьте с карточкой «сегодня», 2) один конкретный шаг, 3) вечером отметьте, что сработало.'
+      : 'Note saved. 1) Cross-check today’s card, 2) one concrete step, 3) evening: what worked.';
+  }
 
-  return isRu
-    ? 'Спасибо за заметку. Подсказки: 1) сохраняйте осознанность, 2) сверяйте планы с энергией дня в календаре, 3) фиксируйте итоги вечером.'
-    : 'Thanks for the note. Tips: 1) stay mindful, 2) align plans with the day energy in the calendar, 3) capture outcomes in the evening.';
+  if (dayHint) {
+    const dayLine = isRu
+      ? ` Сегодня личный день №${dayHint.number} (${dayHint.tone}): ${dayHint.action}`
+      : ` Today personal day #${dayHint.number} (${dayHint.tone}): ${dayHint.action}`;
+    return base + dayLine;
+  }
+  return base;
 }
 
 export function Notes({ onBack, tipsUnlocked = false, onUpgrade }: NotesProps) {
@@ -103,8 +128,26 @@ export function Notes({ onBack, tipsUnlocked = false, onUpgrade }: NotesProps) {
     await new Promise((r) => setTimeout(r, 350));
 
     // Tips are a Pro value layer; trial keeps free journaling
+    let dayHint: { number: number; tone: string; action: string } | undefined;
+    if (tipsUnlocked) {
+      try {
+        const raw = localStorage.getItem('astronavigator_user');
+        if (raw) {
+          const user = JSON.parse(raw) as { birthDate?: string };
+          if (user.birthDate) {
+            const { calculatePersonalDay } = await import('@/utils/numerology');
+            const { getDayActionLine } = await import('@/utils/actionableDay');
+            const n = calculatePersonalDay(user.birthDate, new Date());
+            const { action, tone } = getDayActionLine(n, t);
+            dayHint = { number: n, tone, action };
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    }
     const tip = tipsUnlocked
-      ? generateTip(newNote, i18n.language || 'en')
+      ? generateTip(newNote, i18n.language || 'en', dayHint)
       : undefined;
     const note: Note = {
       id: Date.now().toString(),

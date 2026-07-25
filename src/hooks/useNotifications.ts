@@ -20,16 +20,35 @@ interface NotificationPrefs {
   hour: number;
   minute: number;
   enabled: boolean;
+  /** Year perk: adapt message to favorable / hard days */
+  energyMode?: boolean;
 }
 
 function readPrefs(): NotificationPrefs {
   try {
     const raw = localStorage.getItem(PREFS_KEY);
-    if (raw) return { hour: 8, minute: 0, enabled: false, ...JSON.parse(raw) };
+    if (raw) {
+      return {
+        hour: 8,
+        minute: 0,
+        enabled: false,
+        energyMode: false,
+        ...JSON.parse(raw),
+      };
+    }
   } catch {
     /* ignore */
   }
-  return { hour: 8, minute: 0, enabled: false };
+  return { hour: 8, minute: 0, enabled: false, energyMode: false };
+}
+
+export function getNotificationPrefs(): NotificationPrefs {
+  return readPrefs();
+}
+
+export function setNotificationEnergyMode(energyMode: boolean): void {
+  const prefs = readPrefs();
+  writePrefs({ ...prefs, energyMode });
 }
 
 function writePrefs(prefs: NotificationPrefs): void {
@@ -108,12 +127,13 @@ export function useNotifications() {
   /** Build morning payload: same actionable line as home "Today" strip */
   const buildMorningPayload = useCallback((): NotificationData => {
     const { birthDate: birth, displayName } = readUserProfile();
+    const prefs = readPrefs();
     if (birth) {
       try {
         const now = new Date();
         const personal = calculatePersonalDay(birth, now);
         const energy = getEnergyInfo(personal, t);
-        const { action } = getDayActionLine(personal, t);
+        const { action, tone } = getDayActionLine(personal, t);
         const title = displayName
           ? t('notifications.dailyTitleNamed', {
               name: displayName,
@@ -125,9 +145,30 @@ export function useNotifications() {
               number: personal,
               planet: energy.planet,
             });
+
+        let body = action;
+        if (prefs.energyMode) {
+          if (tone === 'favorable') {
+            body = t('notifications.energyFavorable', {
+              action,
+              defaultValue: `Green day · ${action}`,
+            });
+          } else if (tone === 'challenging') {
+            body = t('notifications.energyHard', {
+              action,
+              defaultValue: `Soft day · ${action} Protect energy.`,
+            });
+          } else {
+            body = t('notifications.energyNeutral', {
+              action,
+              defaultValue: `Steady day · ${action}`,
+            });
+          }
+        }
+
         return {
           title,
-          body: action,
+          body,
           tag: 'daily-reminder',
         };
       } catch {

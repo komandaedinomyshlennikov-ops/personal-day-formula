@@ -32,6 +32,7 @@ import { UpcomingDays } from '@/components/UpcomingDays';
 import { StreakChip } from '@/components/StreakChip';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
 import { YearPerksPanel } from '@/components/YearPerksPanel';
+import { MonthProPanel } from '@/components/MonthProPanel';
 import { MorningNotifyBanner } from '@/components/MorningNotifyBanner';
 import { EveningCheckIn } from '@/components/EveningCheckIn';
 import type { AccessTier } from '@/utils/access';
@@ -404,6 +405,17 @@ export function Calendar({
         )}
 
         <EveningCheckIn birthDate={birthDateString} />
+
+        {/* Pro month tools (month / year / lifetime) */}
+        {canUseFeature('monthYearDeep', accessTier) && (
+          <MonthProPanel
+            birthDate={birthDateString}
+            onSelectDay={onDaySelect}
+            onOpenMonth={onMonthClick}
+            onNotes={onNotes}
+            onExport={onSettings}
+          />
+        )}
 
         {/* Year tools for annual plan OR teaser for others */}
         {yearPerks ? (

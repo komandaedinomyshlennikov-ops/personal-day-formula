@@ -469,9 +469,11 @@ function AppShell() {
             path="/energy/:type/:number"
             element={requireBirth(
               <EnergyRoute
+                birthDate={userData.birthDate}
                 isSubscribed={isPaid}
                 onBack={goCalendar}
                 onSubscribe={() => navigate('/subscription')}
+                onSelectDay={(path) => navigate(path)}
               />
             )}
           />
@@ -551,6 +553,7 @@ function AppShell() {
                   onLanguageChange={handleLanguageChange}
                   onDisplayNameChange={setDisplayName}
                   exportUnlocked={canUseFeature('export', accessTier)}
+                  energyRemindersUnlocked={canUseFeature('customReminders', accessTier)}
                   onUpgrade={() => navigate('/subscription')}
                 />
               </PageTransition>
@@ -651,13 +654,17 @@ function CoachRoute({
 }
 
 function EnergyRoute({
+  birthDate,
   isSubscribed,
   onBack,
   onSubscribe,
+  onSelectDay,
 }: {
+  birthDate: string | null;
   isSubscribed: boolean;
   onBack: () => void;
   onSubscribe: () => void;
+  onSelectDay: (iso: string) => void;
 }) {
   const { type, number } = useParams();
   const n = Number(number);
@@ -673,6 +680,8 @@ function EnergyRoute({
         onBack={onBack}
         isSubscribed={isSubscribed}
         onSubscribe={onSubscribe}
+        birthDate={birthDate}
+        onSelectDay={onSelectDay}
       />
     </PageTransition>
   );

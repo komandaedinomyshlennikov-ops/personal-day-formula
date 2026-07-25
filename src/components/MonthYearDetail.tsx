@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Calendar, Target, AlertTriangle, Star, Moon, Sparkle, Lock, Crown } from 'lucide-react';
+import { ArrowLeft, Sparkles, Calendar, Target, AlertTriangle, Star, Moon, Sparkle, Lock, Crown, CalendarCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getMonthRecommendation, getYearRecommendation } from '@/data/monthYearRecommendations';
 import { getEnergyInfo } from '@/utils/numerology';
+import { getBestWindows, getMonthTopDays } from '@/utils/premiumInsights';
+import { dayToPath } from '@/utils/dayInfo';
 
 interface MonthYearDetailProps {
   type: 'month' | 'year';
@@ -12,32 +14,61 @@ interface MonthYearDetailProps {
   /** Paid Pro (not trial) — unlocks full depth */
   isSubscribed?: boolean;
   onSubscribe?: () => void;
+  /** Birth date for real computed planner (Pro) */
+  birthDate?: string | null;
+  /** Path like /day/2026-07-25 */
+  onSelectDay?: (path: string) => void;
 }
 
 type TabType = 'overview' | 'astro';
 
-export function MonthYearDetail({ type, number, onBack, isSubscribed = false, onSubscribe }: MonthYearDetailProps) {
-  const { t } = useTranslation();
+export function MonthYearDetail({
+  type,
+  number,
+  onBack,
+  isSubscribed = false,
+  onSubscribe,
+  birthDate,
+  onSelectDay,
+}: MonthYearDetailProps) {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  
-  const recommendation = type === 'month' 
-    ? getMonthRecommendation(number, t) 
+  const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+
+  const recommendation = type === 'month'
+    ? getMonthRecommendation(number, t)
     : getYearRecommendation(number, t);
-  
+
   const energyInfo = getEnergyInfo(number, t);
   const isMonth = type === 'month';
   // isSubscribed here means PAID Pro (App passes isPaid)
   const isPro = isSubscribed;
-  
-  // Limit visible astro events for trial/free
-  const visibleAstroEvents = isPro 
-    ? recommendation.astroEvents 
+
+  // Trial sees teaser lists; Pro gets full depth
+  const visibleFocus = isPro ? recommendation.focus : recommendation.focus.slice(0, 2);
+  const visibleOpps = isPro
+    ? recommendation.opportunities
+    : recommendation.opportunities.slice(0, 2);
+  const visibleChallenges = isPro
+    ? recommendation.challenges
+    : recommendation.challenges.slice(0, 1);
+
+  const visibleAstroEvents = isPro
+    ? recommendation.astroEvents
     : recommendation.astroEvents.slice(0, 2);
-  
-  // Significant dates only for Pro
-  const visibleSignificantDates = isPro 
-    ? recommendation.significantDates 
+
+  const visibleSignificantDates = isPro
+    ? recommendation.significantDates
     : [];
+
+  const plannerWindows = useMemo(() => {
+    if (!isPro || !birthDate) return [];
+    const now = new Date();
+    if (type === 'month') {
+      return getMonthTopDays(birthDate, now.getFullYear(), now.getMonth() + 1, 6, t);
+    }
+    return getBestWindows(birthDate, 45, 6, t);
+  }, [isPro, birthDate, type, t]);
 
   return (
     <div className="min-h-screen pb-20">
@@ -154,10 +185,19 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = false, on
                   {t('recommendations.focus')}
                 </h3>
                 <ul>
-                  {recommendation.focus.map((item, i) => (
+                  {visibleFocus.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}
                 </ul>
+                {!isPro && recommendation.focus.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={onSubscribe}
+                    className="mt-2 text-xs text-amber-300/90 underline-offset-2 hover:underline"
+                  >
+                    {t('premium.lockedMonthYear')}
+                  </button>
+                )}
               </div>
 
               {/* Opportunities */}
@@ -167,18 +207,18 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = false, on
                   {t('recommendations.opportunities')}
                 </h3>
                 <ul>
-                  {recommendation.opportunities.map((item, i) => (
+                  {visibleOpps.map((item, i) => (
                     <li key={i}>{item}</li>
                   ))}
                 </ul>
               </div>
 
               {/* Challenges */}
-              <div 
+              <div
                 className="recommendation-section rounded-2xl"
-                style={{ 
+                style={{
                   background: 'rgba(239, 68, 68, 0.05)',
-                  borderColor: 'rgba(239, 68, 68, 0.2)' 
+                  borderColor: 'rgba(239, 68, 68, 0.2)',
                 }}
               >
                 <h3>
@@ -186,11 +226,59 @@ export function MonthYearDetail({ type, number, onBack, isSubscribed = false, on
                   {t('recommendations.challenges')}
                 </h3>
                 <ul>
-                  {recommendation.challenges.map((item, i) => (
+                  {visibleChallenges.map((item, i) => (
                     <li key={i} style={{ color: '#fca5a5' }}>{item}</li>
                   ))}
                 </ul>
               </div>
+
+              {/* Pro: real calendar planner from birth date */}
+              {isPro && plannerWindows.length > 0 && (
+                <div className="glass-card p-4 rounded-2xl border border-emerald-400/25">
+                  <h3 className="text-emerald-200 font-semibold mb-1 flex items-center gap-2 text-sm">
+                    <CalendarCheck size={16} />
+                    {isMonth
+                      ? t('premium.monthTopTitle')
+                      : t('premium.windowsTitle')}
+                    <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 flex items-center gap-1">
+                      <Crown size={10} />
+                      Pro
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-gray-400 mb-3">
+                    {t('premium.plannerHint')}
+                  </p>
+                  <ul className="space-y-2">
+                    {plannerWindows.map((w) => {
+                      const e = getEnergyInfo(w.day.personalNumber, t);
+                      const label = w.day.date.toLocaleDateString(locale, {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      });
+                      const path = dayToPath(w.day.date);
+                      return (
+                        <li key={path}>
+                          <button
+                            type="button"
+                            onClick={() => onSelectDay?.(path)}
+                            className="w-full text-left rounded-xl px-3 py-2 bg-emerald-400/8 border border-emerald-400/20"
+                          >
+                            <div className="flex items-center gap-2 text-sm text-emerald-50">
+                              <span>{e.icon}</span>
+                              <span className="font-medium">{label}</span>
+                              <span className="opacity-70">№{w.day.personalNumber}</span>
+                            </div>
+                            <p className="text-[11px] text-gray-400 mt-0.5 pl-6 line-clamp-2">
+                              {w.tip}
+                            </p>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.div
