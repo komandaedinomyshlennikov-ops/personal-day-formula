@@ -6,7 +6,8 @@ compatibility_date = "2026-01-01"
 #   BOT_TOKEN               — from @BotFather
 #   UNLOCK_SECRET           — long random string for signed unlock links
 #   WEBHOOK_SECRET          — path secret, e.g. /webhook/<WEBHOOK_SECRET>
-#   PAYMENT_PROVIDER_TOKEN  — BotFather → Payments (Stripe TEST / LIVE)
+#   PAYMENT_PROVIDER_TOKEN  — Ammer "Gateway Secret" from BotFather → Payments → Ammer Pay
+#                             https://ammer-tech.github.io/AmmerPayBotDocumentation/
 #                             https://core.telegram.org/bots/payments
 
 [vars]

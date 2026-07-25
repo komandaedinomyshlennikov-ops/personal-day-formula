@@ -1,32 +1,29 @@
-# Оплата через Telegram Bot Payments
+# Оплата через Telegram + Ammer Pay
 
-Документация: [core.telegram.org/bots/payments](https://core.telegram.org/bots/payments)
+- Telegram API: [Bot Payments](https://core.telegram.org/bots/payments)  
+- Провайдер: [Ammer Pay Bot Documentation](https://ammer-tech.github.io/AmmerPayBotDocumentation/)  
+- Сайт: [ammer.group/telegram_payments](https://ammer.group/telegram_payments)
 
-## Автопоток
+## Поток
 
-1. Пользователь выбирает план → **«Оплатить в Telegram»**.
-2. Открывается бот: `t.me/<Bot>?start=buy_year`.
-3. Бот шлёт **invoice** (карта / Apple Pay / Google Pay через провайдера).
-4. После оплаты — кнопка **«Открыть доступ»** → `#/unlock?token=v1.…`
-5. Приложение: `POST /claim` → Pro. **Код не нужен.**
+1. В приложении — **«Оплатить в Telegram»** → `t.me/Sacrum_lab_bot?start=buy_…`
+2. Бот шлёт **invoice** с `provider_token` = Ammer **Gateway Secret**
+3. Пользователь платит в Telegram (Ammer / Ammer Card)
+4. `successful_payment` → ссылка `#/unlock?token=v1.…`
+5. Приложение: `POST /claim` → Pro
 
+## Подключение Ammer (кратко)
+
+1. Аккаунт [Merchant Hub](https://merchants.ammer.io)
+2. BotFather → bot → **Payments** → **Ammer Pay** → Connect Live → скопировать **Gateway Secret**
+3. Merchant Hub → Telegram Sales Channel: Ammer Card + Gateway Secret
+4. Worker:
+
+```bash
+printf '%s' 'GATEWAY_SECRET' | npx wrangler secret put PAYMENT_PROVIDER_TOKEN
 ```
-Приложение                    Telegram                 Worker
-   │ «Оплатить» ──► t.me/Bot?start=buy_year              │
-   │                      │  sendInvoice (provider)      │
-   │                      │  pre_checkout → ok           │
-   │                      │  successful_payment ────────►│ mint token
-   │                      │◄── unlock link               │
-   │ POST /claim ───────────────────────────────────────►│ verify
-```
 
-## Подключение провайдера
-
-1. BotFather → `/mybots` → bot → **Payments**
-2. Stripe TEST MODE (разработка) или LIVE (бой)
-3. `wrangler secret put PAYMENT_PROVIDER_TOKEN`
-
-Инструкция: [`telegram-bot/README.md`](../telegram-bot/README.md)
+Полная инструкция: [`telegram-bot/README.md`](../telegram-bot/README.md)
 
 ## Цены (USD)
 
@@ -36,12 +33,12 @@
 | Год | $50 |
 | Навсегда | $100 |
 
-## Переменные
+## Secrets
 
-| Где | Что |
-|-----|-----|
-| Worker secret | `PAYMENT_PROVIDER_TOKEN`, `BOT_TOKEN`, `UNLOCK_SECRET`, `WEBHOOK_SECRET` |
-| Pages build | `VITE_TELEGRAM_BOT_USERNAME`, `VITE_PAY_API_URL` |
-
-> Telegram **не** берёт комиссию; комиссия — у Stripe/другого провайдера.  
-> iOS может ограничивать оплату цифровых товаров картой — см. docs Telegram / Apple.
+| Secret | Назначение |
+|--------|------------|
+| `BOT_TOKEN` | токен @Sacrum_lab_bot |
+| `PAYMENT_PROVIDER_TOKEN` | **Ammer Gateway Secret** (BotFather) |
+| `UNLOCK_SECRET` | подпись unlock-ссылок |
+| `WEBHOOK_SECRET` | path webhook |
+| Pages: `VITE_TELEGRAM_BOT_USERNAME`, `VITE_PAY_API_URL` | deep-link + claim |

@@ -1,30 +1,51 @@
-# Telegram Pay Bot — Bot Payments (карта) → unlock
+# Telegram Pay Bot — Ammer Pay → unlock
 
-Оплата через [Telegram Bot Payments API](https://core.telegram.org/bots/payments)  
-(карта / Apple Pay / Google Pay у провайдера — **не** Telegram Stars).
+Оплата через [Telegram Bot Payments](https://core.telegram.org/bots/payments)  
+с провайдером **[Ammer Pay](https://ammer-tech.github.io/AmmerPayBotDocumentation/)**.
 
-После оплаты бот шлёт `#/unlock?token=v1.…` → приложение делает `POST /claim`.
+После оплаты бот шлёт `#/unlock?token=v1.…` → приложение `POST /claim` → Pro.
 
 ```
-/start → план → sendInvoice(provider_token)
-       → pre_checkout_query → answer ok
-       → successful_payment → signed token → unlock
+/start → план → sendInvoice(provider_token = Ammer Gateway Secret)
+       → pre_checkout → ok
+       → successful_payment → signed unlock link
 ```
 
-## 1. Бот + провайдер
+Официально: [Ammer Telegram Payments](https://ammer.group/telegram_payments) · [docs](https://ammer-tech.github.io/AmmerPayBotDocumentation/)
 
-1. [@BotFather](https://t.me/BotFather) → `/mybots` → **Sacrum_lab_bot**
-2. **Bot Settings → Payments**
-3. Подключить провайдера (для разработки: **Stripe TEST MODE**)
-4. Скопировать **provider token**
-5. Для боя: **LIVE** token (в строке обычно есть `:LIVE:`)
+---
 
-Документация: https://core.telegram.org/bots/payments
+## 1. Аккаунт Ammer
 
-Тестовые карты Stripe: https://stripe.com/docs/testing#cards  
-(например `4242 4242 4242 4242`)
+1. [Merchant Hub](https://merchants.ammer.io) — зарегистрироваться (если ещё нет)
+2. Подготовить **Ammer Card**, на которую будут падать платежи
 
-## 2. Секреты + деплой
+## 2. Подключить Ammer к боту (BotFather)
+
+По [Ammer Pay Bot Documentation](https://ammer-tech.github.io/AmmerPayBotDocumentation/):
+
+1. [@BotFather](https://t.me/BotFather) → `/mybots` → **@Sacrum_lab_bot**
+2. **Payments**
+3. Выбрать **Ammer Pay** → **Connect Ammer Pay Live**
+4. Вернуться в BotFather — скопировать **API Key / token** провайдера  
+   (в доке Ammer это **Gateway Secret**)
+5. Bot Token бота у вас уже есть (`BOT_TOKEN`)
+
+## 3. Sales Channel в Merchant Hub
+
+В Ammer Merchant Hub → Telegram Sales Channel:
+
+| Поле | Что вписать |
+|------|-------------|
+| Channel type | Telegram Bot |
+| Ammer Card | карта для приёма |
+| Name | например `AstroNavigator` |
+| Bot Token | только если создаёте **новый** shop-bot; для **существующего** `@Sacrum_lab_bot` — по доке можно не трогать item list |
+| **Gateway Secret** | token из BotFather (Ammer Pay) |
+
+Подробно: [Ammer docs Step 3](https://ammer-tech.github.io/AmmerPayBotDocumentation/)
+
+## 4. Секреты Worker
 
 ```bash
 cd telegram-bot
@@ -33,10 +54,11 @@ npm install --legacy-peer-deps
 npx wrangler secret put BOT_TOKEN
 npx wrangler secret put WEBHOOK_SECRET
 npx wrangler secret put UNLOCK_SECRET
-npx wrangler secret put PAYMENT_PROVIDER_TOKEN   # ← токен из BotFather Payments
+
+# ← Gateway Secret из BotFather / Ammer (это provider_token в sendInvoice)
+npx wrangler secret put PAYMENT_PROVIDER_TOKEN
 
 npx wrangler deploy
-# https://astronavigator-pay-bot.astronavigator.workers.dev
 ```
 
 Webhook:
@@ -46,20 +68,23 @@ export BOT_TOKEN=...
 export WEBHOOK_SECRET=...
 export WORKER_URL=https://astronavigator-pay-bot.astronavigator.workers.dev
 npm run set-webhook
+
+curl -s "$WORKER_URL/health"
+# ожидайте: "hasProviderToken": true
 ```
 
-## 3. Цены
+## 5. Цены
 
-`wrangler.toml` → `USD_MONTH` / `USD_YEAR` / `USD_LIFETIME` (доллары).  
-В invoice уходит **×100** (центы). Валюта: `PAY_CURRENCY` (по умолчанию `USD`).
+`wrangler.toml`:
 
-| План     | Цена |
-|----------|------|
-| Месяц    | $10  |
-| Год      | $50  |
-| Навсегда | $100 |
+```toml
+PAY_CURRENCY = "USD"
+USD_MONTH = "10"      # → 1000 cents в invoice
+USD_YEAR = "50"
+USD_LIFETIME = "100"
+```
 
-## 4. Фронт (GitHub Secrets)
+## 6. Фронт
 
 ```
 VITE_TELEGRAM_BOT_USERNAME=Sacrum_lab_bot
@@ -68,33 +93,39 @@ VITE_PAY_API_URL=https://astronavigator-pay-bot.astronavigator.workers.dev
 
 Кнопка → `https://t.me/Sacrum_lab_bot?start=buy_year`
 
-## 5. Live checklist (обязательно перед LIVE)
+## 7. Как это стыкуется с кодом
 
-По [docs](https://core.telegram.org/bots/payments#going-live):
+Наш Worker уже шлёт стандартный `sendInvoice`:
 
-- `/terms` и `/support` в боте (уже есть)
-- 2FA на аккаунте владельца бота
-- Стабильный webhook / бэкап
-- Правила провайдера (Stripe prohibited businesses)
+- `provider_token` = **Ammer Gateway Secret** (`PAYMENT_PROVIDER_TOKEN`)
+- `currency` = `PAY_CURRENCY` (USD)
+- `prices[].amount` = доллары × 100 (центы)
+- без доставки (`need_shipping_address: false`)
 
-> **iOS / digital goods:** Apple historically limited card payments for digital goods.  
-> Если iOS-оплата блокируется, используйте десктоп/Android Telegram или уточните политику провайдера.
+Отдельный SDK Ammer **не нужен**: они — payment provider Telegram, как Stripe.
 
-## Команды
+## Команды бота
 
 | Команда | Действие |
 |---------|----------|
 | `/start` | меню планов |
 | `/start buy_month` | счёт на месяц |
-| `/buy` | меню |
+| `/buy` | тарифы |
 | `/terms` | условия |
 | `/support` | поддержка |
 | `/help` | справка |
 
-## API Worker
+## API
 
 | Method | Path | Описание |
 |--------|------|----------|
-| GET | `/health` | статус + цены + hasProviderToken |
-| POST | `/claim` | `{ "token": "v1.…" }` → `{ ok, plan, days }` |
+| GET | `/health` | `hasProviderToken`, цены |
+| POST | `/claim` | unlock token → plan |
 | POST | `/webhook/<WEBHOOK_SECRET>` | Telegram updates |
+
+## Если invoice не создаётся
+
+1. `curl …/health` → `hasProviderToken` должен быть `true`
+2. Gateway Secret без лишних пробелов/переносов
+3. Ammer Live подключён в BotFather и настроен Sales Channel в Hub
+4. Валюта `USD` доступна у провайдера; при необходимости смените `PAY_CURRENCY` (и согласуйте с Ammer)

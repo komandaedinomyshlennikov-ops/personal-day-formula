@@ -18,8 +18,9 @@ export interface Env {
   APP_URL: string;
   BOT_USERNAME?: string;
   /**
-   * Payment provider token from BotFather → Payments
-   * (Stripe TEST MODE while developing, LIVE for production).
+   * Ammer Pay "Gateway Secret" from BotFather → Payments → Ammer Pay
+   * (also called provider_token in Telegram Bot Payments API).
+   * https://ammer-tech.github.io/AmmerPayBotDocumentation/
    * https://core.telegram.org/bots/payments
    */
   PAYMENT_PROVIDER_TOKEN?: string;
@@ -201,10 +202,12 @@ async function sendInvoiceForPlan(env: Env, chatId: number, plan: UnlockPlan) {
       [
         '⚠️ Платёжный провайдер ещё не подключён.',
         '',
-        'Админу: BotFather → /mybots → Payments → выбрать Stripe (или другой провайдер)',
-        'и сохранить token: <code>wrangler secret put PAYMENT_PROVIDER_TOKEN</code>',
+        'Админу: BotFather → Payments → <b>Ammer Pay</b> → Connect Live',
+        'Скопировать Gateway Secret и выполнить:',
+        '<code>wrangler secret put PAYMENT_PROVIDER_TOKEN</code>',
         '',
-        'Документация: https://core.telegram.org/bots/payments',
+        'Ammer: https://ammer-tech.github.io/AmmerPayBotDocumentation/',
+        'Telegram: https://core.telegram.org/bots/payments',
       ].join('\n')
     );
     return;
