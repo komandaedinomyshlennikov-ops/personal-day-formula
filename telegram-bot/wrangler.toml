@@ -20,8 +20,12 @@ USD_MONTH = "10"
 USD_YEAR = "50"
 USD_LIFETIME = "100"
 ALLOWED_ORIGINS = "https://komandaedinomyshlennikov-ops.github.io,http://localhost:5173,http://127.0.0.1:5173"
+# fiat = Ammer Bot Payments | stars = Telegram Stars (digital goods compliance)
+PAY_MODE = "fiat"
+# Fail /claim if UNLOCK_KV not bound
+REQUIRE_UNLOCK_KV = "true"
 
-# Optional KV for one-time tokens (create with: wrangler kv namespace create UNLOCK_TOKENS)
-# [[kv_namespaces]]
-# binding = "UNLOCK_KV"
-# id = "REPLACE_AFTER_CREATE"
+# One-time claim tokens (audit P0.5)
+[[kv_namespaces]]
+binding = "UNLOCK_KV"
+id = "77ac4a7dec97499d90f7dc61557b7a6f"

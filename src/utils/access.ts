@@ -40,11 +40,14 @@ const FEATURE_MATRIX: Record<PremiumFeature, AccessTier[]> = {
 };
 
 export function getAccessTier(
-  user: Pick<UserData, 'subscriptionEndDate' | 'isTrialActive' | 'activatedPlan'> & {
+  user: Pick<
+    UserData,
+    'subscriptionEndDate' | 'isTrialActive' | 'activatedPlan' | 'entitlement'
+  > & {
     birthDate?: string | null;
   }
 ): AccessTier {
-  // Admin / developer: full unlock (lifetime) by birth date
+  // Admin / developer: full unlock only when explicitly enabled (DEV / flag)
   if (isAdminBirthDate(user.birthDate)) return 'lifetime';
 
   if (!user.subscriptionEndDate) return 'none';
@@ -54,12 +57,21 @@ export function getAccessTier(
   if (user.isTrialActive) return 'trial';
 
   const plan = (user.activatedPlan || '').toLowerCase();
+
+  // P0.1: paid plans require a server-issued entitlement string in production.
+  // Freeform localStorage edits without entitlement → no paid access.
+  const paidPlans = ['month', 'year', 'lifetime', 'life', 'test'];
+  if (paidPlans.includes(plan) && !user.entitlement && import.meta.env.PROD) {
+    return 'none';
+  }
+
   if (plan === 'lifetime' || plan === 'life') return 'lifetime';
   if (plan === 'year') return 'year';
   if (plan === 'month' || plan === 'test') return 'month';
 
-  // Active sub without plan marker — treat as paid month
-  return 'month';
+  // Active sub without plan marker — treat as paid month only with entitlement
+  if (user.entitlement) return 'month';
+  return 'none';
 }
 
 export function isAccessActive(tier: AccessTier): boolean {

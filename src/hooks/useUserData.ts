@@ -122,47 +122,122 @@ export function useUserData() {
   }, []);
 
   /**
-   * Activate after server-verified pay claim (or known plan + days).
-   * Used by signed Telegram unlock tokens via POST /claim.
+   * Activate after server-verified pay claim.
+   * Paid plans should pass entitlement from Worker /claim.
    */
-  const activateWithPlan = useCallback((planId: string, days: number): boolean => {
-    if (planId !== 'month' && planId !== 'year' && planId !== 'lifetime' && planId !== 'test') {
-      return false;
-    }
-    if (!Number.isFinite(days) || days <= 0) return false;
+  const activateWithPlan = useCallback(
+    (planId: string, days: number, entitlement?: string): boolean => {
+      if (planId !== 'month' && planId !== 'year' && planId !== 'lifetime' && planId !== 'test') {
+        return false;
+      }
+      if (!Number.isFinite(days) || days <= 0) return false;
 
-    const endDate = new Date();
-    if (planId === 'lifetime') {
-      endDate.setFullYear(2099);
-    } else {
-      endDate.setDate(endDate.getDate() + days);
-    }
+      // Paid plans (not test/trial) require server entitlement in production
+      const paid = planId === 'month' || planId === 'year' || planId === 'lifetime';
+      if (paid && import.meta.env.PROD && !entitlement) {
+        console.warn('[access] refuse paid activate without entitlement');
+        return false;
+      }
 
-    setUserData((prev) => ({
-      ...prev,
-      isTrialActive: false,
-      subscriptionEndDate: endDate.toISOString(),
-      activatedPlan: planId,
-      activationCode: `***-${planId}`,
-    }));
+      const endDate = new Date();
+      if (planId === 'lifetime') {
+        endDate.setFullYear(2099);
+      } else {
+        endDate.setDate(endDate.getDate() + days);
+      }
 
-    return true;
-  }, []);
+      setUserData((prev) => ({
+        ...prev,
+        isTrialActive: false,
+        subscriptionEndDate: endDate.toISOString(),
+        activatedPlan: planId,
+        activationCode: `***-${planId}`,
+        entitlement: entitlement || prev.entitlement,
+        entitlementVerifiedAt: entitlement
+          ? new Date().toISOString()
+          : prev.entitlementVerifiedAt,
+      }));
 
-  /** Async: legacy tokens matched via SHA-256 hashes (no plaintext in bundle). */
-  const activateWithCode = useCallback(async (code: string): Promise<boolean> => {
-    const activationData = await resolveActivationCode(code);
-    if (!activationData) return false;
-    return activateWithPlan(activationData.plan, activationData.days);
-  }, [activateWithPlan]);
+      return true;
+    },
+    []
+  );
+
+  /** Async: legacy tokens — disabled in production (audit P0.3). */
+  const activateWithCode = useCallback(
+    async (code: string): Promise<boolean> => {
+      const activationData = await resolveActivationCode(code);
+      if (!activationData) return false;
+      // Dev-only path: no server entitlement
+      return activateWithPlan(activationData.plan, activationData.days, undefined);
+    },
+    [activateWithPlan]
+  );
 
   const checkSubscription = useCallback((): boolean => {
-    // Admin developer unlock (Андрей 07.03.1991) — always active
     if (isAdminBirthDate(userData.birthDate)) return true;
     if (!userData.subscriptionEndDate) return false;
     const endDate = new Date(userData.subscriptionEndDate);
-    return endDate > new Date();
-  }, [userData.subscriptionEndDate, userData.birthDate]);
+    if (endDate <= new Date()) return false;
+
+    // Paid plans need entitlement in production (prevents DevTools free lifetime)
+    const plan = (userData.activatedPlan || '').toLowerCase();
+    if (
+      plan === 'month' ||
+      plan === 'year' ||
+      plan === 'lifetime' ||
+      plan === 'life'
+    ) {
+      if (import.meta.env.PROD) return Boolean(userData.entitlement);
+      return true;
+    }
+    // trial
+    return true;
+  }, [
+    userData.subscriptionEndDate,
+    userData.birthDate,
+    userData.activatedPlan,
+    userData.entitlement,
+  ]);
+
+  /** Revalidate paid entitlement with pay Worker (audit P0.1 / P1.1). */
+  const revalidateEntitlement = useCallback(async (): Promise<boolean> => {
+    const token = userData.entitlement;
+    if (!token) return false;
+    try {
+      const { verifyEntitlementToken } = await import('@/utils/payClaim');
+      const v = await verifyEntitlementToken(token);
+      if (!v) {
+        setUserData((prev) => ({
+          ...prev,
+          activatedPlan: undefined,
+          entitlement: undefined,
+          entitlementVerifiedAt: undefined,
+          subscriptionEndDate: null,
+          isTrialActive: false,
+        }));
+        return false;
+      }
+      const endDate = new Date(v.exp * 1000);
+      setUserData((prev) => ({
+        ...prev,
+        activatedPlan: v.plan,
+        isTrialActive: false,
+        subscriptionEndDate: endDate.toISOString(),
+        entitlementVerifiedAt: new Date().toISOString(),
+      }));
+      return true;
+    } catch {
+      return false;
+    }
+  }, [userData.entitlement]);
+
+  useEffect(() => {
+    if (!userData.entitlement) return;
+    // Soft revalidate at most once per session hour is enough; always on load
+    void revalidateEntitlement();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run when entitlement appears
+  }, [userData.entitlement]);
 
   const setTheme = useCallback((theme: 'light' | 'dark' | 'auto') => {
     setUserData((prev) => ({ ...prev, theme }));
@@ -213,6 +288,7 @@ export function useUserData() {
     activateSubscription,
     activateWithPlan,
     activateWithCode,
+    revalidateEntitlement,
     checkSubscription,
     setTheme,
     toggleHighContrast,

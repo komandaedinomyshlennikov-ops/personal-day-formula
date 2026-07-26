@@ -23,24 +23,73 @@ interface CoachRequestBody {
 
 const MAX_MESSAGE = 1200;
 const MAX_HISTORY = 16;
+/** Per-IP soft limit via Cache API (audit P0.6) */
+const RATE_LIMIT_PER_MINUTE = 20;
 
 /** Free default: Groq + Llama (OpenAI-compatible) */
 const DEFAULT_BASE = 'https://api.groq.com/openai/v1';
 const DEFAULT_MODEL = 'llama-3.1-8b-instant';
 
+const CRISIS_MARKERS =
+  /суицид|самоубий|покончить с собой|убить себя|suicid|kill myself|end my life|self[- ]?harm|самоповрежд/i;
+
+function crisisFallback(lang: string): string {
+  if (lang === 'en') {
+    return [
+      'I’m really sorry you’re going through this. I’m not a crisis service and can’t help in an emergency.',
+      'Please reach out to people nearby or a local emergency number, or the IASP resources: https://www.iasp.info/suicidalthoughts/',
+      'You matter. When you’re ready, we can talk about ordinary day planning — but your safety comes first.',
+    ].join('\n');
+  }
+  return [
+    'Мне жаль, что вам сейчас так тяжело. Я не служба экстренной помощи и не могу заменить её.',
+    'Пожалуйста, обратитесь к близким или по местному номеру экстренной помощи. Ресурсы IASP: https://www.iasp.info/suicidalthoughts/',
+    'Вы важны. Когда будете готовы — можем говорить о спокойном плане дня, но безопасность — прежде всего.',
+  ].join('\n');
+}
+
 function corsHeaders(origin: string | null, allowed: string[]): HeadersInit {
+  // Fail closed: if allow-list is empty, only localhost
+  const list = allowed.length ? allowed : [];
   const ok =
     origin &&
-    (allowed.includes(origin) ||
-      allowed.includes('*') ||
+    (list.includes(origin) ||
+      list.includes('*') ||
       /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin));
   return {
-    'Access-Control-Allow-Origin': ok && origin ? origin : allowed[0] || '*',
+    'Access-Control-Allow-Origin': ok && origin ? origin : list[0] || 'null',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
+}
+
+async function rateLimitOk(request: Request): Promise<boolean> {
+  try {
+    const ip =
+      request.headers.get('CF-Connecting-IP') ||
+      request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
+      'unknown';
+    const bucket = Math.floor(Date.now() / 60_000);
+    const keyUrl = `https://astronavigator-coach.rate-limit.internal/${ip}/${bucket}`;
+    const cache = caches.default;
+    const cacheKey = new Request(keyUrl);
+    const hit = await cache.match(cacheKey);
+    let count = 0;
+    if (hit) {
+      count = Number(await hit.text()) || 0;
+    }
+    if (count >= RATE_LIMIT_PER_MINUTE) return false;
+    const res = new Response(String(count + 1), {
+      headers: { 'Cache-Control': 'max-age=120' },
+    });
+    await cache.put(cacheKey, res);
+    return true;
+  } catch {
+    // If cache unavailable, allow (don't take coach offline)
+    return true;
+  }
 }
 
 function json(data: unknown, status: number, cors: HeadersInit): Response {
@@ -92,6 +141,10 @@ export default {
       return json({ error: 'Not found' }, 404, cors);
     }
 
+    if (!(await rateLimitOk(request))) {
+      return json({ error: 'Rate limit exceeded. Try again in a minute.' }, 429, cors);
+    }
+
     if (!apiKey) {
       return json(
         {
@@ -118,9 +171,23 @@ export default {
       return json({ error: 'Missing context' }, 400, cors);
     }
 
+    const lang = body.context.lang === 'en' ? 'en' : 'ru';
+    if (CRISIS_MARKERS.test(message)) {
+      return json(
+        {
+          reply: crisisFallback(lang),
+          model: 'safety-fallback',
+          source: 'safety',
+          provider: 'local',
+        },
+        200,
+        cors
+      );
+    }
+
     const system = buildSystemPrompt({
       ...body.context,
-      lang: body.context.lang === 'en' ? 'en' : 'ru',
+      lang,
     });
 
     const history = (body.history || [])

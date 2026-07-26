@@ -3,7 +3,8 @@ import { isAdminBirthDate, isAdminUser } from './admin';
 import { getAccessTier, canUseFeature, hasYearPerks, isPaidTier } from './access';
 
 describe('admin unlock (Андрей 07.03.1991)', () => {
-  it('recognizes 1991-03-07', () => {
+  it('recognizes 1991-03-07 when unlock is enabled (DEV / vitest)', () => {
+    // vitest runs with import.meta.env.DEV === true
     expect(isAdminBirthDate('1991-03-07')).toBe(true);
     expect(isAdminBirthDate('1991-03-07 ')).toBe(true);
     expect(isAdminUser({ birthDate: '1991-03-07' })).toBe(true);

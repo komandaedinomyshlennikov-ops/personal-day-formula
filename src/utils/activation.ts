@@ -1,6 +1,7 @@
 /**
- * Activation codes are stored as SHA-256 hashes only.
- * Plaintext codes never ship in the client bundle.
+ * Legacy static activation codes.
+ * SECURITY (audit P0.3): disabled in production builds.
+ * Paid unlock must use signed v1 tokens via pay Worker /claim only.
  */
 
 export type ActivationPlan = 'month' | 'year' | 'lifetime' | 'test';
@@ -10,9 +11,14 @@ export interface ActivationResult {
   days: number;
 }
 
-/** SHA-256 hex of valid codes (MONTH-*, YEAR-*, LIFE-*; TEST only in dev). */
-const PROD_CODE_HASHES: Record<string, ActivationResult> = {
-  // MONTH-4915
+/** Dev-only codes (never in production bundle map). */
+const DEV_CODE_HASHES: Record<string, ActivationResult> = {
+  // TEST-1234
+  '3352ceb2586cac573f9a9e0c5529b87ff65b6dc87b79d0c251c2ac025eaa5d91': {
+    plan: 'test',
+    days: 30,
+  },
+  // MONTH-4915 — dev only (legacy)
   '79d036a3a1730635d8df710e6adbb7919bc06a3f39bd7fcb7c14b4d6c021528b': {
     plan: 'month',
     days: 30,
@@ -29,14 +35,6 @@ const PROD_CODE_HASHES: Record<string, ActivationResult> = {
   },
 };
 
-const DEV_CODE_HASHES: Record<string, ActivationResult> = {
-  // TEST-1234 — only available outside production builds
-  '3352ceb2586cac573f9a9e0c5529b87ff65b6dc87b79d0c251c2ac025eaa5d91': {
-    plan: 'test',
-    days: 30,
-  },
-};
-
 async function sha256Hex(value: string): Promise<string> {
   const data = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest('SHA-256', data);
@@ -45,15 +43,20 @@ async function sha256Hex(value: string): Promise<string> {
     .join('');
 }
 
+/**
+ * Resolve legacy static code. Returns null in production always.
+ */
 export async function resolveActivationCode(code: string): Promise<ActivationResult | null> {
+  // P0.3: no static codes in public builds
+  if (import.meta.env.PROD) return null;
+
   const normalized = code.trim().toUpperCase();
   if (!normalized) return null;
 
   const hash = await sha256Hex(normalized);
-  const map = {
-    ...PROD_CODE_HASHES,
-    ...(import.meta.env.PROD ? {} : DEV_CODE_HASHES),
-  };
+  return DEV_CODE_HASHES[hash] ?? null;
+}
 
-  return map[hash] ?? null;
+export function legacyActivationEnabled(): boolean {
+  return !import.meta.env.PROD;
 }

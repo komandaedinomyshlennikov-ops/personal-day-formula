@@ -67,6 +67,7 @@ function AppShell() {
     startTrial,
     activateWithCode,
     activateWithPlan,
+    revalidateEntitlement,
     checkSubscription,
     setTheme,
     toggleHighContrast,
@@ -145,18 +146,25 @@ function AppShell() {
       const { claimUnlockToken, isSignedUnlockToken } = await import('@/utils/payClaim');
 
       let success = false;
-      let method: 'telegram_auto_pay' | 'telegram_unlock_link' = 'telegram_unlock_link';
+      let method: 'telegram_auto_pay' | 'telegram_unlock_link' | 'legacy_dev' =
+        'telegram_unlock_link';
 
       if (isSignedUnlockToken(token)) {
-        // Auto-pay bot: HMAC token verified on Worker via POST /claim
+        // Server-verified claim → entitlement (cannot forge client-side)
         const claimed = await claimUnlockToken(token);
         if (claimed) {
-          success = activateWithPlan(claimed.plan, claimed.days);
+          success = activateWithPlan(
+            claimed.plan,
+            claimed.days,
+            claimed.entitlement
+          );
           method = 'telegram_auto_pay';
+          if (success) void revalidateEntitlement();
         }
-      } else {
-        // Legacy static tokens (admin-sent links)
+      } else if (!import.meta.env.PROD) {
+        // Legacy static codes — DEV only (audit P0.3)
         success = await activateWithCode(token);
+        method = 'legacy_dev';
       }
 
       if (success) {
@@ -170,7 +178,7 @@ function AppShell() {
       trackEvent('subscription_unlock_failed');
       return false;
     },
-    [activateWithCode, activateWithPlan, t]
+    [activateWithCode, activateWithPlan, revalidateEntitlement, t]
   );
 
   const getExportPeriod = () => {

@@ -12,6 +12,14 @@ export interface UserData {
   language: Language;
   activatedPlan?: string;
   activationCode?: string;
+  /**
+   * Signed entitlement from pay Worker (/claim).
+   * Paid access is only trusted when this is present and passes /verify
+   * (or offline grace after a successful verify).
+   */
+  entitlement?: string;
+  /** ISO time of last successful entitlement verify */
+  entitlementVerifiedAt?: string;
 }
 
 export type Language = 'ru' | 'en' | 'es' | 'de' | 'fr' | 'pt' | 'it' | 'hi' | 'zh' | 'ja' | 'ar';

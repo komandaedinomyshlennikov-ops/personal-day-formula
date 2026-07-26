@@ -1,6 +1,8 @@
 import {
   mintUnlockToken,
+  mintEntitlementToken,
   verifyUnlockToken,
+  verifyEntitlementToken,
   type UnlockPlan,
 } from './crypto';
 import {
@@ -32,6 +34,10 @@ export interface Env {
   USD_LIFETIME?: string;
   ALLOWED_ORIGINS?: string;
   UNLOCK_KV?: KVNamespace;
+  /** When "true", /claim fails closed without UNLOCK_KV (audit P0.5) */
+  REQUIRE_UNLOCK_KV?: string;
+  /** Payment mode: fiat (Ammer) | stars — product compliance choice */
+  PAY_MODE?: string;
 }
 
 const PLANS: Record<
@@ -455,8 +461,10 @@ export default {
           ok: true,
           service: 'astronavigator-pay-bot',
           hasBot: Boolean(env.BOT_TOKEN),
+          hasUnlockKv: Boolean(env.UNLOCK_KV),
+          requireUnlockKv: env.REQUIRE_UNLOCK_KV === 'true',
           payments: {
-            mode: 'bot_payments',
+            mode: env.PAY_MODE || 'fiat',
             hasProviderToken: Boolean((env.PAYMENT_PROVIDER_TOKEN || '').trim()),
             currency: currency(env),
           },
@@ -474,9 +482,40 @@ export default {
       );
     }
 
+    // POST /verify — revalidate stored entitlement (HMAC server-side only)
+    if (request.method === 'POST' && url.pathname === '/verify') {
+      if (!env.UNLOCK_SECRET) {
+        return json({ error: 'UNLOCK_SECRET missing' }, 503, c);
+      }
+      let body: { entitlement?: string; token?: string };
+      try {
+        body = (await request.json()) as { entitlement?: string; token?: string };
+      } catch {
+        return json({ error: 'Invalid JSON' }, 400, c);
+      }
+      const ent = (body.entitlement || body.token || '').trim();
+      if (!ent) return json({ error: 'entitlement required' }, 400, c);
+      const payload = await verifyEntitlementToken(env.UNLOCK_SECRET, ent);
+      if (!payload) return json({ error: 'invalid_or_expired' }, 403, c);
+      return json(
+        {
+          ok: true,
+          plan: payload.plan,
+          days: payload.days,
+          exp: payload.exp,
+        },
+        200,
+        c
+      );
+    }
+
     if (request.method === 'POST' && url.pathname === '/claim') {
       if (!env.UNLOCK_SECRET) {
         return json({ error: 'UNLOCK_SECRET missing' }, 503, c);
+      }
+      // P0.5: fail closed when KV required but missing
+      if (env.REQUIRE_UNLOCK_KV === 'true' && !env.UNLOCK_KV) {
+        return json({ error: 'UNLOCK_KV required' }, 503, c);
       }
       let body: { token?: string };
       try {
@@ -502,11 +541,14 @@ export default {
         });
       }
 
+      const entitlement = await mintEntitlementToken(env.UNLOCK_SECRET, payload.plan);
+
       return json(
         {
           ok: true,
           plan: payload.plan,
           days: payload.days,
+          entitlement,
         },
         200,
         c
