@@ -36,7 +36,7 @@ import { getDayActionLine, getPersonalDayStory } from '@/utils/actionableDay';
 import { getUpcomingDays } from '@/utils/upcomingDays';
 import { recordAppOpen, type StreakState } from '@/utils/streak';
 import { CoachMarks } from '@/components/CoachMarks';
-import { TrialBanner } from '@/components/TrialBanner';
+import { UpgradeBar } from '@/components/UpgradeBar';
 import { UpcomingDays } from '@/components/UpcomingDays';
 import { StreakChip } from '@/components/StreakChip';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
@@ -125,12 +125,13 @@ export function Calendar({
   onYearClick,
   isSubscribed,
   daysLeft = 0,
-  isTrialActive = false,
+  isTrialActive: _isTrialActive = false,
   accessTier = 'none',
   notificationsEnabled = false,
   onEnableNotifications,
 }: CalendarProps) {
   void _onShare;
+  void _isTrialActive; // tier derived from accessTier (trial)
   const paid = isPaidTier(accessTier);
   const yearPerks = hasYearPerks(accessTier);
   const trial = isTrialTier(accessTier);
@@ -325,59 +326,66 @@ export function Calendar({
         </button>
       </header>
 
-      {/* Scrollable main stack */}
+      {/* Scrollable main stack — P0: compress, one upsell, hero hierarchy, calendar closer */}
       <div className="home-body">
-        {isSubscribed && daysLeft > 0 && daysLeft <= 14 && (
-          <TrialBanner
+        {/* P0.2: single UpgradeBar (trial always; paid sub only last 14 days) */}
+        {((trial && daysLeft > 0) ||
+          (paid && !trial && daysLeft > 0 && daysLeft <= 14)) && (
+          <UpgradeBar
             daysLeft={daysLeft}
-            isTrial={isTrialActive}
+            isTrial={trial}
             onOpenSubscription={onSubscription}
           />
         )}
 
-        {/* Today hero — personal story of the day */}
+        {/* P0.3: Today hero — tone + action first, meta secondary */}
         {todayEnergy && todayInfo && todayAction && todayStory && (
           <button
             type="button"
             data-coach="today"
             onClick={() => onDaySelect(todayInfo)}
-            className={`today-hero today-hero--story ${todayToneBorder}`}
+            className={`today-hero today-hero--story today-hero--compact ${todayToneBorder}`}
             style={{ background: todayToneBg }}
           >
             <div className="today-hero__top">
               <div
-                className="today-hero__icon"
+                className="today-hero__icon today-hero__icon--sm"
                 style={{
                   background: `${todayEnergy.color}2e`,
-                  boxShadow: `0 0 26px ${todayEnergy.color}38`,
+                  boxShadow: `0 0 20px ${todayEnergy.color}30`,
                 }}
               >
                 {todayEnergy.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                   <span className={toneDotClass} />
                   <span className="today-hero__badge">{todayStory.toneLabel}</span>
-                  <span className="today-hero__meta">
-                    {t('calendar.today')} · {todayInfo.personalNumber} · {todayEnergy.planet}
-                  </span>
                 </div>
-                {displayName && (
-                  <p className="today-hero__for-you">
-                    {t('calendar.forYou', {
-                      name: displayName,
-                      defaultValue: `For you, ${displayName}`,
-                    })}
-                  </p>
-                )}
-                <p className="today-hero__story-title">{todayStory.storyTitle}</p>
-                <p className="today-hero__action">{todayAction.action}</p>
+                <p className="today-hero__action today-hero__action--primary">
+                  {todayAction.action}
+                </p>
+                <p className="today-hero__story-title today-hero__story-title--sm">
+                  {todayStory.storyTitle}
+                </p>
+                <p className="today-hero__meta">
+                  {t('calendar.today')} · №{todayInfo.personalNumber} · {todayEnergy.planet}
+                  {displayName
+                    ? ` · ${t('calendar.forYouShort', {
+                        name: displayName,
+                        defaultValue: displayName,
+                      })}`
+                    : ''}
+                </p>
               </div>
-              <ChevronRight size={18} className="text-[var(--text-muted)] shrink-0 opacity-70 self-center" />
+              <ChevronRight
+                size={16}
+                className="text-[var(--text-muted)] shrink-0 opacity-70 self-center"
+              />
             </div>
             {todayStory.doList.length > 0 && (
               <ul className="today-hero__do-list">
-                {todayStory.doList.map((item) => (
+                {todayStory.doList.slice(0, 2).map((item) => (
                   <li key={item}>
                     <span className="text-emerald-300">✓</span>
                     {item}
@@ -385,7 +393,25 @@ export function Calendar({
                 ))}
               </ul>
             )}
-            <p className="today-hero__hint">{t('calendar.tapForDetails')}</p>
+            <p className="today-hero__hint">
+              {todayStory.doList.length > 2
+                ? t('calendar.tapForMore', { defaultValue: 'Tap for full day · more tips' })
+                : t('calendar.tapForDetails')}
+            </p>
+          </button>
+        )}
+
+        {/* P0.1: coach as compact chip (not full card) */}
+        {onCoach && (
+          <button
+            type="button"
+            data-coach="discuss"
+            onClick={onCoach}
+            className="coach-chip"
+          >
+            <MessageCircle size={14} className="text-violet-200 shrink-0" />
+            <span className="truncate flex-1 text-left">{t('coach.ctaHome')}</span>
+            <ChevronRight size={14} className="text-[var(--text-muted)] shrink-0" />
           </button>
         )}
 
@@ -396,32 +422,26 @@ export function Calendar({
           />
         )}
 
-        {onCoach && (
-          <button
-            type="button"
-            data-coach="discuss"
-            onClick={onCoach}
-            className="w-full flex items-center gap-3 glass-card p-3.5 rounded-2xl border border-violet-400/30 text-left"
-            style={{
-              background:
-                'linear-gradient(120deg, rgba(167,139,250,0.14), rgba(245,215,142,0.08))',
-            }}
-          >
-            <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
-              <MessageCircle size={18} className="text-violet-200" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-white text-sm font-semibold">{t('coach.ctaHome')}</p>
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5 line-clamp-2">
-                {t('coach.ctaHomeHint')}
-              </p>
-            </div>
-            <ChevronRight size={16} className="text-[var(--text-muted)] shrink-0" />
-          </button>
-        )}
-
         {/* Next 3 days — habit loop */}
         <UpcomingDays days={upcoming} onSelect={onDaySelect} />
+
+        {/* P0.4: jump to calendar grid */}
+        <button
+          type="button"
+          onClick={() => {
+            containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="jump-calendar"
+        >
+          <CalendarDays size={14} className="text-amber-200/90 shrink-0" />
+          <span className="truncate">
+            {t('calendar.jumpToMonth', {
+              month: getTranslatedMonthName(month),
+              defaultValue: `Month · ${getTranslatedMonthName(month)}`,
+            })}
+          </span>
+          <ChevronRight size={14} className="text-[var(--text-muted)] shrink-0" />
+        </button>
 
         {streak.streak > 0 && (
           <p className="habit-nudge">
@@ -432,44 +452,10 @@ export function Calendar({
           </p>
         )}
 
-        <EveningCheckIn birthDate={birthDateString} />
+        {/* P0.1: evening check-in compact before 17:00 */}
+        <EveningCheckIn birthDate={birthDateString} openHour={17} />
 
-        {/* Pro month tools (month / year / lifetime) */}
-        {canUseFeature('monthYearDeep', accessTier) && (
-          <MonthProPanel
-            birthDate={birthDateString}
-            onSelectDay={onDaySelect}
-            onOpenMonth={onMonthClick}
-            onNotes={onNotes}
-            onExport={onSettings}
-          />
-        )}
-
-        {/* Year tools for annual plan OR teaser for others */}
-        {yearPerks ? (
-          <YearPerksPanel
-            birthDate={birthDateString}
-            onSelectDay={onDaySelect}
-            onOpenYear={onYearClick}
-          />
-        ) : trial ? (
-          <PremiumTeaser
-            variant="banner"
-            yearOnly
-            title={t('premium.yearTitle')}
-            body={t('premium.lockedYear')}
-            onUpgrade={onSubscription}
-          />
-        ) : paid ? (
-          <PremiumTeaser
-            variant="inline"
-            yearOnly
-            title={t('premium.lockedYear')}
-            onUpgrade={onSubscription}
-          />
-        ) : null}
-
-        {/* Year / Month — compact dual stats (Pro deep dive; trial opens subscribe modal) */}
+        {/* Year / Month chips — before heavy Pro panels so calendar stays closer */}
         <div className="stats-row">
           <button
             type="button"
@@ -525,13 +511,8 @@ export function Calendar({
           </button>
         </div>
 
-        {/* Soft upgrade nudge during trial after core value */}
-        {trial && (
-          <PremiumTeaser variant="card" onUpgrade={onSubscription} />
-        )}
-
-        {/* Calendar panel — month nav + grid as one unit */}
-        <div ref={containerRef} className="cal-panel" data-coach="grid">
+        {/* Calendar panel — closer to top of stack (P0.4) */}
+        <div ref={containerRef} className="cal-panel" data-coach="grid" id="home-cal-panel">
           <div className="cal-panel__toolbar">
             <button
               type="button"
@@ -674,6 +655,33 @@ export function Calendar({
             {t('calendar.swipeHint')}
           </p>
         </div>
+
+        {/* Pro tools below calendar (don't push grid down on first paint) */}
+        {canUseFeature('monthYearDeep', accessTier) && (
+          <MonthProPanel
+            birthDate={birthDateString}
+            onSelectDay={onDaySelect}
+            onOpenMonth={onMonthClick}
+            onNotes={onNotes}
+            onExport={onSettings}
+          />
+        )}
+
+        {/* Year tools only for year+; month-paid gets year upsell (not trial) */}
+        {yearPerks ? (
+          <YearPerksPanel
+            birthDate={birthDateString}
+            onSelectDay={onDaySelect}
+            onOpenYear={onYearClick}
+          />
+        ) : paid ? (
+          <PremiumTeaser
+            variant="inline"
+            yearOnly
+            title={t('premium.lockedYear')}
+            onUpgrade={onSubscription}
+          />
+        ) : null}
       </div>
 
       {/* Bottom nav */}

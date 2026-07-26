@@ -11,15 +11,18 @@ import { calculatePersonalDay } from '@/utils/numerology';
 
 interface EveningCheckInProps {
   birthDate: string;
+  /** Full prompt only after this local hour (default 17). Before: compact chip. */
+  openHour?: number;
 }
 
 /** Builds “second memory”: did the day match reality? */
-export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
+export function EveningCheckIn({ birthDate, openHour = 17 }: EveningCheckInProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [match, setMatch] = useState<1 | 2 | 3 | 4 | 5 | null>(null);
   const [note, setNote] = useState('');
   const [saved, setSaved] = useState(false);
+  const [afterHours, setAfterHours] = useState(() => new Date().getHours() >= openHour);
 
   const dateKey = getLocalDateKey();
 
@@ -32,6 +35,13 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
       setSaved(true);
     }
   }, [dateKey]);
+
+  useEffect(() => {
+    const tick = () => setAfterHours(new Date().getHours() >= openHour);
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(id);
+  }, [openHour]);
 
   const submit = () => {
     if (!match) return;
@@ -60,9 +70,27 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
         type="button"
         data-coach="checkin"
         onClick={() => setOpen(true)}
-        className="w-full text-left glass-card p-3 rounded-2xl border border-white/10 text-xs text-[var(--text-muted)]"
+        className="w-full text-left px-1 py-1 text-[11px] text-[var(--text-muted)]"
       >
         {t('coach.checkInSaved')} · {t('coach.checkInEdit')}
+      </button>
+    );
+  }
+
+  // Before evening: compact one-line only (P0 home compress)
+  if (!open && !afterHours) {
+    return (
+      <button
+        type="button"
+        data-coach="checkin"
+        onClick={() => setOpen(true)}
+        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl border border-white/10 bg-white/[0.03] text-left"
+      >
+        <Moon size={14} className="text-violet-200/80 shrink-0" />
+        <span className="text-[11px] text-[var(--text-muted)] truncate flex-1">
+          {t('coach.checkInCollapsed')}
+        </span>
+        <span className="text-[10px] text-violet-200/70">→</span>
       </button>
     );
   }
@@ -73,18 +101,18 @@ export function EveningCheckIn({ birthDate }: EveningCheckInProps) {
         type="button"
         data-coach="checkin"
         onClick={() => setOpen(true)}
-        className="w-full flex items-center gap-3 glass-card p-3.5 rounded-2xl border border-violet-400/25 text-left"
+        className="w-full flex items-center gap-3 glass-card p-3 rounded-2xl border border-violet-400/25 text-left"
         style={{
           background:
             'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(245,215,142,0.06))',
         }}
       >
-        <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
-          <Moon size={18} className="text-violet-200" />
+        <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
+          <Moon size={16} className="text-violet-200" />
         </div>
         <div className="min-w-0">
           <p className="text-white text-sm font-semibold">{t('coach.checkInTitle')}</p>
-          <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+          <p className="text-[11px] text-[var(--text-muted)] mt-0.5 line-clamp-1">
             {t('coach.checkInHint')}
           </p>
         </div>

@@ -28,8 +28,8 @@ export function MorningNotifyBanner({ enabled, onEnable }: MorningNotifyBannerPr
     } catch {
       /* ignore */
     }
-    // Delay so today-story lands first
-    const id = window.setTimeout(() => setVisible(true), 1200);
+    // Short delay so today hero paints first (P0 compress)
+    const id = window.setTimeout(() => setVisible(true), 600);
     return () => window.clearTimeout(id);
   }, [enabled]);
 

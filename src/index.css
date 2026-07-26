@@ -389,10 +389,92 @@
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding: 0.65rem 1rem 0.5rem;
+    padding: 0.5rem 1rem 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.7rem;
+    gap: 0.55rem;
+  }
+
+  .upgrade-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 14px;
+    border: 1px solid rgba(245, 215, 142, 0.28);
+    background: linear-gradient(
+      120deg,
+      rgba(245, 215, 142, 0.12),
+      rgba(167, 139, 250, 0.08)
+    );
+    text-align: left;
+  }
+
+  .upgrade-bar--urgent {
+    border-color: rgba(248, 113, 113, 0.4);
+    background: linear-gradient(
+      120deg,
+      rgba(248, 113, 113, 0.14),
+      rgba(245, 158, 11, 0.08)
+    );
+  }
+
+  .upgrade-bar__icon {
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(245, 215, 142, 0.14);
+    flex-shrink: 0;
+  }
+
+  .upgrade-bar__icon--urgent {
+    background: rgba(248, 113, 113, 0.18);
+  }
+
+  .upgrade-bar__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: rgba(253, 230, 138, 0.95);
+    white-space: nowrap;
+  }
+
+  .coach-chip {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    background: linear-gradient(
+      120deg,
+      rgba(167, 139, 250, 0.12),
+      rgba(245, 215, 142, 0.06)
+    );
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .jump-calendar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
   }
 
   .home-section-label {
@@ -432,15 +514,19 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.65rem;
-    padding: 1.05rem 1.05rem 0.9rem;
-    border-radius: 24px;
+    gap: 0.5rem;
+    padding: 0.85rem 0.9rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .today-hero--compact {
+    gap: 0.4rem;
   }
 
   .today-hero__top {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
 
   .today-hero:active {
@@ -458,12 +544,19 @@
     flex-shrink: 0;
   }
 
+  .today-hero__icon--sm {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.95rem;
+    font-size: 1.25rem;
+  }
+
   .today-hero__meta {
     font-size: 0.62rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(245, 215, 142, 0.8);
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
   }
 
   .today-hero__badge {
@@ -483,11 +576,17 @@
 
   .today-hero__story-title {
     font-family: var(--font-display);
-    font-size: 1.2rem;
+    font-size: 1.05rem;
     font-weight: 600;
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin-bottom: 0.2rem;
+    line-height: 1.25;
+    color: var(--text-secondary);
+    margin: 0.15rem 0 0;
+  }
+
+  .today-hero__story-title--sm {
+    font-size: 0.88rem;
+    font-weight: 550;
+    color: var(--text-muted);
   }
 
   .notify-banner {
@@ -527,10 +626,19 @@
     overflow: hidden;
   }
 
+  /* P0.3: action is the primary verdict */
+  .today-hero__action--primary {
+    font-size: 1rem;
+    font-weight: 650;
+    color: var(--text-primary);
+    line-height: 1.3;
+    -webkit-line-clamp: 3;
+  }
+
   .today-hero__do-list {
     display: flex;
     flex-direction: column;
-    gap: 0.28rem;
+    gap: 0.22rem;
     padding-left: 0.15rem;
   }
 
@@ -538,13 +646,13 @@
     display: flex;
     align-items: flex-start;
     gap: 0.4rem;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
     line-height: 1.3;
   }
 
   .today-hero__hint {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     margin-top: 0;
   }
