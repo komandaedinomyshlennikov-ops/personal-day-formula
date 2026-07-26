@@ -1,4 +1,5 @@
 import type { UserData } from '@/types';
+import { isAdminBirthDate } from '@/utils/admin';
 
 /** Product access tier for freemium gating */
 export type AccessTier = 'none' | 'trial' | 'month' | 'year' | 'lifetime';
@@ -38,7 +39,14 @@ const FEATURE_MATRIX: Record<PremiumFeature, AccessTier[]> = {
   customReminders: ['year', 'lifetime'],
 };
 
-export function getAccessTier(user: Pick<UserData, 'subscriptionEndDate' | 'isTrialActive' | 'activatedPlan'>): AccessTier {
+export function getAccessTier(
+  user: Pick<UserData, 'subscriptionEndDate' | 'isTrialActive' | 'activatedPlan'> & {
+    birthDate?: string | null;
+  }
+): AccessTier {
+  // Admin / developer: full unlock (lifetime) by birth date
+  if (isAdminBirthDate(user.birthDate)) return 'lifetime';
+
   if (!user.subscriptionEndDate) return 'none';
   const end = new Date(user.subscriptionEndDate);
   if (end <= new Date()) return 'none';

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserData, SubscriptionPlan, Language } from '@/types';
 import { resolveActivationCode } from '@/utils/activation';
+import { isAdminBirthDate } from '@/utils/admin';
 import { normalizeBirthDateString } from '@/utils/date';
 
 const defaultUserData: UserData = {
@@ -156,10 +157,12 @@ export function useUserData() {
   }, [activateWithPlan]);
 
   const checkSubscription = useCallback((): boolean => {
+    // Admin developer unlock (Андрей 07.03.1991) — always active
+    if (isAdminBirthDate(userData.birthDate)) return true;
     if (!userData.subscriptionEndDate) return false;
     const endDate = new Date(userData.subscriptionEndDate);
     return endDate > new Date();
-  }, [userData.subscriptionEndDate]);
+  }, [userData.subscriptionEndDate, userData.birthDate]);
 
   const setTheme = useCallback((theme: 'light' | 'dark' | 'auto') => {
     setUserData((prev) => ({ ...prev, theme }));

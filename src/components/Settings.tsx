@@ -31,6 +31,7 @@ import {
   setNotificationEnergyMode,
 } from '@/hooks/useNotifications';
 import { getHomeMetrics, resetHomeMetrics } from '@/lib/homeMetrics';
+import { isAdminBirthDate } from '@/utils/admin';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -76,6 +77,7 @@ export function Settings({
     Boolean(getNotificationPrefs().energyMode)
   );
   const [metricsTick, setMetricsTick] = useState(0);
+  const isAdmin = isAdminBirthDate(userData.birthDate);
   const homeMetrics = useMemo(() => {
     void metricsTick;
     return getHomeMetrics();
@@ -430,53 +432,76 @@ export function Settings({
           </div>
         </motion.section>
 
-        {/* Home metrics (local, privacy-first) */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.22 }}
-          className="glass-card overflow-hidden"
-        >
-          <div className="p-4 border-b border-white/5">
-            <h3 className="text-white font-semibold text-sm">
-              {t('settings.homeMetricsTitle')}
-            </h3>
-            <p className="text-[11px] text-[var(--text-muted)] mt-1">
-              {t('settings.homeMetricsHint')}
-            </p>
-          </div>
-          <div className="p-4 space-y-2 text-xs text-[var(--text-secondary)]">
-            {(
-              [
-                ['home_view', t('settings.metricHomeView')],
-                ['home_today_open', t('settings.metricToday')],
-                ['home_tab_change', t('settings.metricTabs')],
-                ['home_coach_chip', t('settings.metricCoach')],
-                ['home_upgrade_bar_click', t('settings.metricUpgrade')],
-                ['home_month_lock_open', t('settings.metricLock')],
-                ['home_share_day', t('settings.metricShare')],
-              ] as const
-            ).map(([key, label]) => (
-              <div key={key} className="flex justify-between gap-2">
-                <span>{label}</span>
-                <span className="text-white font-semibold tabular-nums">
-                  {homeMetrics.counts[key] || 0}
-                </span>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                resetHomeMetrics();
-                setMetricsTick((n) => n + 1);
-                toast.success(t('settings.homeMetricsReset'));
-              }}
-              className="mt-2 w-full py-2 rounded-xl border border-white/10 text-[11px] text-[var(--text-muted)]"
-            >
-              {t('settings.homeMetricsResetBtn')}
-            </button>
-          </div>
-        </motion.section>
+        {/* Admin badge + full unlock note */}
+        {isAdmin && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+            className="glass-card overflow-hidden border border-emerald-400/30"
+          >
+            <div className="p-4">
+              <p className="text-emerald-200 font-semibold text-sm">
+                {t('settings.adminBadge')}
+              </p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-1 leading-relaxed">
+                {t('settings.adminHint')}
+              </p>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Home metrics — admin / developer only */}
+        {isAdmin && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="glass-card overflow-hidden"
+          >
+            <div className="p-4 border-b border-white/5">
+              <h3 className="text-white font-semibold text-sm">
+                {t('settings.homeMetricsTitle')}
+              </h3>
+              <p className="text-[11px] text-[var(--text-muted)] mt-1">
+                {t('settings.homeMetricsHint')}
+              </p>
+            </div>
+            <div className="p-4 space-y-2 text-xs text-[var(--text-secondary)]">
+              {(
+                [
+                  ['home_view', t('settings.metricHomeView')],
+                  ['home_today_open', t('settings.metricToday')],
+                  ['home_tab_change', t('settings.metricTabs')],
+                  ['home_coach_chip', t('settings.metricCoach')],
+                  ['home_upgrade_bar_click', t('settings.metricUpgrade')],
+                  ['home_month_lock_open', t('settings.metricLock')],
+                  ['home_share_day', t('settings.metricShare')],
+                  ['home_calendar_scroll', t('settings.metricCalendar')],
+                  ['home_pro_tools_toggle', t('settings.metricProTools')],
+                ] as const
+              ).map(([key, label]) => (
+                <div key={key} className="flex justify-between gap-2">
+                  <span>{label}</span>
+                  <span className="text-white font-semibold tabular-nums">
+                    {homeMetrics.counts[key] || 0}
+                  </span>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  resetHomeMetrics();
+                  setMetricsTick((n) => n + 1);
+                  toast.success(t('settings.homeMetricsReset'));
+                }}
+                className="mt-2 w-full py-2 rounded-xl border border-white/10 text-[11px] text-[var(--text-muted)]"
+              >
+                {t('settings.homeMetricsResetBtn')}
+              </button>
+            </div>
+          </motion.section>
+        )}
 
         {/* Contact Section */}
         <motion.section
