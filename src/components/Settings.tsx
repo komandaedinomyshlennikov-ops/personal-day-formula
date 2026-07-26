@@ -600,7 +600,7 @@ export function Settings({
               to="/terms"
               className="block w-full p-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm"
             >
-              {t('legal.terms', { defaultValue: 'Terms / Offer' })}
+              {t('legal.terms', { defaultValue: 'Terms of use' })}
             </Link>
             <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/5">
               <div>

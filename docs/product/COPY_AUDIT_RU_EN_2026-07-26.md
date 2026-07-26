@@ -265,12 +265,18 @@ RU «Публичная оферта» vs EN «Terms / Offer» — для EN р�
 - [x] yearBadge без года в бренде (Wave A+B)  
 - [x] Social proof: label «иллюстрации» / illustrative (Wave B)  
 - [x] unlock fail → Telegram, не код; notes empty + windowsEmpty согласованы (Wave B)  
+- [x] EN settings: sentence case (Wave C)  
+- [x] a11y: high contrast phrasing, no “visually impaired” (Wave C)  
+- [x] EN: Terms of use; Digital astrology → Vedic; category/UI calques polished (Wave C)  
 
 ### Wave A applied
 См. commit copy Wave A: ru/en subscription, landing plans, activation→link, meta, coach CTA, yearBadge.
 
 ### Wave B applied
 См. commit copy Wave B: glossary cycle/tone labels, coach source UX, proofNote, unlock/empty polish; brand «Астронавигатор» сохранён.
+
+### Wave C applied
+См. commit copy Wave C: EN settings sentence case, a11y contrast copy, legal Terms of use, glossary Vedic naming, UI calques (nav/categories/premium/coach). Full native editorial of all day/month recommendation bodies remains optional backlog.
 
 ---
 
@@ -279,7 +285,7 @@ RU «Публичная оферта» vs EN «Terms / Offer» — для EN р�
 Тексты **не «сырые»**: RU/EN выровнены, голос заботливый и юридически аккуратный.  
 Слабое место — **продуктовая правда в словах**: цены на лендинге, «полный trial», коды активации, «астро-события» и tech-строки коуча.  
 
-Исправление Wave A — максимальный ROI перед запуском рекламы; Wave B/C — полировка бренда и EN-рынка.
+Исправление Wave A — максимальный ROI перед запуском рекламы; Wave B/C — полировка бренда и EN-рынка. **Copy waves A–C done** (2026-07-26).
 
 ---
 
