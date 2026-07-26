@@ -28,11 +28,23 @@
   --accent-gold-dark: #d4a017;
   --accent-champagne: #f5e6c8;
 
-  /* Text */
+  /* Text — muted raised for WCAG-ish contrast on dark glass (P2.4) */
   --text-primary: #f7f4ff;
-  --text-secondary: rgba(247, 244, 255, 0.72);
-  --text-muted: rgba(247, 244, 255, 0.48);
+  --text-secondary: rgba(247, 244, 255, 0.78);
+  --text-muted: rgba(247, 244, 255, 0.58);
   --text-gold: #f5d78e;
+
+  /* Surface hierarchy (P2.1) */
+  --surface-primary: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  --surface-secondary: rgba(255, 255, 255, 0.04);
+  --surface-tertiary: rgba(255, 255, 255, 0.03);
+  --surface-border: rgba(255, 255, 255, 0.1);
+  --surface-border-strong: rgba(245, 215, 142, 0.28);
+  --hero-min-height: 7.5rem;
 
   /* Energy colors (planets) */
   --energy-1: #f5d78e;

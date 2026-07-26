@@ -14,7 +14,10 @@ import {
   Info,
   MessageCircle,
   Lock,
+  Share2,
+  X,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -44,15 +47,18 @@ import { MorningNotifyBanner } from '@/components/MorningNotifyBanner';
 import { EveningCheckIn } from '@/components/EveningCheckIn';
 import type { AccessTier } from '@/utils/access';
 import { canUseFeature, hasYearPerks, isPaidTier, isTrialTier } from '@/utils/access';
-import { trackEvent } from '@/lib/analytics';
+import { recordHomeMetric } from '@/lib/homeMetrics';
 import { buildTelegramPaymentUrl } from '@/config/site';
 import {
   getMonthRecommendation,
   getYearRecommendation,
 } from '@/data/monthYearRecommendations';
+import { loadCoachState, getLocalDateKey } from '@/utils/coachMemory';
+import { buildDayShareText, shareText } from '@/utils/shareDay';
 import type { DayInfo } from '@/types';
 
 const HOME_TAB_KEY = 'astronavigator_home_tab_v1';
+const FIRST_HINT_KEY = 'astronavigator_home_first_hint_v1';
 type HomeTab = 'week' | 'month';
 
 function readHomeTab(): HomeTab {
@@ -63,6 +69,20 @@ function readHomeTab(): HomeTab {
     /* ignore */
   }
   return 'week';
+}
+
+function readFirstHintVisible(): boolean {
+  try {
+    return localStorage.getItem(FIRST_HINT_KEY) !== '1';
+  } catch {
+    return true;
+  }
+}
+
+function yesterdayKey(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return getLocalDateKey(d);
 }
 
 interface CalendarProps {
@@ -160,16 +180,38 @@ export function Calendar({
   /** Trial / free: block month & year deep dive with subscribe modal */
   const [proLock, setProLock] = useState<'month' | 'year' | null>(null);
   const [homeTab, setHomeTab] = useState<HomeTab>(readHomeTab);
+  const [firstHint, setFirstHint] = useState(readFirstHintVisible);
+  const [sharing, setSharing] = useState(false);
   const [streak, setStreak] = useState<StreakState>({
     streak: 0,
     lastDate: '',
     totalDays: 0,
   });
   const containerRef = useRef<HTMLDivElement>(null);
+  const calScrollTracked = useRef(false);
 
   useEffect(() => {
     setStreak(recordAppOpen());
+    recordHomeMetric('home_view', { tab: readHomeTab() });
   }, []);
+
+  // P2: track calendar grid entering viewport (month tab)
+  useEffect(() => {
+    if (homeTab !== 'month') return;
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting) && !calScrollTracked.current) {
+          calScrollTracked.current = true;
+          recordHomeMetric('home_calendar_scroll', { tab: 'month' });
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [homeTab]);
 
   const switchTab = (tab: HomeTab) => {
     setHomeTab(tab);
@@ -178,7 +220,17 @@ export function Calendar({
     } catch {
       /* ignore */
     }
-    trackEvent('home_tab_change', { tab });
+    recordHomeMetric('home_tab_change', { tab });
+  };
+
+  const dismissFirstHint = () => {
+    try {
+      localStorage.setItem(FIRST_HINT_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+    setFirstHint(false);
+    recordHomeMetric('home_first_hint_dismiss');
   };
 
   const year = currentDate.getFullYear();
@@ -192,7 +244,7 @@ export function Calendar({
   const handleMonthTap = () => {
     if (!monthYearUnlocked) {
       setProLock('month');
-      trackEvent('home_month_lock_open', { kind: 'month' });
+      recordHomeMetric('home_month_lock_open', { kind: 'month' });
       return;
     }
     onMonthClick(personalMonth);
@@ -201,7 +253,7 @@ export function Calendar({
   const handleYearTap = () => {
     if (!monthYearUnlocked) {
       setProLock('year');
-      trackEvent('home_month_lock_open', { kind: 'year' });
+      recordHomeMetric('home_month_lock_open', { kind: 'year' });
       return;
     }
     onYearClick(personalYear);
@@ -210,9 +262,14 @@ export function Calendar({
   const payTelegramYear = () => {
     const lang = i18n.language?.startsWith('ru') ? 'ru' : 'en';
     const url = buildTelegramPaymentUrl('year', lang);
-    trackEvent('home_upgrade_bar_click', { action: 'telegram_year' });
+    recordHomeMetric('home_upgrade_bar_click', { action: 'telegram_year' });
     window.open(url, '_blank', 'noopener,noreferrer');
   };
+
+  const yesterdayCheckIn = useMemo(() => {
+    const yKey = yesterdayKey();
+    return loadCoachState().checkIns.find((c) => c.dateKey === yKey) || null;
+  }, []);
 
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
   const adjustedFirstDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
@@ -288,6 +345,20 @@ export function Calendar({
     ? getPersonalDayStory(todayInfo.personalNumber, t)
     : null;
 
+  const handleShareToday = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!todayInfo || sharing) return;
+    setSharing(true);
+    const locale = i18n.language?.startsWith('ru') ? 'ru-RU' : 'en-US';
+    const text = buildDayShareText(todayInfo, t, locale);
+    const result = await shareText(text);
+    recordHomeMetric('home_share_day', { result });
+    if (result === 'shared') toast.success(t('share.sharedDay'));
+    else if (result === 'copied') toast.success(t('share.copiedDay'));
+    else toast.error(t('share.shareFailed'));
+    setSharing(false);
+  };
+
   const upcoming = useMemo(
     () => getUpcomingDays(birthDateString, 7),
     [birthDateString]
@@ -343,12 +414,17 @@ export function Calendar({
     <div className="app-shell page-pad flex flex-col min-h-screen">
       <CoachMarks enabled />
 
-      {/* Compact sticky header */}
+      {/* P2.2: sticky header with app icon wordmark */}
       <header className="app-header justify-between !min-h-[52px] !py-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-[13px] flex items-center justify-center bg-gradient-to-br from-amber-200/20 to-violet-400/25 border border-white/10 shrink-0">
-            <Sparkles size={15} className="text-amber-200" />
-          </div>
+          <img
+            src="./icon-48x48.png"
+            alt=""
+            width={28}
+            height={28}
+            className="header-wordmark"
+            decoding="async"
+          />
           <div className="min-w-0">
             <p className="font-display text-[1.05rem] leading-none text-white truncate">
               {displayName
@@ -394,74 +470,133 @@ export function Calendar({
             daysLeft={daysLeft}
             isTrial={trial}
             onOpenSubscription={() => {
-              trackEvent('home_upgrade_bar_click', { action: 'plans' });
+              recordHomeMetric('home_upgrade_bar_click', { action: 'plans' });
               onSubscription();
             }}
             onPayTelegram={trial && daysLeft <= 1 ? payTelegramYear : undefined}
           />
         )}
 
-        {/* Today hero */}
+        {/* P2.5: first-open one-liner (no full tour re-show) */}
+        {firstHint && (
+          <div className="home-first-hint">
+            <Sparkles size={14} className="text-violet-200 shrink-0" />
+            <p className="flex-1 min-w-0">{t('calendar.firstHint')}</p>
+            <button
+              type="button"
+              onClick={dismissFirstHint}
+              className="icon-btn !w-8 !h-8 shrink-0"
+              aria-label={t('actions.close')}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* Today hero + P2.3 check-in echo + P2.6 share */}
         {todayEnergy && todayInfo && todayAction && todayStory && (
-          <button
-            type="button"
-            data-coach="today"
-            onClick={() => onDaySelect(todayInfo)}
+          <div
             className={`today-hero today-hero--story today-hero--compact ${todayToneBorder}`}
             style={{ background: todayToneBg }}
           >
             <div className="today-hero__top">
-              <div
-                className="today-hero__icon today-hero__icon--sm"
-                style={{
-                  background: `${todayEnergy.color}2e`,
-                  boxShadow: `0 0 20px ${todayEnergy.color}30`,
+              <button
+                type="button"
+                data-coach="today"
+                onClick={() => {
+                  recordHomeMetric('home_today_open');
+                  onDaySelect(todayInfo);
                 }}
+                className="flex items-start gap-2.5 min-w-0 flex-1 text-left"
               >
-                {todayEnergy.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                  <span className={toneDotClass} />
-                  <span className="today-hero__badge">{todayStory.toneLabel}</span>
+                <div
+                  className="today-hero__icon today-hero__icon--sm"
+                  style={{
+                    background: `${todayEnergy.color}2e`,
+                    boxShadow: `0 0 20px ${todayEnergy.color}30`,
+                  }}
+                >
+                  {todayEnergy.icon}
                 </div>
-                <p className="today-hero__action today-hero__action--primary">
-                  {todayAction.action}
-                </p>
-                <p className="today-hero__story-title today-hero__story-title--sm">
-                  {todayStory.storyTitle}
-                </p>
-                <p className="today-hero__meta">
-                  {t('calendar.today')} · №{todayInfo.personalNumber} · {todayEnergy.planet}
-                  {displayName
-                    ? ` · ${t('calendar.forYouShort', {
-                        name: displayName,
-                        defaultValue: displayName,
-                      })}`
-                    : ''}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                    <span className={toneDotClass} />
+                    <span className="today-hero__badge">{todayStory.toneLabel}</span>
+                  </div>
+                  <p className="today-hero__action today-hero__action--primary">
+                    {todayAction.action}
+                  </p>
+                  <p className="today-hero__story-title today-hero__story-title--sm">
+                    {todayStory.storyTitle}
+                  </p>
+                  {yesterdayCheckIn && (
+                    <p className="home-checkin-echo">
+                      {t('calendar.yesterdayCheckIn', {
+                        score: yesterdayCheckIn.match,
+                        defaultValue: `Yesterday you marked {{score}}/5 — we keep that in mind`,
+                      })}
+                    </p>
+                  )}
+                  <p className="today-hero__meta">
+                    {t('calendar.today')} · №{todayInfo.personalNumber} · {todayEnergy.planet}
+                    {displayName
+                      ? ` · ${t('calendar.forYouShort', {
+                          name: displayName,
+                          defaultValue: displayName,
+                        })}`
+                      : ''}
+                  </p>
+                </div>
+              </button>
+              <div className="flex flex-col items-center gap-1.5 shrink-0 self-center">
+                <button
+                  type="button"
+                  className="hero-share-btn"
+                  onClick={(e) => void handleShareToday(e)}
+                  disabled={sharing}
+                  aria-label={t('actions.share')}
+                  title={t('actions.share')}
+                >
+                  <Share2 size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    recordHomeMetric('home_today_open');
+                    onDaySelect(todayInfo);
+                  }}
+                  className="text-[var(--text-muted)] opacity-70 p-0.5"
+                  aria-label={t('calendar.tapForDetails')}
+                >
+                  <ChevronRight size={16} />
+                </button>
               </div>
-              <ChevronRight
-                size={16}
-                className="text-[var(--text-muted)] shrink-0 opacity-70 self-center"
-              />
             </div>
-            {todayStory.doList.length > 0 && (
-              <ul className="today-hero__do-list">
-                {todayStory.doList.slice(0, 2).map((item) => (
-                  <li key={item}>
-                    <span className="text-emerald-300">✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="today-hero__hint">
-              {todayStory.doList.length > 2
-                ? t('calendar.tapForMore', { defaultValue: 'Tap for full day · more tips' })
-                : t('calendar.tapForDetails')}
-            </p>
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                recordHomeMetric('home_today_open');
+                onDaySelect(todayInfo);
+              }}
+              className="text-left w-full"
+            >
+              {todayStory.doList.length > 0 && (
+                <ul className="today-hero__do-list">
+                  {todayStory.doList.slice(0, 2).map((item) => (
+                    <li key={item}>
+                      <span className="text-emerald-300">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="today-hero__hint">
+                {todayStory.doList.length > 2
+                  ? t('calendar.tapForMore', { defaultValue: 'Tap for full day · more tips' })
+                  : t('calendar.tapForDetails')}
+              </p>
+            </button>
+          </div>
         )}
 
         {/* P1.1: Week / Month tabs */}
@@ -492,8 +627,11 @@ export function Calendar({
               <button
                 type="button"
                 data-coach="discuss"
-                onClick={onCoach}
-                className="coach-chip"
+                onClick={() => {
+                  recordHomeMetric('home_coach_chip');
+                  onCoach();
+                }}
+                className="coach-chip surface-tertiary"
               >
                 <MessageCircle size={14} className="text-violet-200 shrink-0" />
                 <span className="truncate flex-1 text-left">{t('coach.ctaHome')}</span>
@@ -829,7 +967,7 @@ export function Calendar({
               type="button"
               onClick={() => {
                 setProLock(null);
-                trackEvent('home_upgrade_bar_click', {
+                recordHomeMetric('home_upgrade_bar_click', {
                   action: proLock === 'year' ? 'lock_year' : 'lock_month',
                 });
                 onSubscription();

@@ -5,7 +5,7 @@ import { MonthProPanel } from '@/components/MonthProPanel';
 import { YearPerksPanel } from '@/components/YearPerksPanel';
 import { PremiumTeaser } from '@/components/PremiumTeaser';
 import type { DayInfo } from '@/types';
-import { trackEvent } from '@/lib/analytics';
+import { recordHomeMetric } from '@/lib/homeMetrics';
 
 interface HomeProToolsProps {
   birthDate: string;
@@ -60,7 +60,7 @@ export function HomeProTools({
       } catch {
         /* ignore */
       }
-      trackEvent('home_pro_tools_toggle', { open: next });
+      recordHomeMetric('home_pro_tools_toggle', { open: next });
       return next;
     });
   };
