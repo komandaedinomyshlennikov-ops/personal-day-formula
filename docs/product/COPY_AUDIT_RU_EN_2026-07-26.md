@@ -260,9 +260,17 @@ RU «Публичная оферта» vs EN «Terms / Offer» — для EN р�
 - [x] Pro / Year / trial термины выровнены (Wave A)  
 - [x] EN: critical calques Wave A  
 - [x] Lifetime «консультация» смягчена (по договорённости)  
+- [x] UI: «астро-события» → «события цикла» / cycle events (Wave B)  
+- [x] Coach source без Llama/Groq/LLM/API (Wave B)  
+- [x] yearBadge без года в бренде (Wave A+B)  
+- [x] Social proof: label «иллюстрации» / illustrative (Wave B)  
+- [x] unlock fail → Telegram, не код; notes empty + windowsEmpty согласованы (Wave B)  
 
 ### Wave A applied
 См. commit copy Wave A: ru/en subscription, landing plans, activation→link, meta, coach CTA, yearBadge.
+
+### Wave B applied
+См. commit copy Wave B: glossary cycle/tone labels, coach source UX, proofNote, unlock/empty polish; brand «Астронавигатор» сохранён.
 
 ---
 

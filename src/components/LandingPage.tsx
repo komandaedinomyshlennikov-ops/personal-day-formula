@@ -361,8 +361,11 @@ export function LandingPage({ onStart, onLanguageChange }: LandingPageProps) {
           <h2 className="section-title text-center mb-2 text-[1.55rem]">
             {t('landing.proofTitle')}
           </h2>
-          <p className="text-center text-[var(--text-muted)] text-sm mb-5">
+          <p className="text-center text-[var(--text-muted)] text-sm mb-1.5">
             {t('landing.proofLead')}
+          </p>
+          <p className="text-center text-[10px] uppercase tracking-wide text-[var(--text-muted)]/80 mb-5">
+            {t('landing.proofNote')}
           </p>
           <div className="space-y-3">
             {socialProof.map((item, i) => (

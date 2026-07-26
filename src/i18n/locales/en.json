@@ -278,8 +278,7 @@
     "legendFavorableHint": "Easier for starts, meetings, decisions",
     "legendNeutralHint": "Normal pace — no extremes",
     "legendCompletionHint": "Better to finish and protect energy than force ahead",
-    "legendZeroHint": "10, 20, 30 — postpone big moves if you can",
-    "storyTitleDay": "Today is your day №{{number}}"
+    "legendZeroHint": "10, 20, 30 — postpone big moves if you can"
   },
   "dayDetail": {
     "personalDay": "Your personal day",
@@ -731,10 +730,10 @@
     "version": "AstroNavigator v1.0"
   },
   "astroEvents": {
-    "title": "Astro Events",
-    "subtitle": "Planetary influences that amplify your period's energy",
+    "title": "Cycle events",
+    "subtitle": "Period cues that amplify your cycle tone",
     "significantDates": "Significant Dates",
-    "howItAffectsYou": "How This Affects You",
+    "howItAffectsYou": "How this may land for you",
     "lunarNodes": "Lunar Nodes active — fateful events unfolding",
     "plutoRetrograde": "Pluto retrograde — deep transformation period",
     "uranusDirect": "Uranus direct — unexpected changes ahead",
@@ -1132,24 +1131,24 @@
     "focus": "Focus Areas",
     "opportunities": "Opportunities",
     "challenges": "Challenges",
-    "astroEvents": "Astro Events",
-    "astroEventsTitle": "Astro Events",
-    "monthAstroEvents": "Month Astro Events",
-    "yearAstroEvents": "Year Astro Events",
+    "astroEvents": "Cycle events",
+    "astroEventsTitle": "Cycle events",
+    "monthAstroEvents": "Month cycle events",
+    "yearAstroEvents": "Year cycle events",
     "planetaryInfluences": "Planetary influences that amplify your period's energy",
     "premiumFeature": "Premium Feature",
-    "subscribeToSeeAll": "Subscribe to see all {{count}} astro events",
+    "subscribeToSeeAll": "Subscribe to see all {{count}} cycle events",
     "significantDates": "Significant Dates",
     "significantDatesDesc": "Special days with enhanced energy",
-    "howItAffectsYou": "How This Affects You",
-    "howItAffectsYouDesc": "These astrological events create special energy that will affect your mood, decision-making, and results throughout the period. Use this information to plan important events.",
+    "howItAffectsYou": "How this may land for you",
+    "howItAffectsYouDesc": "These cycle cues set the tone of the period — mood, decisions, and pace. Use them as planning hints, not orders.",
     "impact": {
       "positive": "favorable",
       "challenging": "attention",
       "neutral": "neutral"
     },
     "categories": {
-      "astroCharacter": "Astro Character",
+      "astroCharacter": "Day character",
       "career": "Career & Business",
       "relationships": "Relationships",
       "finance": "Finance",
@@ -1666,7 +1665,7 @@
     "trust3": "3 days free",
     "energiesToggle": "Show 9 day types",
     "energiesHide": "Hide",
-    "proofTitle": "How people use it",
+    "proofTitle": "How it can look",
     "proofLead": "Not “predictions” — a calm plan for the day",
     "proof1": "I finally know when meetings fit and when to reschedule. I open it in the morning like a normal calendar.",
     "proof1Author": "Maria, 34 · marketing",
@@ -1682,7 +1681,8 @@
     "faq3q": "Do I need a bank card?",
     "faq3a": "No. 3 free days without a bank card 💳. Birth date stays only in your browser.",
     "faq4q": "Can I rely on this fully?",
-    "faq4a": "No — and we say so clearly. It’s a prompt to think about the day. Not a scientific forecast or an order."
+    "faq4a": "No — and we say so clearly. It’s a prompt to think about the day. Not a scientific forecast or an order.",
+    "proofNote": "Illustrative scenarios · not verified reviews"
   },
   "legal": {
     "section": "Legal",
@@ -1703,7 +1703,8 @@
     "placeholder": "How was your day? Plans, feelings, meetings…",
     "empty": "No notes yet",
     "tipLabel": "Tip",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "emptyHint": "Jot a thought about the day — just your note, no AI analysis"
   },
   "export": {
     "pdfOk": "PDF exported",
@@ -1718,7 +1719,7 @@
     "placeholder": "Use the unlock link from the bot",
     "submit": "Open access",
     "checking": "Checking…",
-    "empty": "Open the unlock link from Telegram",
+    "empty": "Open the link from Telegram",
     "invalid": "Link is invalid or expired",
     "error": "Could not open access. Message us on Telegram.",
     "howTitle": "How to open access",
@@ -1749,10 +1750,10 @@
     "checkInNote": "What happened? (optional)",
     "checkInSaved": "Check-in saved",
     "checkInEdit": "edit",
-    "sourceLive": "Reply via Llama (Groq) · interpretive helper",
-    "sourceReady": "Free LLM connected · offline falls back to local",
-    "sourceFallback": "Network/API unavailable · local helper",
-    "sourceLocal": "Local helper (API not configured)"
+    "sourceLive": "Online helper",
+    "sourceReady": "Helper ready · falls back offline if needed",
+    "sourceFallback": "Offline mode · network unavailable",
+    "sourceLocal": "Offline helper"
   },
   "trial": {
     "daysLeft": "Trial: {{count}} days left",
@@ -1829,7 +1830,7 @@
     "yearUpsellBody": "Annual plan: best days for 30 days, weekly balance, and year compass",
     "lockedExport": "Report export — in Pro",
     "lockedNotes": "Personal journal tips — in Pro",
-    "lockedYear": "Year Compass, luck windows & digest — on annual plan",
+    "lockedYear": "Year compass, luck windows & digest — on annual plan",
     "whyTitle": "Why Pro if trial already helps?",
     "whyBody": "Trial answers “what about today?”. Pro helps decide for the month — fewer impulses, calmer strategy.",
     "compareFree": "3‑day trial",
@@ -1878,11 +1879,11 @@
   },
   "unlock": {
     "loadingTitle": "Unlocking access…",
-    "loadingBody": "Checking the link from Telegram",
+    "loadingBody": "Checking the link from Telegram…",
     "okTitle": "You’re in!",
     "okBody": "Subscription active. Opening the calendar…",
     "failTitle": "Link didn’t work",
-    "failBody": "Message on Telegram — we’ll send a working unlock link.",
+    "failBody": "Message us on Telegram — we’ll send a working link. No code needed.",
     "writeTelegram": "Message on Telegram",
     "backPlans": "Back to plans"
   }

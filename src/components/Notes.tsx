@@ -268,6 +268,9 @@ export function Notes({ onBack, tipsUnlocked = false, onUpgrade }: NotesProps) {
             <div className="text-center py-16 text-gray-500">
               <MessageSquare className="mx-auto mb-3 opacity-40" size={40} />
               <p>{t('notes.empty', { defaultValue: 'No notes yet' })}</p>
+              <p className="mt-2 text-xs text-gray-500/80 max-w-[16rem] mx-auto leading-relaxed">
+                {t('notes.emptyHint')}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
