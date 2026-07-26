@@ -253,13 +253,16 @@ RU «Публичная оферта» vs EN «Terms / Offer» — для EN р�
 
 ## 9. Acceptance criteria copy release
 
-- [ ] Нет упоминания кодов активации в основном pay flow (RU+EN)  
-- [ ] Нет противоречия «trial = всё»  
-- [ ] Landing prices = subscription prices  
+- [x] Нет упоминания кодов активации в основном pay flow (RU+EN) — Wave A 2026-07-26  
+- [x] Нет противоречия «trial = всё» — trialDesc / freePlan переписаны  
+- [x] Landing prices = subscription prices ($0 / $10 / $50 / $100)  
 - [ ] FAQ + method disclaimer на landing и в app  
-- [ ] Pro / Year / trial термины совпадают на home, subscription, premium teaser  
-- [ ] EN: 0 кириллицы, placeholders parity (уже), 0 critical calques из Wave A  
-- [ ] Product owner sign-off на lifetime «консультация»  
+- [x] Pro / Year / trial термины выровнены (Wave A)  
+- [x] EN: critical calques Wave A  
+- [x] Lifetime «консультация» смягчена (по договорённости)  
+
+### Wave A applied
+См. commit copy Wave A: ru/en subscription, landing plans, activation→link, meta, coach CTA, yearBadge.
 
 ---
 

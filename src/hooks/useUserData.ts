@@ -21,21 +21,21 @@ const subscriptionPlans: SubscriptionPlan[] = [
     name: '3 дня бесплатно',
     price: 0,
     period: 'пробный период',
-    description: 'Попробуйте все функции бесплатно',
+    description: 'Сегодня, календарь и ближайшие дни',
   },
   {
     id: 'month',
     name: 'Месяц',
     price: 10,
     period: 'месяц',
-    description: 'Базовый доступ',
+    description: 'Pro: месяц и год · $10',
   },
   {
     id: 'year',
     name: 'Год',
     price: 50,
     period: 'год',
-    description: 'Выгода 58%',
+    description: 'Pro + год · $50',
     popular: true,
   },
   {
@@ -43,7 +43,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
     name: 'Навсегда',
     price: 100,
     period: 'пожизненно',
-    description: 'Пожизненный доступ',
+    description: 'Все инструменты · $100',
   },
 ];
 
