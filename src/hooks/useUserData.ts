@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserData, SubscriptionPlan, Language } from '@/types';
 import { resolveActivationCode } from '@/utils/activation';
-import { isAdminBirthDate } from '@/utils/admin';
+import {
+  adminAccessFields,
+  ensureAdminUserData,
+  isAdminBirthDate,
+} from '@/utils/admin';
 import { normalizeBirthDateString } from '@/utils/date';
 
 const defaultUserData: UserData = {
@@ -57,7 +61,7 @@ export function useUserData() {
       const birthDate = parsed.birthDate
         ? normalizeBirthDateString(parsed.birthDate) ?? ''
         : '';
-      return { ...defaultUserData, ...parsed, birthDate };
+      return ensureAdminUserData({ ...defaultUserData, ...parsed, birthDate });
     } catch {
       return defaultUserData;
     }
@@ -70,10 +74,23 @@ export function useUserData() {
     localStorage.setItem('astronavigator_user', JSON.stringify(userData));
   }, [userData, isLoaded]);
 
+  // Re-apply admin lifetime if unlock gate flips on (session secret) or data drifted
+  useEffect(() => {
+    if (!isLoaded) return;
+    setUserData((prev) => ensureAdminUserData(prev));
+  }, [isLoaded, userData.birthDate]);
+
   const setBirthDate = useCallback((date: string) => {
     const normalized = normalizeBirthDateString(date);
     if (!normalized) return;
-    setUserData((prev) => ({ ...prev, birthDate: normalized }));
+    setUserData((prev) => {
+      const next = { ...prev, birthDate: normalized };
+      // Dev/admin birth date → full lifetime immediately (no trial paywall noise)
+      if (isAdminBirthDate(normalized)) {
+        return { ...next, ...adminAccessFields() };
+      }
+      return next;
+    });
   }, []);
 
   const setDisplayName = useCallback((name: string) => {
@@ -82,14 +99,20 @@ export function useUserData() {
   }, []);
 
   const startTrial = useCallback(() => {
-    const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + 3);
-    setUserData((prev) => ({
-      ...prev,
-      isTrialActive: true,
-      activatedPlan: 'trial',
-      subscriptionEndDate: trialEndDate.toISOString(),
-    }));
+    setUserData((prev) => {
+      // Admin keeps full access instead of a 3-day trial
+      if (isAdminBirthDate(prev.birthDate)) {
+        return { ...prev, ...adminAccessFields() };
+      }
+      const trialEndDate = new Date();
+      trialEndDate.setDate(trialEndDate.getDate() + 3);
+      return {
+        ...prev,
+        isTrialActive: true,
+        activatedPlan: 'trial',
+        subscriptionEndDate: trialEndDate.toISOString(),
+      };
+    });
   }, []);
 
   /**

@@ -696,7 +696,7 @@
     "energyRemindersOn": "Smart reminders on",
     "energyRemindersOff": "Standard reminders",
     "adminBadge": "Admin mode",
-    "adminHint": "Full access: Pro + Year, unlimited helper, metrics and export. Developer account.",
+    "adminHint": "Full access without payment. Birth date 07.03.1991 · developer account.",
     "homeMetricsTitle": "Home screen metrics",
     "homeMetricsHint": "Counts on this device (admin only). GA after cookie consent.",
     "homeMetricsReset": "Counters reset",
@@ -727,7 +727,17 @@
     "logoutDesc": "Clear data and exit",
     "deleteData": "Delete all data",
     "deleteDataDesc": "Reset the app to a clean state",
-    "version": "AstroNavigator v1.0"
+    "version": "AstroNavigator v1.0",
+    "adminPerkPro": "Pro: month/year depth, export, journal",
+    "adminPerkYear": "Annual plan: compass, windows, digest",
+    "adminPerkCoach": "Helper with no daily message limit",
+    "adminPerkMetrics": "Home screen metrics",
+    "adminSessionTitle": "Developer session",
+    "adminSessionHint": "Enter the secret from your private build to enable full access on this device.",
+    "adminSessionPlaceholder": "Session secret",
+    "adminSessionCta": "Enable full access",
+    "adminSessionOk": "Admin access enabled",
+    "adminSessionFail": "Wrong secret"
   },
   "astroEvents": {
     "title": "Cycle events",

@@ -31,7 +31,11 @@ import {
   setNotificationEnergyMode,
 } from '@/hooks/useNotifications';
 import { getHomeMetrics, resetHomeMetrics } from '@/lib/homeMetrics';
-import { isAdminBirthDate } from '@/utils/admin';
+import {
+  isAdminBirthDate,
+  isAdminBirthDateCandidate,
+  tryUnlockAdminSession,
+} from '@/utils/admin';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -77,7 +81,12 @@ export function Settings({
     Boolean(getNotificationPrefs().energyMode)
   );
   const [metricsTick, setMetricsTick] = useState(0);
+  const [adminSecretDraft, setAdminSecretDraft] = useState('');
   const isAdmin = isAdminBirthDate(userData.birthDate);
+  const canEnterAdminSecret =
+    !isAdmin &&
+    isAdminBirthDateCandidate(userData.birthDate) &&
+    Boolean(import.meta.env.VITE_ADMIN_SESSION_SECRET);
   const homeMetrics = useMemo(() => {
     void metricsTick;
     return getHomeMetrics();
@@ -441,12 +450,60 @@ export function Settings({
             className="glass-card overflow-hidden border border-emerald-400/30"
           >
             <div className="p-4">
-              <p className="text-emerald-200 font-semibold text-sm">
+              <p className="text-emerald-200 font-semibold text-sm flex items-center gap-2">
+                <Crown size={16} className="text-emerald-300" />
                 {t('settings.adminBadge')}
               </p>
               <p className="text-[11px] text-[var(--text-muted)] mt-1 leading-relaxed">
                 {t('settings.adminHint')}
               </p>
+              <ul className="mt-2 text-[11px] text-emerald-100/90 space-y-0.5 list-disc list-inside">
+                <li>{t('settings.adminPerkPro')}</li>
+                <li>{t('settings.adminPerkYear')}</li>
+                <li>{t('settings.adminPerkCoach')}</li>
+                <li>{t('settings.adminPerkMetrics')}</li>
+              </ul>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Private-build session unlock for admin birth date */}
+        {canEnterAdminSecret && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.18 }}
+            className="glass-card overflow-hidden border border-white/10"
+          >
+            <div className="p-4 space-y-2">
+              <p className="text-white font-semibold text-sm">
+                {t('settings.adminSessionTitle')}
+              </p>
+              <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                {t('settings.adminSessionHint')}
+              </p>
+              <input
+                type="password"
+                value={adminSecretDraft}
+                onChange={(e) => setAdminSecretDraft(e.target.value)}
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white"
+                placeholder={t('settings.adminSessionPlaceholder')}
+                autoComplete="off"
+              />
+              <button
+                type="button"
+                className="w-full py-2.5 rounded-xl bg-emerald-500/90 text-black text-sm font-semibold"
+                onClick={() => {
+                  if (tryUnlockAdminSession(adminSecretDraft.trim())) {
+                    toast.success(t('settings.adminSessionOk'));
+                    window.location.reload();
+                  } else {
+                    toast.error(t('settings.adminSessionFail'));
+                  }
+                }}
+              >
+                {t('settings.adminSessionCta')}
+              </button>
             </div>
           </motion.section>
         )}
