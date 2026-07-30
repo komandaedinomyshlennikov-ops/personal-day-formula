@@ -38,7 +38,12 @@ import { normalizeBirthDateString } from '@/utils/date';
 import { getDayActionLine, getPersonalDayStory } from '@/utils/actionableDay';
 import { getUpcomingDays } from '@/utils/upcomingDays';
 import { recordAppOpen, type StreakState } from '@/utils/streak';
-import { CoachMarks } from '@/components/CoachMarks';
+import {
+  CoachMarks,
+  TOUR_ACTIVE_EVENT,
+  TOUR_DONE_KEY,
+  type TourHomeTab,
+} from '@/components/CoachMarks';
 import { UpgradeBar } from '@/components/UpgradeBar';
 import { UpcomingDays } from '@/components/UpcomingDays';
 import { StreakChip } from '@/components/StreakChip';
@@ -181,6 +186,7 @@ export function Calendar({
   const [proLock, setProLock] = useState<'month' | 'year' | null>(null);
   const [homeTab, setHomeTab] = useState<HomeTab>(readHomeTab);
   const [firstHint, setFirstHint] = useState(readFirstHintVisible);
+  const [tourActive, setTourActive] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [streak, setStreak] = useState<StreakState>({
     streak: 0,
@@ -194,6 +200,58 @@ export function Calendar({
     setStreak(recordAppOpen());
     recordHomeMetric('home_view', { tab: readHomeTab() });
   }, []);
+
+  // Home tour: dim/spotlight overlay posts active flag (hide one-liner while tour runs)
+  useEffect(() => {
+    const onActive = (e: Event) => {
+      const active = Boolean((e as CustomEvent<{ active?: boolean }>).detail?.active);
+      setTourActive(active);
+      // Lock background scroll under the modal tour
+      try {
+        document.body.style.overflow = active ? 'hidden' : '';
+      } catch {
+        /* ignore */
+      }
+      if (!active) {
+        // Tour finished/skipped — one-liner is dismissed together with tour
+        try {
+          if (localStorage.getItem(FIRST_HINT_KEY) === '1') setFirstHint(false);
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+    window.addEventListener(TOUR_ACTIVE_EVENT, onActive);
+    return () => {
+      window.removeEventListener(TOUR_ACTIVE_EVENT, onActive);
+      try {
+        document.body.style.overflow = '';
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
+
+  const handleTourPreferTab = useCallback((tab: TourHomeTab) => {
+    setHomeTab(tab);
+    try {
+      localStorage.setItem(HOME_TAB_KEY, tab);
+    } catch {
+      /* ignore */
+    }
+    // Colors step needs legend readable
+    if (tab === 'month') setLegendOpen(true);
+  }, []);
+
+  // One-liner only after full tour is done (avoids double onboarding with CoachMarks)
+  const tourAlreadyDone = (() => {
+    try {
+      return localStorage.getItem(TOUR_DONE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  })();
+  const showFirstHint = firstHint && !tourActive && tourAlreadyDone;
 
   // P2: track calendar grid entering viewport (month tab)
   useEffect(() => {
@@ -412,7 +470,7 @@ export function Calendar({
 
   return (
     <div className="app-shell page-pad flex flex-col min-h-screen">
-      <CoachMarks enabled />
+      <CoachMarks enabled onPreferTab={handleTourPreferTab} />
 
       {/* P2.2: sticky header with app icon wordmark */}
       <header className="app-header justify-between !min-h-[52px] !py-2">
@@ -477,10 +535,10 @@ export function Calendar({
           />
         )}
 
-        {/* P2.5: first-open one-liner (no full tour re-show) */}
-        {firstHint && (
-          <div className="home-first-hint">
-            <Sparkles size={14} className="text-violet-200 shrink-0" />
+        {/* One-liner only after tour was completed earlier (no double onboarding) */}
+        {showFirstHint && (
+          <div className="home-first-hint" role="status">
+            <Sparkles size={14} className="text-violet-200 shrink-0" aria-hidden />
             <p className="flex-1 min-w-0">{t('calendar.firstHint')}</p>
             <button
               type="button"

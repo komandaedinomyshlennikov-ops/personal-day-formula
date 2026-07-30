@@ -383,22 +383,73 @@
     touch-action: manipulation;
   }
 
-  /* Home tour spotlight */
+  /* Home tour — single scrim OR cut-out spotlight (not both) */
+  .tour-root {
+    pointer-events: auto;
+  }
+
+  .tour-scrim {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
   .tour-spotlight {
     position: fixed;
     z-index: 72;
-    border-radius: 22px;
+    border-radius: 18px;
+    /* Real hole: ring + huge outer shadow dims everything else */
     box-shadow:
-      0 0 0 3px rgba(245, 215, 142, 0.55),
-      0 0 0 9999px rgba(0, 0, 0, 0.78),
-      0 0 28px rgba(245, 215, 142, 0.35);
+      0 0 0 3px rgba(245, 215, 142, 0.75),
+      0 0 0 6px rgba(245, 215, 142, 0.2),
+      0 0 36px rgba(245, 215, 142, 0.4),
+      0 0 0 9999px rgba(0, 0, 0, 0.72);
     pointer-events: none;
-    transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+    transition:
+      top 0.22s ease,
+      left 0.22s ease,
+      width 0.22s ease,
+      height 0.22s ease;
+    animation: tour-pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes tour-pulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 0 3px rgba(245, 215, 142, 0.75),
+        0 0 0 6px rgba(245, 215, 142, 0.2),
+        0 0 36px rgba(245, 215, 142, 0.4),
+        0 0 0 9999px rgba(0, 0, 0, 0.72);
+    }
+    50% {
+      box-shadow:
+        0 0 0 3px rgba(245, 215, 142, 0.95),
+        0 0 0 8px rgba(245, 215, 142, 0.28),
+        0 0 48px rgba(245, 215, 142, 0.55),
+        0 0 0 9999px rgba(0, 0, 0, 0.72);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tour-spotlight {
+      animation: none;
+      transition: none;
+    }
   }
 
   .tour-card {
-    max-height: min(70vh, 420px);
+    max-height: min(58vh, 400px);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(245, 215, 142, 0.12);
+  }
+
+  .tour-tip {
+    word-break: break-word;
   }
 
   /* —— Home (calendar) layout —— */
