@@ -2,12 +2,11 @@ import {
   useCallback,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
-  type CSSProperties,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
@@ -17,7 +16,6 @@ import { recordHomeMetric } from '@/lib/homeMetrics';
 export const TOUR_DONE_KEY = 'astronavigator_tour_done_v2';
 const FIRST_HINT_KEY = 'astronavigator_home_first_hint_v1';
 
-/** Calendar listens to switch Week/Month for off-screen targets */
 export const TOUR_STEP_EVENT = 'astronavigator:tour-step';
 export const TOUR_ACTIVE_EVENT = 'astronavigator:tour-active';
 export const TOUR_RESTART_EVENT = 'astronavigator:tour-restart';
@@ -26,7 +24,7 @@ export type TourHomeTab = 'week' | 'month';
 
 export interface TourStep {
   id: string;
-  /** Optional CSS selector for spotlight; omit for centered intro */
+  /** CSS selector for spotlight; omit for centered intro */
   target?: string;
   /** Preferred home tab so the target is mounted */
   preferTab?: TourHomeTab;
@@ -35,6 +33,10 @@ export interface TourStep {
   tipKey?: string;
 }
 
+/**
+ * Compact targets only — never spotlight the whole month grid
+ * (that made the hole fill the screen and broke the card).
+ */
 const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
@@ -65,6 +67,13 @@ const TOUR_STEPS: TourStep[] = [
     tipKey: 'tour.checkinTip',
   },
   {
+    id: 'grid',
+    target: '[data-coach="grid-head"]',
+    preferTab: 'month',
+    titleKey: 'tour.gridTitle',
+    bodyKey: 'tour.gridBody',
+  },
+  {
     id: 'colors',
     target: '[data-coach="legend"]',
     preferTab: 'month',
@@ -72,29 +81,31 @@ const TOUR_STEPS: TourStep[] = [
     bodyKey: 'tour.colorsBody',
     tipKey: 'tour.colorsTip',
   },
-  {
-    id: 'grid',
-    target: '[data-coach="grid"]',
-    preferTab: 'month',
-    titleKey: 'tour.gridTitle',
-    bodyKey: 'tour.gridBody',
-  },
 ];
 
 interface CoachMarksProps {
   enabled?: boolean;
   steps?: TourStep[];
-  /** Called when tour wants a home tab (week/month) for the next spotlight */
   onPreferTab?: (tab: TourHomeTab) => void;
-  /** Force remount key from parent after Settings “replay” */
   restartToken?: number;
 }
+
+interface Hole {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+const PAD = 6;
+/** Reserve for bottom sheet + nav so hole never sits under the card */
+const SHEET_RESERVE = 220;
+const NAV_SAFE = 8;
 
 function isTourDone(): boolean {
   try {
     if (localStorage.getItem(TOUR_DONE_KEY) === '1') return true;
     const legacy = localStorage.getItem('astronavigator_coach_v1');
-    // Only skip if legacy is exactly "1" (old tour done), not JSON memory blob
     if (legacy === '1') {
       localStorage.setItem(TOUR_DONE_KEY, '1');
       return true;
@@ -108,7 +119,6 @@ function isTourDone(): boolean {
 function markTourDone(): void {
   try {
     localStorage.setItem(TOUR_DONE_KEY, '1');
-    // Don't re-show the one-liner banner after a full tour
     localStorage.setItem(FIRST_HINT_KEY, '1');
   } catch {
     /* ignore */
@@ -125,20 +135,66 @@ function dispatchTourActive(active: boolean): void {
   }
 }
 
-function dispatchTourStep(step: TourStep, index: number, total: number): void {
+function lockScroll(lock: boolean): void {
   try {
-    window.dispatchEvent(
-      new CustomEvent(TOUR_STEP_EVENT, {
-        detail: {
-          id: step.id,
-          preferTab: step.preferTab,
-          index,
-          total,
-        },
-      })
-    );
+    document.body.style.overflow = lock ? 'hidden' : '';
+    const body = document.querySelector('.home-body') as HTMLElement | null;
+    if (body) body.style.overflow = lock ? 'hidden' : '';
   } catch {
     /* ignore */
+  }
+}
+
+/** Clamp a DOMRect into a reasonable spotlight that leaves room for the sheet */
+function clampHole(r: DOMRect): Hole {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const maxBottom = vh - SHEET_RESERVE - NAV_SAFE;
+  const maxH = Math.max(48, Math.min(r.height + PAD * 2, vh * 0.36, maxBottom - 12));
+  const maxW = Math.min(r.width + PAD * 2, vw - 16);
+
+  let top = Math.max(8, r.top - PAD);
+  let left = Math.max(8, r.left - PAD);
+  let width = maxW;
+  let height = Math.min(r.height + PAD * 2, maxH);
+
+  // If target is taller than max, show the top portion
+  if (r.height + PAD * 2 > maxH) {
+    height = maxH;
+  }
+
+  // Keep hole above the bottom sheet
+  if (top + height > maxBottom) {
+    top = Math.max(8, maxBottom - height);
+  }
+  if (left + width > vw - 8) {
+    left = Math.max(8, vw - 8 - width);
+  }
+
+  return {
+    top: Math.round(top),
+    left: Math.round(left),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+
+function scrollTargetIntoView(el: HTMLElement): void {
+  const scrollRoot =
+    (document.querySelector('.home-body') as HTMLElement | null) || null;
+
+  if (scrollRoot) {
+    const rootRect = scrollRoot.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    // Keep target in the upper band so the bottom sheet never covers it
+    const desiredTop = rootRect.top + Math.min(72, rootRect.height * 0.1);
+    const delta = elRect.top - desiredTop;
+    if (Math.abs(delta) > 6) {
+      // scrollTop works even when overflow is locked for touch
+      scrollRoot.scrollTop += delta;
+    }
+  } else {
+    el.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
 }
 
@@ -151,31 +207,33 @@ export function CoachMarks({
   const { t } = useTranslation();
   const titleId = useId();
   const bodyId = useId();
-  const cardRef = useRef<HTMLDivElement>(null);
   const nextBtnRef = useRef<HTMLButtonElement>(null);
+  const measureGen = useRef(0);
 
   const [stepIndex, setStepIndex] = useState(0);
   const [active, setActive] = useState(false);
-  const [rect, setRect] = useState<DOMRect | null>(null);
-  const [cardHeight, setCardHeight] = useState(220);
+  const [hole, setHole] = useState<Hole | null>(null);
   const [targetMissing, setTargetMissing] = useState(false);
 
-  // Start (or restart) tour
+  const startTour = useCallback(() => {
+    setStepIndex(0);
+    setHole(null);
+    setTargetMissing(false);
+    setActive(true);
+    dispatchTourActive(true);
+    lockScroll(true);
+  }, []);
+
+  // Auto-start for first visit
   useEffect(() => {
     if (!enabled) return;
     if (restartToken === 0 && isTourDone()) return;
-
-    setStepIndex(0);
-    setRect(null);
-    const delay = restartToken > 0 ? 280 : 550;
-    const tmr = window.setTimeout(() => {
-      setActive(true);
-      dispatchTourActive(true);
-    }, delay);
+    const delay = restartToken > 0 ? 200 : 480;
+    const tmr = window.setTimeout(startTour, delay);
     return () => window.clearTimeout(tmr);
-  }, [enabled, restartToken]);
+  }, [enabled, restartToken, startTour]);
 
-  // External restart from Settings (same Calendar instance)
+  // Settings → “Show tips again”
   useEffect(() => {
     const onRestart = () => {
       try {
@@ -183,115 +241,138 @@ export function CoachMarks({
       } catch {
         /* ignore */
       }
-      setStepIndex(0);
-      setRect(null);
-      setActive(true);
-      dispatchTourActive(true);
+      startTour();
     };
     window.addEventListener(TOUR_RESTART_EVENT, onRestart);
     return () => window.removeEventListener(TOUR_RESTART_EVENT, onRestart);
+  }, [startTour]);
+
+  // Cleanup scroll lock on unmount
+  useEffect(() => {
+    return () => lockScroll(false);
   }, []);
 
-  // Notify home about preferred tab for this step
+  // Prefer tab before measuring
   useEffect(() => {
     if (!active) return;
     const step = steps[stepIndex];
     if (!step) return;
-    dispatchTourStep(step, stepIndex, steps.length);
     if (step.preferTab) onPreferTab?.(step.preferTab);
+    try {
+      window.dispatchEvent(
+        new CustomEvent(TOUR_STEP_EVENT, {
+          detail: {
+            id: step.id,
+            preferTab: step.preferTab,
+            index: stepIndex,
+            total: steps.length,
+          },
+        })
+      );
+    } catch {
+      /* ignore */
+    }
   }, [active, stepIndex, steps, onPreferTab]);
 
   const measure = useCallback(() => {
     const step = steps[stepIndex];
+    const gen = ++measureGen.current;
+
     if (!step?.target) {
-      setRect(null);
+      setHole(null);
       setTargetMissing(false);
       return;
     }
-    const el = document.querySelector(step.target);
-    if (el instanceof HTMLElement) {
+
+    const run = () => {
+      if (gen !== measureGen.current) return;
+      const el = document.querySelector(step.target!) as HTMLElement | null;
+      if (!el) {
+        setHole(null);
+        setTargetMissing(true);
+        return;
+      }
       setTargetMissing(false);
-      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      // Wait for scroll + layout (tab switch may remount target)
-      window.setTimeout(() => {
-        const r = el.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) setRect(r);
-        else setRect(null);
-      }, 120);
-    } else {
-      setRect(null);
-      setTargetMissing(true);
-    }
+      scrollTargetIntoView(el);
+      // After scroll settles
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (gen !== measureGen.current) return;
+          const r = el.getBoundingClientRect();
+          if (r.width < 4 || r.height < 4) {
+            setHole(null);
+            setTargetMissing(true);
+            return;
+          }
+          setHole(clampHole(r));
+        });
+      });
+    };
+
+    // Tab content may mount next frame
+    run();
+    window.setTimeout(run, 60);
+    window.setTimeout(run, 180);
+    window.setTimeout(run, 360);
   }, [stepIndex, steps]);
 
   useEffect(() => {
     if (!active) return;
     measure();
-    // Retry while tab content mounts
-    const retries = [200, 450, 800].map((ms) => window.setTimeout(measure, ms));
-    const onResize = () => measure();
-    window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onResize, true);
-    const id = window.setInterval(measure, 600);
+    const onWin = () => measure();
+    window.addEventListener('resize', onWin);
+    window.addEventListener('orientationchange', onWin);
     return () => {
-      retries.forEach(clearTimeout);
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onResize, true);
-      window.clearInterval(id);
+      window.removeEventListener('resize', onWin);
+      window.removeEventListener('orientationchange', onWin);
     };
   }, [active, measure]);
 
-  useLayoutEffect(() => {
-    if (!active || !cardRef.current) return;
-    setCardHeight(cardRef.current.getBoundingClientRect().height);
-  }, [active, stepIndex, targetMissing]);
-
-  // Focus primary action when step changes
   useEffect(() => {
     if (!active) return;
-    const id = window.setTimeout(() => nextBtnRef.current?.focus(), 80);
+    const id = window.setTimeout(() => nextBtnRef.current?.focus(), 60);
     return () => window.clearTimeout(id);
   }, [active, stepIndex]);
 
-  const finish = useCallback(
-    (reason: 'done' | 'skip') => {
-      markTourDone();
-      setActive(false);
-      dispatchTourActive(false);
-      try {
-        recordHomeMetric(
-          reason === 'skip' ? 'home_first_hint_dismiss' : 'home_first_hint_dismiss',
-          { action: reason === 'skip' ? 'tour_skip' : 'tour_done' }
-        );
-      } catch {
-        /* ignore */
-      }
-    },
-    []
-  );
+  const finish = useCallback((reason: 'done' | 'skip') => {
+    markTourDone();
+    setActive(false);
+    setHole(null);
+    dispatchTourActive(false);
+    lockScroll(false);
+    try {
+      recordHomeMetric('home_first_hint_dismiss', {
+        action: reason === 'skip' ? 'tour_skip' : 'tour_done',
+      });
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const next = useCallback(() => {
     if (stepIndex >= steps.length - 1) finish('done');
-    else setStepIndex((i) => i + 1);
+    else {
+      setHole(null);
+      setStepIndex((i) => i + 1);
+    }
   }, [stepIndex, steps.length, finish]);
 
   const back = useCallback(() => {
-    if (stepIndex > 0) setStepIndex((i) => i - 1);
+    if (stepIndex > 0) {
+      setHole(null);
+      setStepIndex((i) => i - 1);
+    }
   }, [stepIndex]);
 
-  // Keyboard
   useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         finish('skip');
-      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
-        if ((e.target as HTMLElement)?.tagName === 'BUTTON' && e.key === 'Enter') return;
-        if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          next();
-        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        next();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
         back();
@@ -301,7 +382,6 @@ export function CoachMarks({
     return () => window.removeEventListener('keydown', onKey);
   }, [active, next, back, finish]);
 
-  // Touch swipe on card
   const touchStartX = useRef<number | null>(null);
   const onTouchStart = (e: ReactTouchEvent) => {
     touchStartX.current = e.changedTouches[0]?.clientX ?? null;
@@ -311,217 +391,207 @@ export function CoachMarks({
     touchStartX.current = null;
     if (start == null) return;
     const dx = (e.changedTouches[0]?.clientX ?? start) - start;
-    if (dx < -48) next();
-    else if (dx > 48) back();
+    if (dx < -56) next();
+    else if (dx > 56) back();
   };
 
-  if (!active) return null;
+  if (typeof document === 'undefined') return null;
 
   const step = steps[stepIndex];
-  if (!step) return null;
-
-  const pad = 8;
-  const hole = rect
-    ? {
-        top: Math.max(4, rect.top - pad),
-        left: Math.max(4, rect.left - pad),
-        width: Math.min(window.innerWidth - 8, rect.width + pad * 2),
-        height: Math.min(window.innerHeight - 8, rect.height + pad * 2),
-      }
-    : null;
-
-  /**
-   * Mobile-first: card docks to bottom (above bottom nav ~72px),
-   * unless hole is in the lower half — then float above the hole.
-   */
-  const navClearance = 76;
-  const gap = 12;
-  const vh = typeof window !== 'undefined' ? window.innerHeight : 700;
-  let cardTop: number | undefined;
-  let cardBottom: number | undefined;
-
-  if (hole) {
-    const holeBottom = hole.top + hole.height;
-    const spaceBelow = vh - holeBottom - navClearance;
-    const spaceAbove = hole.top - 12;
-    if (spaceBelow >= cardHeight + gap) {
-      cardTop = holeBottom + gap;
-      cardBottom = undefined;
-    } else if (spaceAbove >= cardHeight + gap) {
-      cardTop = Math.max(12, hole.top - cardHeight - gap);
-      cardBottom = undefined;
-    } else {
-      // Not enough room — dock bottom sheet
-      cardTop = undefined;
-      cardBottom = navClearance;
-    }
-  } else {
-    cardTop = undefined;
-    cardBottom = navClearance;
-  }
-
-  const cardStyle: CSSProperties = {
-    position: 'fixed',
-    left: 12,
-    right: 12,
-    top: cardTop,
-    bottom: cardBottom,
-    zIndex: 80,
-    maxWidth: 420,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  };
+  if (!active || !step) return null;
 
   const isLast = stepIndex >= steps.length - 1;
   const isFirst = stepIndex === 0;
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 390;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-  return (
+  const overlay = (
     <AnimatePresence>
-      <motion.div
-        className="tour-root fixed inset-0 z-[70]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={bodyId}
-      >
-        {/* Single dim layer with real cut-out via box-shadow (no second full dim) */}
-        {hole ? (
-          <div
-            className="tour-spotlight"
-            style={{
-              top: hole.top,
-              left: hole.left,
-              width: hole.width,
-              height: hole.height,
-            }}
-            aria-hidden
-          />
-        ) : (
-          <div className="tour-scrim absolute inset-0" aria-hidden />
-        )}
-
+      {active && (
         <motion.div
-          ref={cardRef}
-          key={step.id}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.2 }}
-          className="tour-card glass-card p-4 rounded-2xl border border-amber-400/35 shadow-2xl"
-          style={cardStyle}
-          onClick={(e) => e.stopPropagation()}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
+          key="tour-root"
+          className="tour-root"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          aria-describedby={bodyId}
         >
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Sparkles size={12} className="text-amber-300 shrink-0" aria-hidden />
-                <p className="text-[10px] uppercase tracking-[0.12em] text-amber-200/85 font-semibold">
-                  {t('tour.badge')} · {stepIndex + 1}/{steps.length}
-                </p>
-              </div>
-              <h3 id={titleId} className="font-display text-[1.15rem] text-white leading-snug">
-                {t(step.titleKey)}
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => finish('skip')}
-              className="icon-btn !w-9 !h-9 shrink-0"
-              aria-label={t('tour.skip')}
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          <p
-            id={bodyId}
-            className="text-[var(--text-secondary)] text-sm leading-relaxed whitespace-pre-line"
-          >
-            {t(step.bodyKey)}
-          </p>
-
-          {step.tipKey && (
-            <p className="tour-tip mt-2.5 text-[11px] leading-snug text-amber-100/90 bg-amber-400/10 border border-amber-400/20 rounded-xl px-3 py-2">
-              {t(step.tipKey)}
-            </p>
-          )}
-
-          {targetMissing && step.target && (
-            <p className="mt-2 text-[11px] text-[var(--text-muted)]">
-              {t('tour.targetHidden')}
-            </p>
-          )}
-
-          {/* Progress dots — tappable */}
-          <div
-            className="flex justify-center gap-1.5 mt-3.5 mb-3"
-            role="tablist"
-            aria-label={t('tour.badge')}
-          >
-            {steps.map((s, i) => (
-              <button
-                key={s.id}
-                type="button"
-                role="tab"
-                aria-selected={i === stepIndex}
-                aria-label={`${i + 1}/${steps.length}`}
-                onClick={() => setStepIndex(i)}
-                className={`h-2 rounded-full transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300 ${
-                  i === stepIndex
-                    ? 'w-6 bg-amber-300'
-                    : i < stepIndex
-                      ? 'w-2 bg-amber-300/55'
-                      : 'w-2 bg-white/20'
-                }`}
+          {/* 4-panel dim — reliable on iOS/Safari (no 9999px box-shadow) */}
+          {hole ? (
+            <>
+              <div
+                className="tour-dim"
+                style={{ top: 0, left: 0, width: vw, height: hole.top }}
               />
-            ))}
-          </div>
+              <div
+                className="tour-dim"
+                style={{
+                  top: hole.top,
+                  left: 0,
+                  width: hole.left,
+                  height: hole.height,
+                }}
+              />
+              <div
+                className="tour-dim"
+                style={{
+                  top: hole.top,
+                  left: hole.left + hole.width,
+                  width: Math.max(0, vw - (hole.left + hole.width)),
+                  height: hole.height,
+                }}
+              />
+              <div
+                className="tour-dim"
+                style={{
+                  top: hole.top + hole.height,
+                  left: 0,
+                  width: vw,
+                  height: Math.max(0, vh - (hole.top + hole.height)),
+                }}
+              />
+              <div
+                className="tour-hole-ring"
+                style={{
+                  top: hole.top,
+                  left: hole.left,
+                  width: hole.width,
+                  height: hole.height,
+                }}
+                aria-hidden
+              />
+            </>
+          ) : (
+            <div className="tour-dim tour-dim--full" aria-hidden />
+          )}
 
-          <div className="flex gap-2">
-            {isFirst ? (
+          {/* Always bottom sheet — predictable, never covers the hole */}
+          <motion.div
+            key={step.id}
+            className="tour-sheet"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.2 }}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="tour-sheet__handle" aria-hidden />
+
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Sparkles size={12} className="text-amber-300 shrink-0" aria-hidden />
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-amber-200/85 font-semibold">
+                    {t('tour.badge')} · {stepIndex + 1}/{steps.length}
+                  </p>
+                </div>
+                <h3
+                  id={titleId}
+                  className="font-display text-[1.12rem] text-white leading-snug"
+                >
+                  {t(step.titleKey)}
+                </h3>
+              </div>
               <button
                 type="button"
                 onClick={() => finish('skip')}
-                className="btn-secondary flex-1 !min-h-[48px] !text-sm"
+                className="icon-btn !w-9 !h-9 shrink-0"
+                aria-label={t('tour.skip')}
               >
-                {t('tour.skip')}
+                <X size={16} />
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={back}
-                className="btn-secondary flex-1 !min-h-[48px] !text-sm inline-flex items-center justify-center gap-1"
-              >
-                <ChevronLeft size={16} aria-hidden />
-                {t('tour.back')}
-              </button>
-            )}
-            <button
-              ref={nextBtnRef}
-              type="button"
-              onClick={next}
-              className="gradient-button flex-1 !min-h-[48px] !text-sm !py-2 inline-flex items-center justify-center gap-1"
-            >
-              {isLast ? t('tour.done') : t('tour.next')}
-              {!isLast && <ChevronRight size={16} aria-hidden />}
-            </button>
-          </div>
+            </div>
 
-          <p className="mt-2 text-center text-[10px] text-[var(--text-muted)]">
-            {t('tour.swipeHint')}
-          </p>
+            <p
+              id={bodyId}
+              className="text-[var(--text-secondary)] text-[13px] leading-relaxed whitespace-pre-line"
+            >
+              {t(step.bodyKey)}
+            </p>
+
+            {step.tipKey && (
+              <p className="tour-tip mt-2 text-[11px] leading-snug text-amber-100/90 bg-amber-400/10 border border-amber-400/20 rounded-xl px-3 py-2">
+                {t(step.tipKey)}
+              </p>
+            )}
+
+            {targetMissing && step.target && (
+              <p className="mt-2 text-[11px] text-[var(--text-muted)]">
+                {t('tour.targetHidden')}
+              </p>
+            )}
+
+            <div
+              className="flex justify-center gap-1.5 mt-3 mb-2.5"
+              role="tablist"
+              aria-label={t('tour.badge')}
+            >
+              {steps.map((s, i) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === stepIndex}
+                  aria-label={`${i + 1}/${steps.length}`}
+                  onClick={() => {
+                    setHole(null);
+                    setStepIndex(i);
+                  }}
+                  className={`h-2 rounded-full transition-all ${
+                    i === stepIndex
+                      ? 'w-6 bg-amber-300'
+                      : i < stepIndex
+                        ? 'w-2 bg-amber-300/55'
+                        : 'w-2 bg-white/20'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              {isFirst ? (
+                <button
+                  type="button"
+                  onClick={() => finish('skip')}
+                  className="btn-secondary flex-1 !min-h-[48px] !text-sm"
+                >
+                  {t('tour.skip')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={back}
+                  className="btn-secondary flex-1 !min-h-[48px] !text-sm inline-flex items-center justify-center gap-1"
+                >
+                  <ChevronLeft size={16} aria-hidden />
+                  {t('tour.back')}
+                </button>
+              )}
+              <button
+                ref={nextBtnRef}
+                type="button"
+                onClick={next}
+                className="gradient-button flex-1 !min-h-[48px] !text-sm !py-2 inline-flex items-center justify-center gap-1"
+              >
+                {isLast ? t('tour.done') : t('tour.next')}
+                {!isLast && <ChevronRight size={16} aria-hidden />}
+              </button>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
+
+  return createPortal(overlay, document.body);
 }
 
-/** Reset tour (e.g. from settings) and ask home to show it again */
+/** Reset tour (e.g. from settings) and show it again on home */
 export function resetHomeTour(): void {
   try {
     localStorage.removeItem(TOUR_DONE_KEY);

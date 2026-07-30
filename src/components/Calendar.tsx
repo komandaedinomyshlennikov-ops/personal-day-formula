@@ -201,19 +201,12 @@ export function Calendar({
     recordHomeMetric('home_view', { tab: readHomeTab() });
   }, []);
 
-  // Home tour: dim/spotlight overlay posts active flag (hide one-liner while tour runs)
+  // Home tour active flag (first-hint hidden while tour runs)
   useEffect(() => {
     const onActive = (e: Event) => {
       const active = Boolean((e as CustomEvent<{ active?: boolean }>).detail?.active);
       setTourActive(active);
-      // Lock background scroll under the modal tour
-      try {
-        document.body.style.overflow = active ? 'hidden' : '';
-      } catch {
-        /* ignore */
-      }
       if (!active) {
-        // Tour finished/skipped — one-liner is dismissed together with tour
         try {
           if (localStorage.getItem(FIRST_HINT_KEY) === '1') setFirstHint(false);
         } catch {
@@ -222,14 +215,7 @@ export function Calendar({
       }
     };
     window.addEventListener(TOUR_ACTIVE_EVENT, onActive);
-    return () => {
-      window.removeEventListener(TOUR_ACTIVE_EVENT, onActive);
-      try {
-        document.body.style.overflow = '';
-      } catch {
-        /* ignore */
-      }
-    };
+    return () => window.removeEventListener(TOUR_ACTIVE_EVENT, onActive);
   }, []);
 
   const handleTourPreferTab = useCallback((tab: TourHomeTab) => {
@@ -777,8 +763,8 @@ export function Calendar({
 
         {homeTab === 'month' && (
           <div className="space-y-2.5" role="tabpanel">
-            <div ref={containerRef} className="cal-panel" data-coach="grid" id="home-cal-panel">
-              <div className="cal-panel__toolbar">
+            <div ref={containerRef} className="cal-panel" id="home-cal-panel">
+              <div className="cal-panel__toolbar" data-coach="grid-head">
                 <button
                   type="button"
                   onClick={handlePrevMonth}

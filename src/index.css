@@ -383,73 +383,84 @@
     touch-action: manipulation;
   }
 
-  /* Home tour — single scrim OR cut-out spotlight (not both) */
+  /* —— Home tips tour (portal to body) —— */
   .tour-root {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
     pointer-events: auto;
   }
 
-  .tour-scrim {
-    background: rgba(0, 0, 0, 0.72);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-  }
-
-  .tour-spotlight {
+  .tour-dim {
     position: fixed;
-    z-index: 72;
-    border-radius: 18px;
-    /* Real hole: ring + huge outer shadow dims everything else */
+    z-index: 201;
+    background: rgba(0, 0, 0, 0.72);
+    pointer-events: auto;
+  }
+
+  .tour-dim--full {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .tour-hole-ring {
+    position: fixed;
+    z-index: 202;
+    border-radius: 16px;
+    border: 2px solid rgba(245, 215, 142, 0.9);
     box-shadow:
-      0 0 0 3px rgba(245, 215, 142, 0.75),
-      0 0 0 6px rgba(245, 215, 142, 0.2),
-      0 0 36px rgba(245, 215, 142, 0.4),
-      0 0 0 9999px rgba(0, 0, 0, 0.72);
+      0 0 0 4px rgba(245, 215, 142, 0.18),
+      0 0 24px rgba(245, 215, 142, 0.35);
     pointer-events: none;
-    transition:
-      top 0.22s ease,
-      left 0.22s ease,
-      width 0.22s ease,
-      height 0.22s ease;
-    animation: tour-pulse 1.8s ease-in-out infinite;
+    background: transparent;
   }
 
-  @keyframes tour-pulse {
-    0%,
-    100% {
-      box-shadow:
-        0 0 0 3px rgba(245, 215, 142, 0.75),
-        0 0 0 6px rgba(245, 215, 142, 0.2),
-        0 0 36px rgba(245, 215, 142, 0.4),
-        0 0 0 9999px rgba(0, 0, 0, 0.72);
-    }
-    50% {
-      box-shadow:
-        0 0 0 3px rgba(245, 215, 142, 0.95),
-        0 0 0 8px rgba(245, 215, 142, 0.28),
-        0 0 48px rgba(245, 215, 142, 0.55),
-        0 0 0 9999px rgba(0, 0, 0, 0.72);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tour-spotlight {
-      animation: none;
-      transition: none;
-    }
-  }
-
-  .tour-card {
-    max-height: min(58vh, 400px);
+  .tour-sheet {
+    /* No CSS transform — framer-motion owns transform for enter animation */
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 210;
+    width: 100%;
+    max-width: var(--app-max, 430px);
+    margin-left: auto;
+    margin-right: auto;
+    max-height: min(48vh, 380px);
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.45),
-      0 0 0 1px rgba(245, 215, 142, 0.12);
+    padding: 0.55rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0px));
+    border-radius: 22px 22px 0 0;
+    border: 1px solid rgba(245, 215, 142, 0.28);
+    border-bottom: none;
+    background: linear-gradient(
+      180deg,
+      rgba(28, 24, 42, 0.98) 0%,
+      rgba(14, 12, 22, 0.99) 100%
+    );
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.55);
+    pointer-events: auto;
+  }
+
+  .tour-sheet__handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    margin: 0.15rem auto 0.75rem;
   }
 
   .tour-tip {
     word-break: break-word;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tour-root,
+    .tour-sheet {
+      transition: none !important;
+    }
   }
 
   /* —— Home (calendar) layout —— */
