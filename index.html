@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#07060d" />
+    <meta name="description" content="Астронавигатор — ваш личный день по дате рождения. Подсказка на сегодня и спокойный помощник." />
+    <meta name="keywords" content="личный день, календарь, дата рождения, планирование, Астронавигатор, Татьяна Генюш" />
+    <meta name="author" content="Татьяна Генюш" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Астронавигатор — ваш личный день" />
+    <meta property="og:description" content="Персональная подсказка на сегодня по дате рождения. Без банковской карты, за полминуты." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/" />
+    <meta property="og:image" content="https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/icon-512x512.png" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Астронавигатор — ваш личный день" />
+    <meta name="twitter:description" content="Персональная подсказка на сегодня по дате рождения." />
+    <meta name="twitter:image" content="https://komandaedinomyshlennikov-ops.github.io/personal-day-formula/icon-512x512.png" />
+    
+    <!-- Preconnect + premium type -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+    
+    <!-- Favicon + home screen icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json" />
+    
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="АстроНав" />
+    <meta name="application-name" content="АстроНав" />
+    
+    <!-- Performance hints -->
+    <link rel="dns-prefetch" href="https://t.me" />
+    
+    <title>Астронавигатор — Личный календарь успеха</title>
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical styles for fast initial render */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #07060d;
+        color: #f7f4ff;
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Loading spinner */
+      .loading-spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(251, 191, 36, 0.3);
+        border-top-color: #fbbf24;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/js/index-2TGcAGrJ.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/js/i18n-BeVMLXAi.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/react-core-BFpZtv01.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/pwa-CL9JG1YF.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/animations-BahzO3Wv.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/icons-sUIygpyC.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/notifications-BDfsp6K2.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/ui-libs-CdrXTunZ.js">
+    <link rel="stylesheet" crossorigin href="./assets/css/index-DFdNAwdV.css">
+  <link rel="manifest" href="./manifest.webmanifest"></head>
+  <body>
+    <div id="root">
+      <!-- Loading spinner shown before JS loads -->
+      <div class="loading-spinner"></div>
+    </div>
+  </body>
+</html>
