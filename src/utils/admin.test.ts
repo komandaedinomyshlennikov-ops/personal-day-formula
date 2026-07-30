@@ -22,11 +22,11 @@ const baseUser: UserData = {
 };
 
 describe('admin unlock (Андрей 07.03.1991)', () => {
-  it('unlock gate is on in DEV / vitest', () => {
+  it('unlock gate is on by default (all builds unless kill-switch)', () => {
     expect(isAdminUnlockEnabled()).toBe(true);
   });
 
-  it('recognizes 1991-03-07 when unlock is enabled (DEV / vitest)', () => {
+  it('recognizes 1991-03-07 (Андрей) as admin with full access', () => {
     expect(isAdminBirthDate('1991-03-07')).toBe(true);
     expect(isAdminBirthDate('1991-03-07 ')).toBe(true);
     expect(isAdminUser({ birthDate: '1991-03-07' })).toBe(true);

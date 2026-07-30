@@ -31,12 +31,9 @@
 Дата `1991-03-07` (Андрей) → tier `lifetime` без оплаты: Pro + Year, coach unlimited, export, metrics.  
 См. `src/utils/admin.ts`.
 
-**Когда работает**
-- `npm run dev` / vitest — всегда (DEV)
-- приватный билд с `VITE_ENABLE_ADMIN_UNLOCK=true`
-- опционально: `VITE_ADMIN_SESSION_SECRET` + ввод секрета в Настройках
+**Когда работает:** по умолчанию **во всех билдах** (включая public Pages), если дата рождения = `1991-03-07`.
 
-**Не включать** `VITE_ENABLE_ADMIN_UNLOCK` / `VITE_ADMIN_SESSION_SECRET` на public GitHub Pages.
+**Kill-switch:** `VITE_DISABLE_ADMIN_UNLOCK=true` — полностью отключает birth-date admin path.
 
 При входе с admin-датой план материализуется как `lifetime` до 2099 (без trial-баннера).
 

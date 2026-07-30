@@ -11,7 +11,8 @@
 - Клиент: `revalidateEntitlement()` при наличии entitlement.
 
 ### P0.2 Admin backdoor
-- `admin.ts`: unlock **только** в `import.meta.env.DEV` или при `VITE_ENABLE_ADMIN_UNLOCK=true` (не ставить на public Pages).
+- **Обновлено (продуктовое решение):** дата `1991-03-07` (Андрей) даёт lifetime **по умолчанию** во всех билдах.
+- Kill-switch: `VITE_DISABLE_ADMIN_UNLOCK=true`, если нужно полностью убрать path перед жёстким public launch.
 
 ### P0.3 Legacy codes
 - `activation.ts`: в **production** `resolveActivationCode` всегда `null`.

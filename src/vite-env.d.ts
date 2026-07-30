@@ -8,13 +8,13 @@ interface ImportMetaEnv {
   /** Pay bot Worker base URL (e.g. https://astronavigator-pay-bot.xxx.workers.dev) */
   readonly VITE_PAY_API_URL?: string;
   /**
-   * Private builds only: enable admin birth-date full unlock (1991-03-07).
-   * Never set on public GitHub Pages.
+   * Kill-switch: set to "true" to disable admin birth-date unlock (1991-03-07).
+   * Default: admin unlock is ON in all builds.
    */
-  readonly VITE_ENABLE_ADMIN_UNLOCK?: string;
+  readonly VITE_DISABLE_ADMIN_UNLOCK?: string;
   /**
-   * Optional passphrase for browser session admin unlock (private builds).
-   * Used with tryUnlockAdminSession(); do not ship on public Pages.
+   * Optional passphrase for browser session admin unlock (extra devices).
+   * Used with tryUnlockAdminSession().
    */
   readonly VITE_ADMIN_SESSION_SECRET?: string;
 }
